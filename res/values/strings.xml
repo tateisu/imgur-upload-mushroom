@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Imgur Upload Mushroom</string>
+    <string name="close_button">close</string>
+    <string name="no_picker">missing app to choose the file.</string>
+    <string name="btnCancel">cancel</string>
+    <string name="btnUpload">upload</string>
+    <string name="btnPick">choose image</string>
+    
+    <string name="act_oauth">Imgur OAuth authentication</string>
+
+    <string name="oauth_start">restart oAuth</string>
+    <string name="site_top">Imgur website toppage</string>
+    <string name="oauth_complete">account has been configured.</string>
+    
+    <string name="too_large_data">too large data</string>
+    <string name="copy_to_clipboard">URL is copied to clipboard</string>
+
+    <string name="menu_history">history</string>
+    <string name="menu_setting">setting</string>
+
+    <string name="cbAutoPick_title">auto start picker</string>
+    <string name="cbAutoPick_summary">if checked, automatically start file picker when start.</string>
+
+    <string name="cbAutoStart_title">skip confirm</string>
+    <string name="cbAutoStart_summary">if checked, automatically start upload when image is choose.</string>
+
+    <string name="output_style_title">output type</string>
+    <string name="output_style_summary">type of output URL</string>
+     <string-array name="output_style_list_captions">
+        <item>URL to direct image</item>
+        <item>URL to Imgur\'s site</item>
+    </string-array>
+     <string-array name="output_style_list_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    
+    <string name="pref_add_account_title">add account</string>
+    <string name="pref_del_account_title">remove account</string>
+    <string name="pref_default_account_title">default account</string>
+
+    <string name="cbDisablePreview_title">disable preview</string>
+    <string name="cbDisablePreview_summary">if checked, disable image preview to save native heap memory.</string>
+
+    <string name="account_last_used">(last used)</string>
+    <string name="account_anonymous">(anonymous)</string>
+    <string name="no_album">(no album)</string>
+    <string-array name="history_context_menu">
+        <item>Input this URL</item>
+        <item>Browse image URL</item>
+        <item>Browse Imgur\'s site</item>
+        <item>Browse delete URL</item>
+        <item>Remove from history</item>
+    </string-array>
+
+    <string name="cbInsertSpacePref_title">space before URL</string>
+    <string name="cbInsertSpacePref_summary">if checked, whitespace will be inserted before URL</string>
+    <string name="cbInsertSpaceSuff_title">space after URL</string>
+    <string name="cbInsertSpaceSuff_summary">if checked, whitespace will be inserted after URL</string>
+    <string name="pc_account">account option</string>
+    <string name="pc_lazy">laziness option</string>
+    <string name="pc_url">URL option</string>
+
+    <string name="pc_history">history option</string>
+    <string name="pref_history_clear_title">clear history</string>
+    <string name="pref_history_clear_message">All history data that saved on this app will be deleted. Are You OK?</string>
+    <string name="ok">OK</string>
+    <string name="please_wait">Please wait..</string>
+    <string name="history_cleared">history data is cleared.</string>
+
+
+    <string name="album_unknown">"??"</string>
+    <string name="album_loading">"?"</string>
+</resources>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Imgur アップロード</string>
+    <string name="close_button">閉じる</string>
+    <string name="no_picker">ファイル選択に使えるアプリがありません</string>
+    <string name="btnUpload">アップロード</string>
+    <string name="btnCancel">キャンセル</string>
+    <string name="btnPick">画像を選択</string>
+    
+    <string name="act_oauth">Imgur OAuth 認証</string>
+    <string name="oauth_complete">アカウントが設定されました</string>
+    <string name="site_top">Imgurトップページ</string>
+    <string name="oauth_start">OAuth認証をやり直す</string>
+    
+    <string name="copy_to_clipboard">URLをクリップボードにコピーしました</string>
+
+	<string name="too_large_data">データサイズが大きすぎます</string>
+
+	<string name="menu_history">履歴</string>
+    <string name="menu_setting">設定</string>
+
+	<string name="cbAutoPick_title">自動で画像選択を開始</string>
+    <string name="cbAutoPick_summary">有効にすると、開始したらすぐに画像選択を行います。</string>
+
+    <string name="cbAutoStart_title">確認せずに送信</string>
+    <string name="cbAutoStart_summary">有効にすると、画像選択が終わったらすぐにImgurへの送信を行います。</string>
+
+    <string name="cbDisablePreview_title">プレビューしない</string>
+    <string name="cbDisablePreview_summary">有効にすると、メモリを節約するためにプレビューを省略します。</string>
+
+    <string name="account_last_used">(前回のアップロード)</string>
+    <string name="account_anonymous">(名無し)</string>
+    <string name="no_album">(アルバムなし)</string>
+
+    <string name="output_style_title">出力するURLの種別</string>
+    <string name="output_style_summary">出力するURLの種別を、画像直リンかImgurの画像詳細ページから選べます。</string>
+     <string-array name="output_style_list_captions">
+        <item>画像リンク</item>
+        <item>画像詳細ページ</item>
+    </string-array>
+     <string-array name="output_style_list_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    
+    <string name="pref_add_account_title">アカウントの追加</string>
+    <string name="pref_del_account_title">アカウントの削除</string>
+	<string name="pref_default_account_title">既定のアカウント</string>
+	
+	<string-array name="history_context_menu">
+        <item>このURLを入力</item>
+        <item>画像リンクを開く</item>
+        <item>画像詳細ページ</item>
+        <item>画像削除ページ</item>
+        <item>履歴から削除</item>
+    </string-array>
+    
+    <string name="cbInsertSpacePref_title">URLの直前に空白を入れる</string>
+    <string name="cbInsertSpacePref_summary">有効にすると、出力されるURLの直前に空白が挿入されます。</string>
+    <string name="cbInsertSpaceSuff_title">URLの直後に空白を入れる</string>
+    <string name="cbInsertSpaceSuff_summary">有効にすると、出力されるURLの直後に空白が挿入されます。</string>
+    <string name="pc_account">アカウント設定</string>
+    <string name="pc_lazy">操作の省略</string>
+    <string name="pc_url">URLの設定</string>
+    
+    <string name="pc_history">履歴の設定</string>
+    <string name="pref_history_clear_title">履歴を全て消去</string>
+    <string name="pref_history_clear_message">端末上に保存された履歴を全て消去します。アカウントを使ってアップロードした画像はImgurのWebサイトから管理することができます。よろしいですか？</string>
+    <string name="ok">OK</string>
+	<string name="please_wait">お待ちください…</string>
+    <string name="history_cleared">履歴データを消去しました</string>
+    
+    <string name="album_unknown">"??"</string>
+    <string name="album_loading">"?"</string>
+    
+</resources>

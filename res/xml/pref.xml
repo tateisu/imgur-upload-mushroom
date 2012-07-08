@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android"
+>
+	<PreferenceCategory android:title="@string/pc_lazy">
+		<CheckBoxPreference
+			android:key="cbAutoPick"
+		    android:title="@string/cbAutoPick_title"
+	    	android:summary="@string/cbAutoPick_summary"
+	    />
+		<CheckBoxPreference
+			android:key="cbAutoStart"
+		    android:title="@string/cbAutoStart_title"
+	    	android:summary="@string/cbAutoStart_summary"
+	    />
+		<CheckBoxPreference
+			android:key="cbDisablePreview"
+		    android:title="@string/cbDisablePreview_title"
+	    	android:summary="@string/cbDisablePreview_summary"
+	    />
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/pc_url">
+
+		<ListPreference
+			android:key="URL_mode"
+	  		android:title="@string/output_style_title"
+			android:summary="@string/output_style_summary"
+			android:dialogTitle="@string/output_style_title"
+	    	android:entries="@array/output_style_list_captions"
+	    	android:entryValues="@array/output_style_list_values"
+	    />
+	    <CheckBoxPreference
+			android:key="cbInsertSpacePref"
+		    android:title="@string/cbInsertSpacePref_title"
+	    	android:summary="@string/cbInsertSpacePref_summary"
+	    	android:defaultValue="false"
+	    />
+	    <CheckBoxPreference
+			android:key="cbInsertSpaceSuff"
+		    android:title="@string/cbInsertSpaceSuff_title"
+	    	android:summary="@string/cbInsertSpaceSuff_summary"
+	    	android:defaultValue="true"
+	    />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/pc_account">
+	    <Preference
+	    	android:key="pref_add_account"
+	  		android:title="@string/pref_add_account_title"
+	    />
+	    <jp.juggler.ImgurMush.Pref_RemoveAccount
+	    	android:key="pref_del_account"
+	  		android:title="@string/pref_del_account_title"
+	    />
+	    <jp.juggler.ImgurMush.Pref_DefaultAccount
+	    	android:key="pref_default_account"
+	  		android:title="@string/pref_default_account_title"
+	    />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/pc_history">
+	    <Preference
+	    	android:key="pref_history_clear"
+	  		android:title="@string/pref_history_clear_title"
+	    />
+	</PreferenceCategory>
+</PreferenceScreen>
