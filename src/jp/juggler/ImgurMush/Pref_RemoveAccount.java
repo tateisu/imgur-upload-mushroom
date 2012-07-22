@@ -2,6 +2,8 @@ package jp.juggler.ImgurMush;
 
 import java.util.ArrayList;
 
+import jp.juggler.ImgurMush.data.ImgurAccount;
+
 import android.app.AlertDialog.Builder;
 import android.content.ContentResolver;
 import android.content.Context;

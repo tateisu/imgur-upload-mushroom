@@ -1,76 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Imgur アップロード</string>
-    <string name="close_button">閉じる</string>
-    <string name="no_picker">ファイル選択に使えるアプリがありません</string>
-    <string name="btnUpload">アップロード</string>
-    <string name="btnCancel">キャンセル</string>
-    <string name="btnPick">画像を選択</string>
-    
-    <string name="act_oauth">Imgur OAuth 認証</string>
-    <string name="oauth_complete">アカウントが設定されました</string>
-    <string name="site_top">Imgurトップページ</string>
-    <string name="oauth_start">OAuth認証をやり直す</string>
-    
-    <string name="copy_to_clipboard">URLをクリップボードにコピーしました</string>
 
-	<string name="too_large_data">データサイズが大きすぎます</string>
+<string name="about">このアプリについて</string>
+<string name="account_added">アカウントが設定されました</string>
+<string name="account_add_title">アカウントの追加</string>
+<string name="account_all">全アカウント</string>
+<string name="account_anonymous">(名無し)</string>
+<string name="account_default_title">既定のアカウント</string>
+<string name="account_delete_title">アカウントの削除</string>
+<string name="account_last_used">(前回のアップロード)</string>
+<string name="account_settings">アカウント設定(必須ではありません)</string>
+<string name="act_appinfo"		 >Imgurマッシュ/ このアプリについて</string>
+<string name="act_arrange"		 >Imgurマッシュ/ 画像の加工</string>
+<string name="act_history"		 >Imgurマッシュ/ 投稿履歴</string>
+<string name="act_main"			 >Imgurマッシュ</string>
+<string name="act_oauth"		 >Imgurマッシュ/ アカウントの追加</string>
+<string name="act_pref"			 >Imgurマッシュ/ 設定</string>
+<string name="act_resize_preset" >Imgurマッシュ/ リサイズ指定</string>
+<string name="album_all">全アルバム</string>
+<string name="album_data_invalid">アルバムデータを正しく処理できませんでした</string>
+<string name="album_loading">(読み込み中…)</string>
+<string name="album_not_select">(アルバムなし)</string>
+<string name="autostart_settings">操作の省略</string>
+<string name="cancel">キャンセル</string>
+<string name="cancel_notice">キャンセルします…</string>
+<string name="copy_to_clipboard">URLをクリップボードにコピーしました</string>
+<string name="crop_bottom">下</string>
+<string name="crop_left">左</string>
+<string name="crop_right">右</string>
+<string name="crop_top">上</string>
+<string name="dash3">&#8230;</string>
+<string name="edit">加工</string>
+<string name="edit_progress_title">処理中です…</string>
+<string name="edit_settings">画像加工の設定</string>
+<string name="file_not_selected">ファイルが選択されていません</string>
+<string name="file_temp_error">ファイルの作成に失敗しました</string>
+<string name="history">履歴</string>
+<string name="history_cleared">履歴データを消去しました</string>
+<string name="history_clear_message">端末上に保存された履歴を全て消去します。Imgurサーバ上の画像はそのまま残ります。アカウントを使ってアップロードした画像はImgurのWebサイトから管理することができます。よろしいですか？</string>
+<string name="history_clear_title">履歴を全て消去</string>
+<string name="history_delete_confirm">この画像をサーバから削除しますか?</string>
+<string name="image_output_dir_desc">加工した画像ファイルを出力するフォルダを指定してください。</string>
+<string name="image_output_dir_summary">加工した画像ファイルを出力するフォルダ</string>
+<string name="image_output_dir_title">出力フォルダ</string>
+<string name="insert_space_pre_summary">有効にすると、出力されるURLの直前に空白が挿入されます。</string>
+<string name="insert_space_pre_title">URLの直前に空白を入れる</string>
+<string name="insert_space_suf_summary">有効にすると、出力されるURLの直後に空白が挿入されます。</string>
+<string name="insert_space_suf_title">URLの直後に空白を入れる</string>
+<string name="jpeg_quality_desc">JPEG圧縮の品質を 10～100 の整数で指定してください</string>
+<string name="jpeg_quality_summary">JPEG圧縮の品質</string>
+<string name="jpeg_quality_title">JPEG品質</string>
+<string name="oauth_start">OAuth認証をやり直す</string>
+<string name="ok">OK</string>
+<string name="output_style_settings">テキスト出力の設定</string>
+<string name="output_style_summary">出力するURLの種別を、画像直リンかImgurの画像詳細ページから選べます。</string>
+<string name="output_style_title">出力するURLの種別</string>
+<string name="picker">画像選択</string>
+<string name="picker_autostart_summary">有効にすると、開始したらすぐに画像選択を行います。</string>
+<string name="picker_autostart_title">自動で画像選択を開始</string>
+<string name="picker_missing">ファイル選択に使えるアプリがありません</string>
+<string name="please_wait">お待ちください…</string>
+<string name="preview_disabled_summary">有効にすると、メモリを節約するためにプレビューを省略します。</string>
+<string name="preview_disabled_title">プレビューしない</string>
+<string name="resize_checkbox_longside">長辺を指定ピクセル以内に縮小</string>
+<string name="resize_checkbox_percent">指定パーセント(1..99)以内に縮小</string>
+<string name="resize_checkbox_shortside">短辺を指定ピクセル以内に縮小</string>
+<string name="resize_disabled">リサイズなし</string>
+<string name="resize_error_mode_not_selected">Error: リサイズモードが選択されていません</string>
+<string name="resize_error_value_not_number">Error: 指定した値は整数ではありません</string>
+<string name="resize_error_value_too_large">Error: 指定した値が大きすぎます\n%1$s以内の整数を指定してください</string>
+<string name="resize_error_value_too_small">Error: 指定した値が小さすぎます\n%1$s以上の整数を指定してください</string>
+<string name="resize_limit_long">長辺%1$sピクセル以内</string>
+<string name="resize_limit_short">短辺%1$sピクセル以内</string>
+<string name="resize_new_preset">リサイズ指定を増やす</string>
+<string name="resize_percent">%1$s %%に縮小</string>
+<string name="resize_preset_delete">この指定を削除しますか?</string>
+<string name="resize_value_title">設定値：</string>
+<string name="rotate_left">左</string>
+<string name="rotate_right">右</string>
+<string name="save">作成</string>
+<string name="setting">設定</string>
+<string name="site_top">Imgurトップページ</string>
+<string name="too_large_data">データサイズが大きすぎます</string>
+<string name="upload">アップロード</string>
+<string name="upload_autostart_summary">有効にすると、画像選択が終わったらすぐにImgurへの送信を行います。</string>
+<string name="upload_autostart_title">確認せずに送信</string>
 
-	<string name="menu_history">履歴</string>
-    <string name="menu_setting">設定</string>
+<string name="delete_hash_missing">削除ハッシュが見つかりません</string>
+<string name="uri_parse_error">ファイルパスを調べられません\n%1$s</string>
+<string name="upload_progress">アップロード中です…</string>
+<string name="upload_progress_sizecheck">アップロードサイズを測定中です…</string>
+<string name="upload_progress_digest">署名ダイジェストを計算中です…</string>
 
-	<string name="cbAutoPick_title">自動で画像選択を開始</string>
-    <string name="cbAutoPick_summary">有効にすると、開始したらすぐに画像選択を行います。</string>
+<!-- ここから長いテキスト-->
 
-    <string name="cbAutoStart_title">確認せずに送信</string>
-    <string name="cbAutoStart_summary">有効にすると、画像選択が終わったらすぐにImgurへの送信を行います。</string>
+<string name="about_thisapp">Imgurマッシュ について\n画像をスマホから「Imgur」画像共有サービスにアップロードするアプリです。 \nアプリの不具合報告は Imgur運営ではなく tateisu@gmail.com 宛に送って下さい。\nなお、作者はアプリの使用によって発生した問題についていかなる責任も負わないものとします。</string>
+<string name="about_imgur">Imgur について\nImgur http://imgur.com/ は Imgur, LLC. が運営する画像共有サービスです。\n免責事項: The Imgur logo and “IMGUR” are trademarks of Imgur LLC and are used here for informational purposes only. Imgurマッシュ is not affiliated with Imgur and has not been reviewed or approved by Imgur.</string>
 
-    <string name="cbDisablePreview_title">プレビューしない</string>
-    <string name="cbDisablePreview_summary">有効にすると、メモリを節約するためにプレビューを省略します。</string>
+<string name="about_oauth_signpost">
+このアプリは oauth-signpost のコードを利用しています。 https://github.com/kaeppler/signpost 
+</string>
 
-    <string name="account_last_used">(前回のアップロード)</string>
-    <string name="account_anonymous">(名無し)</string>
-    <string name="no_album">(アルバムなし)</string>
+<string name="about_google_data">
+このアプリは Google Data APIs Client Library のコードを利用しています。 https://developers.google.com/gdata/docs/client-libraries
+</string>
 
-    <string name="output_style_title">出力するURLの種別</string>
-    <string name="output_style_summary">出力するURLの種別を、画像直リンかImgurの画像詳細ページから選べます。</string>
-     <string-array name="output_style_list_captions">
-        <item>画像リンク</item>
-        <item>画像詳細ページ</item>
-    </string-array>
-     <string-array name="output_style_list_values">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
-    
-    <string name="pref_add_account_title">アカウントの追加</string>
-    <string name="pref_del_account_title">アカウントの削除</string>
-	<string name="pref_default_account_title">既定のアカウント</string>
-	
-	<string-array name="history_context_menu">
-        <item>このURLを入力</item>
-        <item>画像リンクを開く</item>
-        <item>画像詳細ページ</item>
-        <item>画像削除ページ</item>
-        <item>履歴から削除</item>
-    </string-array>
-    
-    <string name="cbInsertSpacePref_title">URLの直前に空白を入れる</string>
-    <string name="cbInsertSpacePref_summary">有効にすると、出力されるURLの直前に空白が挿入されます。</string>
-    <string name="cbInsertSpaceSuff_title">URLの直後に空白を入れる</string>
-    <string name="cbInsertSpaceSuff_summary">有効にすると、出力されるURLの直後に空白が挿入されます。</string>
-    <string name="pc_account">アカウント設定</string>
-    <string name="pc_lazy">操作の省略</string>
-    <string name="pc_url">URLの設定</string>
-    
-    <string name="pc_history">履歴の設定</string>
-    <string name="pref_history_clear_title">履歴を全て消去</string>
-    <string name="pref_history_clear_message">端末上に保存された履歴を全て消去します。アカウントを使ってアップロードした画像はImgurのWebサイトから管理することができます。よろしいですか？</string>
-    <string name="ok">OK</string>
-	<string name="please_wait">お待ちください…</string>
-    <string name="history_cleared">履歴データを消去しました</string>
-    
-    <string name="album_unknown">"??"</string>
-    <string name="album_loading">"?"</string>
-    
+
+<string-array name="output_style_list_captions">
+	<item>画像リンク</item>
+	<item>画像詳細ページ</item>
+</string-array>
+<string-array name="output_style_list_values">
+	<item>0</item>
+	<item>1</item>
+</string-array>
+<string-array name="history_context_menu">
+	<item>このURLを入力</item>
+	<item>画像リンクを開く</item>
+	<item>画像詳細ページ</item>
+	<item>サーバから削除</item>
+	<item>履歴だけ削除</item>
+</string-array>
+
 </resources>

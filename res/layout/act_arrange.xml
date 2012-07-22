@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+>
+	<jp.juggler.ImgurMush.ArrangeView
+		android:layout_width="match_parent" 
+	    android:layout_height="0dp" 
+	    android:layout_weight="1"
+
+	    android:id="@+id/preview"
+	/>
+	
+	<LinearLayout 
+		android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:gravity="center_vertical"
+	    android:baselineAligned="false"
+	>
+		<TableLayout
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    android:stretchColumns="1"
+		    android:gravity="center"
+	    >
+	    	<TableRow>
+				<TextView 
+					android:layout_height="match_parent"
+					android:gravity="right|center_vertical"
+					android:text="@string/crop_left"
+				/>
+				<SeekBar
+					android:paddingLeft="8dp"
+					android:paddingRight="32dp"
+					android:id="@+id/sbCropLeft"
+				/>
+		    </TableRow>
+			<TableRow>
+				<TextView 
+					android:layout_height="match_parent"
+					android:gravity="right|center_vertical"
+					android:text="@string/crop_top"
+				/>
+				<SeekBar
+					android:paddingLeft="8dp"
+					android:paddingRight="32dp"
+					android:id="@+id/sbCropTop"
+				/>
+	    	</TableRow>
+	    	<TableRow>
+				<TextView 
+					android:layout_height="match_parent"
+					android:gravity="right|center_vertical"
+					android:text="@string/crop_right"
+				/>
+				<SeekBar
+					android:paddingLeft="8dp"
+					android:paddingRight="32dp"
+					android:id="@+id/sbCropRight"
+				/>
+	    	</TableRow>
+	    	<TableRow>
+				<TextView 
+					android:layout_height="match_parent"
+					android:gravity="right|center_vertical"
+					android:text="@string/crop_bottom"
+				/>
+				<SeekBar
+					android:paddingLeft="8dp"
+					android:paddingRight="32dp"
+					android:id="@+id/sbCropBottom"
+				/>
+			</TableRow>
+	    </TableLayout>
+    
+		<LinearLayout 
+			android:layout_width="wrap_content"
+		    android:layout_height="match_parent"
+		    android:orientation="vertical"
+		    android:gravity="center"
+		>
+			<View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+			<ImageButton
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			    android:minWidth="48dp"
+				android:src="@drawable/rot_left"
+			    android:id="@+id/btnRotateLeft"
+			/>	
+			<View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+			<ImageButton
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+			    android:minWidth="48dp"
+				android:src="@drawable/rot_right"
+			    android:id="@+id/btnRotateRight"
+			/>
+			<View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+		</LinearLayout>
+	</LinearLayout>
+
+	
+	
+
+	<Button
+		android:layout_width="match_parent" 
+    	android:layout_height="wrap_content"
+    	android:id="@+id/btnResize"
+    />
+
+	<LinearLayout
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	    android:orientation="horizontal"
+	>
+	    <Button
+			android:layout_width="wrap_content" 
+	    	android:layout_height="wrap_content"
+	    	android:layout_weight="1"
+	    	android:id="@+id/btnSave"
+	    	android:text="@string/save"
+	    />
+	    <View android:layout_width="12dp" android:layout_height="0dp"  />
+		<Button
+			android:layout_width="wrap_content" 
+	    	android:layout_height="wrap_content"
+	    	android:layout_weight="1"
+	    	android:id="@+id/btnCancel"
+	    	android:text="@string/cancel"
+	    />
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="BackButton" severity="informational" />
+    <issue id="ContentDescription" severity="ignore" />
+    <issue id="HardcodedText" severity="informational" />
+    <issue id="IconDensities" severity="informational" />
+    <issue id="IconMissingDensityFolder" severity="informational" />
+    <issue id="NestedWeights" severity="ignore" />
+    <issue id="Registered" severity="ignore" />
+    <issue id="UnusedResources" severity="informational" />
+    <issue id="UseCompoundDrawables" severity="ignore" />
+</lint>

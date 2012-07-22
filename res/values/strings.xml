@@ -1,75 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Imgur Upload Mushroom</string>
-    <string name="close_button">close</string>
-    <string name="no_picker">missing app to choose the file.</string>
-    <string name="btnCancel">cancel</string>
-    <string name="btnUpload">upload</string>
-    <string name="btnPick">choose image</string>
-    
-    <string name="act_oauth">Imgur OAuth authentication</string>
 
-    <string name="oauth_start">restart oAuth</string>
-    <string name="site_top">Imgur website toppage</string>
-    <string name="oauth_complete">account has been configured.</string>
-    
-    <string name="too_large_data">too large data</string>
-    <string name="copy_to_clipboard">URL is copied to clipboard</string>
+<string name="about">about this app</string>
+<string name="account_added">account has been configured.</string>
+<string name="account_add_title">add account</string>
+<string name="account_all">all account</string>
+<string name="account_anonymous">(anonymous)</string>
+<string name="account_default_title">default account</string>
+<string name="account_delete_title">remove account</string>
+<string name="account_last_used">(last used)</string>
+<string name="account_settings">account settings</string>
+<string name="act_appinfo"		 >Imgur Mushroom/ about this app</string>
+<string name="act_arrange"		 >Imgur Mushroom/ image arrange</string>
+<string name="act_history"		 >Imgur Mushroom/ upload history</string>
+<string name="act_main"			 >Imgur Mushroom</string>
+<string name="act_oauth"		 >Imgur Mushroom/ Imgur account authorization</string>
+<string name="act_pref"			 >Imgur Mushroom/ setting</string>
+<string name="act_resize_preset" >Imgur Mushroom/ resize presets</string>
+<string name="album_all">all albums</string>
+<string name="album_data_invalid">bad album data</string>
+<string name="album_loading">(loading..)</string>
+<string name="album_not_select">(no album)</string>
+<string name="autostart_settings">laziness settings</string>
+<string name="cancel">Cancel</string>
+<string name="cancel_notice">cancelled..</string>
+<string name="copy_to_clipboard">URL is copied to clipboard</string>
+<string name="crop_bottom">bottom</string>
+<string name="crop_left">left</string>
+<string name="crop_right">right</string>
+<string name="crop_top">top</string>
+<string name="dash3">&#8230;</string>
+<string name="edit">edit</string>
+<string name="edit_settings">image editor settings</string>
+<string name="edit_progress_title">processing..</string>
+<string name="file_not_selected">file is not selected.</string>
+<string name="file_temp_error">failed to prepare temporary file</string>
+<string name="history">history</string>
+<string name="history_cleared">history data is cleared.</string>
+<string name="history_clear_message">All history data that saved on this app will be deleted. the image data on Imgur\'s server is not deleted. Are You OK?</string>
+<string name="history_clear_title">clear history</string>
+<string name="history_delete_confirm">delete this image from server?</string>
+<string name="image_output_dir_desc">please specify output folder</string>
+<string name="image_output_dir_summary"></string>
+<string name="image_output_dir_title">output folder</string>
+<string name="insert_space_pre_summary">if checked, whitespace will be inserted before URL</string>
+<string name="insert_space_pre_title">space before URL</string>
+<string name="insert_space_suf_summary">if checked, whitespace will be inserted after URL</string>
+<string name="insert_space_suf_title">space after URL</string>
+<string name="jpeg_quality_desc">please input JPEG compression quality (10..100)</string>
+<string name="jpeg_quality_summary">JPEG compression quality</string>
+<string name="jpeg_quality_title">JPEG quality</string>
+<string name="oauth_start">restart oAuth</string>
+<string name="ok">OK</string>
+<string name="output_style_settings">URL settings</string>
+<string name="output_style_summary">type of output URL</string>
+<string name="output_style_title">output type</string>
+<string name="picker">pick image</string>
+<string name="picker_autostart_summary">if checked, automatically start file picker when start.</string>
+<string name="picker_autostart_title">auto start picker</string>
+<string name="picker_missing">missing app to choose the file.</string>
+<string name="please_wait">Please wait..</string>
+<string name="preview_disabled_summary">if checked, disable image preview to save native heap memory.</string>
+<string name="preview_disabled_title">disable preview</string>
+<string name="resize_checkbox_longside">limit long side to specified pixel</string>
+<string name="resize_checkbox_percent">scale to specified percent(1..99)</string>
+<string name="resize_checkbox_shortside">limit short side to specified pixel</string>
+<string name="resize_disabled">no resize</string>
+<string name="resize_error_mode_not_selected">Error: resize mode is not selected</string>
+<string name="resize_error_value_not_number">Error: specified value is not integer</string>
+<string name="resize_error_value_too_large">Error: specified value is too large.\nplease input integer &lt;= %1$s</string>
+<string name="resize_error_value_too_small">Error: specified value is too small.\nplease input integer &gt;= 1</string>
+<string name="resize_limit_long">limit long side to %1$s px</string>
+<string name="resize_limit_short">limit short side to %1$s px</string>
+<string name="resize_new_preset">new preset</string>
+<string name="resize_percent">scale %1$s percents</string>
+<string name="resize_preset_delete">delete this preset?</string>
+<string name="resize_value_title">value:</string>
+<string name="rotate_left">rot L</string>
+<string name="rotate_right">rot R</string>
+<string name="save">save</string>
+<string name="setting">settings</string>
+<string name="site_top">Imgur website toppage</string>
+<string name="too_large_data">too large data</string>
+<string name="upload">upload</string>
+<string name="upload_autostart_summary">if checked, automatically start upload when image is choose.</string>
+<string name="upload_autostart_title">auto start upload</string>
 
-    <string name="menu_history">history</string>
-    <string name="menu_setting">setting</string>
+<string name="delete_hash_missing">missing delete hash</string>
+<string name="uri_parse_error">cannot detect file path from URI:\n%1$s</string>
+<string name="upload_progress">Uploading...</string>
+<string name="upload_progress_sizecheck">calculate upload size...</string>
+<string name="upload_progress_digest">calculate digest...</string>
 
-    <string name="cbAutoPick_title">auto start picker</string>
-    <string name="cbAutoPick_summary">if checked, automatically start file picker when start.</string>
+<!-- ここから長いテキスト-->
+<string name="about_thisapp">About this app:\nthis is image uploader for Imgur, and also Mushroom IME extension.</string>
+<string name="about_imgur">
+About Imgur:
+\nImgur is image sharing service by Imgur, LLC. please check http://imgur.com/ for more details. 
+\nThe Imgur logo and “IMGUR” are trademarks of Imgur LLC and are used here for informational purposes only.
+“Imgurマッシュ” is not affiliated with Imgur and has not been reviewed or approved by Imgur.
+</string>
 
-    <string name="cbAutoStart_title">skip confirm</string>
-    <string name="cbAutoStart_summary">if checked, automatically start upload when image is choose.</string>
+<string name="about_oauth_signpost">
+this app contains the code from oauth-signpost. https://github.com/kaeppler/signpost 
+</string>
 
-    <string name="output_style_title">output type</string>
-    <string name="output_style_summary">type of output URL</string>
-     <string-array name="output_style_list_captions">
-        <item>URL to direct image</item>
-        <item>URL to Imgur\'s site</item>
-    </string-array>
-     <string-array name="output_style_list_values">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
-    
-    <string name="pref_add_account_title">add account</string>
-    <string name="pref_del_account_title">remove account</string>
-    <string name="pref_default_account_title">default account</string>
+<string name="about_google_data">
+this app contains the code from Google Data APIs Client Library. https://developers.google.com/gdata/docs/client-libraries
+</string>
 
-    <string name="cbDisablePreview_title">disable preview</string>
-    <string name="cbDisablePreview_summary">if checked, disable image preview to save native heap memory.</string>
-
-    <string name="account_last_used">(last used)</string>
-    <string name="account_anonymous">(anonymous)</string>
-    <string name="no_album">(no album)</string>
-    <string-array name="history_context_menu">
-        <item>Input this URL</item>
-        <item>Browse image URL</item>
-        <item>Browse Imgur\'s site</item>
-        <item>Browse delete URL</item>
-        <item>Remove from history</item>
-    </string-array>
-
-    <string name="cbInsertSpacePref_title">space before URL</string>
-    <string name="cbInsertSpacePref_summary">if checked, whitespace will be inserted before URL</string>
-    <string name="cbInsertSpaceSuff_title">space after URL</string>
-    <string name="cbInsertSpaceSuff_summary">if checked, whitespace will be inserted after URL</string>
-    <string name="pc_account">account option</string>
-    <string name="pc_lazy">laziness option</string>
-    <string name="pc_url">URL option</string>
-
-    <string name="pc_history">history option</string>
-    <string name="pref_history_clear_title">clear history</string>
-    <string name="pref_history_clear_message">All history data that saved on this app will be deleted. Are You OK?</string>
-    <string name="ok">OK</string>
-    <string name="please_wait">Please wait..</string>
-    <string name="history_cleared">history data is cleared.</string>
-
-
-    <string name="album_unknown">"??"</string>
-    <string name="album_loading">"?"</string>
+<string-array name="output_style_list_captions">
+	<item>URL to direct image</item>
+	<item>URL to Imgur\'s site</item>
+</string-array>
+<string-array name="output_style_list_values">
+	<item>0</item>
+	<item>1</item>
+</string-array>
+<string-array name="history_context_menu">
+	<item>Input this URL</item>
+	<item>Browse image URL</item>
+	<item>Browse Imgur\'s site</item>
+	<item>delete from server</item>
+	<item>delete from history only</item>
+</string-array>
 </resources>

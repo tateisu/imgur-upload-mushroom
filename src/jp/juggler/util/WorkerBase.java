@@ -31,6 +31,20 @@ public abstract class WorkerBase extends Thread {
 		try{ join(100); }catch(Throwable ex){}
 	}
 
+	// joinLoopを別スレッドから起動する
+	public void joinASync(final LogCategory log,final String caption){
+		// 呼び出し元スレッドからキャンセルをかけておく
+		cancel();
+		// 作成したスレッドで終了待機を行う
+		new Thread(){
+			@Override
+			public void run() {
+				joinLoop(log,caption);
+			}
+			
+		}.start();
+	}
+	
 	/////////////////////////////////////
 	// 毎回catchを書くのが面倒なので用意した補助メソッド 
 	

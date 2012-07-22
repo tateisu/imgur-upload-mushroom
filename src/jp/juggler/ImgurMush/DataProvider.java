@@ -1,7 +1,9 @@
 package jp.juggler.ImgurMush;
 
-import java.util.HashMap;
-
+import jp.juggler.ImgurMush.data.ImgurAccount;
+import jp.juggler.ImgurMush.data.ImgurHistory;
+import jp.juggler.ImgurMush.data.ResizePreset;
+import jp.juggler.ImgurMush.data.TableMeta;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -11,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.util.SparseArray;
 
 public class DataProvider  extends ContentProvider{
 	static final String TAG="ImgurMush";
@@ -19,34 +22,8 @@ public class DataProvider  extends ContentProvider{
 	
 	public static final String AUTHORITY = "jp.juggler.ImgurMush";
 	
-	public static final TableMeta account = new TableMeta(AUTHORITY,"account",1,2);
-
-	public static final TableMeta history = new TableMeta(AUTHORITY,"history",3,4);
-
 	////////////////////////////////////////////
 	
-	static class TableMeta{
-		// authority
-		public final String authority;
-		// table name
-		public final String table;
-		// uri for notification
-		public final Uri uri;
-		// mime-type for dir
-		public final String mimetype_dir;
-		// mime-type for item 
-		public final String mimetype_item;
-		
-		// ctor
-		public TableMeta(String authority,String table,int match_dir,int match_item){
-			this.authority = authority;
-			this.table  = table;
-			this.uri = Uri.parse("content://" + authority + "/" + table);
-			this.mimetype_dir = "vnd.android.cursor.dir/" +authority+"." + table;
-			this.mimetype_item = "vnd.android.cursor.item/"+authority+"." + table;
-		}
-	}
-
 	static class MatchResult{
 		TableMeta meta;
 		boolean is_item;
@@ -58,7 +35,7 @@ public class DataProvider  extends ContentProvider{
 	
 	DBHelper1 helper;
 	UriMatcher uri_matcher;
-	HashMap<Integer,MatchResult> match_map;
+	SparseArray<MatchResult> match_map;
 	
 	int  addUriMatching(int match_next,TableMeta meta){
 		int match_dir =  match_next;
@@ -81,10 +58,11 @@ public class DataProvider  extends ContentProvider{
 
 		// URIマッチングの初期化
 		uri_matcher= new UriMatcher(UriMatcher.NO_MATCH);
-		match_map = new HashMap<Integer,MatchResult>();
+		match_map = new SparseArray<MatchResult>();
 		int match_next = 1;
-		match_next = addUriMatching( match_next,account );
-		match_next = addUriMatching( match_next,history );
+		match_next = addUriMatching( match_next,ImgurAccount.meta );
+		match_next = addUriMatching( match_next,ImgurHistory.meta );
+		match_next = addUriMatching( match_next,ResizePreset.meta );
 	    return true;
 	}
 	
@@ -182,56 +160,21 @@ public class DataProvider  extends ContentProvider{
 	
 	static final class DBHelper1 extends SQLiteOpenHelper {
 		DBHelper1(Context context) {
-			super(context, DBNAME, null, 3 ); // context,filename,CursorFactory,version
+			super(context, DBNAME, null, 4 ); // context,filename,CursorFactory,version
 		}
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL("create table if not exists account ("
-					+ImgurAccount.COL_ID     +" INTEGER PRIMARY KEY,"
-                   	+ImgurAccount.COL_NAME   +" text not null,"
-                   	+ImgurAccount.COL_TOKEN  +" text not null,"
-                   	+ImgurAccount.COL_SECRET +" text not null"
-   					+");"
-			);
-			db.execSQL("create unique index if not exists account_name on account("+ImgurAccount.COL_NAME+")");
-			// 
-			db.execSQL("create table if not exists history ("
-					+ImgurHistory.COL_ID          +" INTEGER PRIMARY KEY,"
-                   	+ImgurHistory.COL_IMGUR_PAGE  +" text not null,"
-                   	+ImgurHistory.COL_DELETE_PAGE +" text not null,"
-                   	+ImgurHistory.COL_IMAGE_LINK  +" text not null,"
-                   	+ImgurHistory.COL_SQUARE      +" text not null,"
-                   	+ImgurHistory.COL_UPLOAD_TIME +" integer not null,"
-                   	+ImgurHistory.COL_ACCOUNT_NAME +" text,"
-                   	+ImgurHistory.COL_ALBUM_ID +" text"
-                   	+");"
-			);
-			db.execSQL("create index if not exists history_time on history("+ImgurHistory.COL_UPLOAD_TIME+")");
-			db.execSQL("create index if not exists history_account_time on history("+ImgurHistory.COL_ACCOUNT_NAME+","+ImgurHistory.COL_UPLOAD_TIME+")");
-			db.execSQL("create index if not exists history_account_album_time on history("+ImgurHistory.COL_ACCOUNT_NAME+","+ImgurHistory.COL_ALBUM_ID+","+ImgurHistory.COL_UPLOAD_TIME+")"); 
+			ImgurAccount.create_table(db);
+			ImgurHistory.create_table(db);
+			ResizePreset.create_table(db);
 		}
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			if(oldVersion < 2 ){
-				db.execSQL("create table if not exists history ("
-						+ImgurHistory.COL_ID          +" INTEGER PRIMARY KEY,"
-	                   	+ImgurHistory.COL_IMGUR_PAGE  +" text not null,"
-	                   	+ImgurHistory.COL_DELETE_PAGE +" text not null,"
-	                   	+ImgurHistory.COL_IMAGE_LINK  +" text not null,"
-	                   	+ImgurHistory.COL_SQUARE      +" text not null,"
-	                   	+ImgurHistory.COL_UPLOAD_TIME +" integer not null"
-	                   	+");"
-				);
-			}
+			ImgurHistory.upgrade_table(db,oldVersion,newVersion);
+			ResizePreset.upgrade_table(db,oldVersion,newVersion);
+			
 
-			if( oldVersion < 3 ){
-				db.execSQL("alter table history add column "+ImgurHistory.COL_ACCOUNT_NAME+" text ");
-				db.execSQL("alter table history add column "+ImgurHistory.COL_ALBUM_ID+" text ");
-			}
 
-			db.execSQL("create index if not exists history_time on history("+ImgurHistory.COL_UPLOAD_TIME+")"); 
-			db.execSQL("create index if not exists history_account_time on history("+ImgurHistory.COL_ACCOUNT_NAME+","+ImgurHistory.COL_UPLOAD_TIME+")"); 
-			db.execSQL("create index if not exists history_account_album_time on history("+ImgurHistory.COL_ACCOUNT_NAME+","+ImgurHistory.COL_ALBUM_ID+","+ImgurHistory.COL_UPLOAD_TIME+")"); 
 		}
 	}
 }

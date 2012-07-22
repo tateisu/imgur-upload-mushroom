@@ -2,25 +2,63 @@
 <PreferenceScreen
 	xmlns:android="http://schemas.android.com/apk/res/android"
 >
-	<PreferenceCategory android:title="@string/pc_lazy">
-		<CheckBoxPreference
-			android:key="cbAutoPick"
-		    android:title="@string/cbAutoPick_title"
-	    	android:summary="@string/cbAutoPick_summary"
+
+	<!-- アカウント関連 -->
+	<PreferenceCategory android:title="@string/account_settings">
+	    <Preference
+	    	android:key="pref_add_account"
+	  		android:title="@string/account_add_title"
 	    />
-		<CheckBoxPreference
-			android:key="cbAutoStart"
-		    android:title="@string/cbAutoStart_title"
-	    	android:summary="@string/cbAutoStart_summary"
+	    <jp.juggler.ImgurMush.Pref_RemoveAccount
+	    	android:key="pref_del_account"
+	  		android:title="@string/account_delete_title"
 	    />
-		<CheckBoxPreference
-			android:key="cbDisablePreview"
-		    android:title="@string/cbDisablePreview_title"
-	    	android:summary="@string/cbDisablePreview_summary"
+	    <jp.juggler.ImgurMush.Pref_DefaultAccount
+	    	android:key="pref_default_account"
+	  		android:title="@string/account_default_title"
 	    />
 	</PreferenceCategory>
 
-	<PreferenceCategory android:title="@string/pc_url">
+	<!-- 操作の省略 -->	
+	<PreferenceCategory android:title="@string/autostart_settings">
+		<CheckBoxPreference
+			android:key="cbAutoPick"
+		    android:title="@string/picker_autostart_title"
+	    	android:summary="@string/picker_autostart_summary"
+	    />
+		<CheckBoxPreference
+			android:key="cbAutoStart"
+		    android:title="@string/upload_autostart_title"
+	    	android:summary="@string/upload_autostart_summary"
+	    />
+		<CheckBoxPreference
+			android:key="cbDisablePreview"
+		    android:title="@string/preview_disabled_title"
+	    	android:summary="@string/preview_disabled_summary"
+	    />
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/edit_settings">
+		<EditTextPreference
+			android:key="image_output_dir"
+		    android:title="@string/image_output_dir_title"
+	    	android:summary="@string/image_output_dir_summary"
+	    	android:dialogTitle="@string/image_output_dir_title"  
+      		android:dialogMessage="@string/image_output_dir_desc"
+	    />
+		<EditTextPreference
+			android:key="jpeg_quality"
+		    android:title="@string/jpeg_quality_title"
+	    	android:summary="@string/jpeg_quality_summary"
+	    	android:dialogTitle="@string/jpeg_quality_title"  
+      		android:dialogMessage="@string/jpeg_quality_desc"
+      		android:defaultValue="85"
+	    />
+
+	</PreferenceCategory>
+			
+	<!-- 出力するURL -->
+	<PreferenceCategory android:title="@string/output_style_settings">
 
 		<ListPreference
 			android:key="URL_mode"
@@ -32,35 +70,16 @@
 	    />
 	    <CheckBoxPreference
 			android:key="cbInsertSpacePref"
-		    android:title="@string/cbInsertSpacePref_title"
-	    	android:summary="@string/cbInsertSpacePref_summary"
+		    android:title="@string/insert_space_pre_title"
+	    	android:summary="@string/insert_space_pre_summary"
 	    	android:defaultValue="false"
 	    />
 	    <CheckBoxPreference
 			android:key="cbInsertSpaceSuff"
-		    android:title="@string/cbInsertSpaceSuff_title"
-	    	android:summary="@string/cbInsertSpaceSuff_summary"
+		    android:title="@string/insert_space_suf_title"
+	    	android:summary="@string/insert_space_suf_summary"
 	    	android:defaultValue="true"
 	    />
 	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/pc_account">
-	    <Preference
-	    	android:key="pref_add_account"
-	  		android:title="@string/pref_add_account_title"
-	    />
-	    <jp.juggler.ImgurMush.Pref_RemoveAccount
-	    	android:key="pref_del_account"
-	  		android:title="@string/pref_del_account_title"
-	    />
-	    <jp.juggler.ImgurMush.Pref_DefaultAccount
-	    	android:key="pref_default_account"
-	  		android:title="@string/pref_default_account_title"
-	    />
-	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/pc_history">
-	    <Preference
-	    	android:key="pref_history_clear"
-	  		android:title="@string/pref_history_clear_title"
-	    />
-	</PreferenceCategory>
+
 </PreferenceScreen>
