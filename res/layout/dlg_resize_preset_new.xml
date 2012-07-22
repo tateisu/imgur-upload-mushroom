@@ -1,64 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
 >
- 	<RadioGroup 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
- 		android:id="@+id/radiogroup"
+	<LinearLayout
+	  android:layout_width="match_parent"
+	  android:layout_height="wrap_content"
+	  android:orientation="vertical"
 	>
-        <RadioButton 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/resize_checkbox_percent" 
-        	android:id="@+id/rbResizeMode0"
-        />
-        <RadioButton 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/resize_checkbox_longside" 
-        	android:id="@+id/rbResizeMode1"
-        />
-        <RadioButton 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/resize_checkbox_shortside" 
-        	android:id="@+id/rbResizeMode2"
-        />
-    </RadioGroup>
-    <LinearLayout 
-		android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-    >
-		<TextView
-			android:layout_width="wrap_content"
-        	android:layout_height="wrap_content"
-        	android:text="@string/resize_value_title"
-        />
-		<EditText
-			android:layout_width="0dp"
+	 	<RadioGroup 
+	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:singleLine="true"
-			android:inputType="number"
-			android:id="@+id/etValue"
+	 		android:id="@+id/radiogroup"
+		>
+	        <RadioButton 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/resize_checkbox_percent" 
+	        	android:id="@+id/rbResizeMode0"
+	        />
+	        <RadioButton 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/resize_checkbox_longside" 
+	        	android:id="@+id/rbResizeMode1"
+	        />
+	        <RadioButton 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="@string/resize_checkbox_shortside" 
+	        	android:id="@+id/rbResizeMode2"
+	        />
+	    </RadioGroup>
+	    <LinearLayout 
+			android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	    >
+			<TextView
+				android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:text="@string/resize_value_title"
+	        />
+			<EditText
+				android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:singleLine="true"
+				android:inputType="number"
+				android:id="@+id/etValue"
+			/>
+		</LinearLayout>
+		<TextView
+			android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:id="@+id/tvDesc"
+	        android:textColor="#ff0000"
 		/>
+	 	<Button
+			android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_horizontal"
+	        android:text="@string/ok"
+	        android:id="@+id/btnOk"
+	 	/>
 	</LinearLayout>
-	<TextView
-		android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvDesc"
-        android:textColor="#ff0000"
-	/>
- 	<Button
-		android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/ok"
-        android:id="@+id/btnOk"
- 	/>
-</LinearLayout>
+</ScrollView>

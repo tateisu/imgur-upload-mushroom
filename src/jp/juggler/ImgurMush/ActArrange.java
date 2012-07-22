@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 public class ActArrange extends BaseActivity{
 	static final LogCategory log = new LogCategory("ActArrange");
