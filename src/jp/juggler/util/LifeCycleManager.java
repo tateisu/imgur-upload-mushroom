@@ -45,16 +45,7 @@ public class LifeCycleManager {
 			try{ item.onRestart(); }catch (Throwable ex) { ex.printStackTrace(); }
 		}
 	}
-	public void fire_onPostCreate(){
-//		for( LifeCycleListener item :set ){
-//			try{ item.onPostCreate(); }catch (Throwable ex) { ex.printStackTrace(); }
-//		}
-	}
-	public void fire_onPostResume(){
-//		for( LifeCycleListener item :set ){
-//			try{ item.onPostResume(); }catch (Throwable ex) { ex.printStackTrace(); }
-//		}
-	}
+
 	public void fire_onNewIntent(){
 		for( LifeCycleListener item :set ){
 			try{ item.onNewIntent(); }catch (Throwable ex) { ex.printStackTrace(); }

@@ -9,6 +9,4 @@ public class LifeCycleListener {
 	//
 	public void onNewIntent(){}
 	public void onRestart(){}
-//	public void onPostCreate(){}
-//	public void onPostResume(){}
 }

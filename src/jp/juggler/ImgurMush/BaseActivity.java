@@ -34,18 +34,16 @@ public class BaseActivity extends Activity {
 
 	@Override protected void onDestroy() {
 		super.onDestroy();
+		dialog_manager.onDestroy();
 		lifecycle_manager.fire_onDestroy();
 	}
 
 	@Override protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
+		setIntent(intent);
 		lifecycle_manager.fire_onNewIntent();
 	}
-	@Override protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		lifecycle_manager.fire_onPostCreate();
-	}
-	
+
 	@Override protected void onStart() {
 		super.onStart();
 		lifecycle_manager.fire_onStart();
@@ -64,12 +62,6 @@ public class BaseActivity extends Activity {
 	@Override protected void onResume() {
 		super.onResume();
 		lifecycle_manager.fire_onResume();
-	}
-
-	@Override
-	protected void onPostResume() {
-		super.onPostResume();
-		lifecycle_manager.fire_onPostResume();
 	}
 
 	@Override protected void onPause() {

@@ -1,15 +1,20 @@
 package jp.juggler.ImgurMush;
 
+import java.io.File;
+
 import jp.juggler.ImgurMush.helper.ImageTempDir;
 import jp.juggler.util.DialogManager;
+import jp.juggler.util.LogCategory;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 
 public class ActPref  extends PreferenceActivity{
+	static final LogCategory log = new LogCategory("ActPref");
 	ActPref act = this;
 	DialogManager dialog_manager;
 	
@@ -18,12 +23,19 @@ public class ActPref  extends PreferenceActivity{
 		super.onCreate(savedInstanceState);
 		dialog_manager = new DialogManager(this);
 		final SharedPreferences pref = BaseActivity.getPref(this);
-		ImageTempDir.getTempDir(act,pref);
-		
-		
-		
+
+		File image_dir = ImageTempDir.getTempDir(act,pref,new Handler());
+		if( image_dir != null){
+			log.d("image_dir =%s",image_dir.getAbsolutePath());
+		}
 		
 		addPreferencesFromResource(R.xml.pref);
+
+		if( image_dir != null){
+//			findPreference(PrefKey.KEY_TEMP_DIR).setDefaultValue(image_dir.getAbsolutePath());
+		}
+
+		
 		findPreference("pref_add_account").setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {

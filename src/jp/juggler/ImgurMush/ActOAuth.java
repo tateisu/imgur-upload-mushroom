@@ -173,12 +173,19 @@ public class ActOAuth extends BaseActivity {
 	            	report_ex(ex);
 	            }
         	}
-            if( validstr(url)  ) {
-            	Log.d(TAG,"auth url="+url);
-                mWebView.loadUrl(url);
-            } else {
-                finish();
+            if( !validstr(url)  ) {
+            	finish();
+            	return;
             }
+        	Log.d(TAG,"auth url="+url);
+        	final String url_ = url;
+        	act.ui_handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if(act.isFinishing()) return;
+	                mWebView.loadUrl(url_);
+				}
+			});
         }
     };
 

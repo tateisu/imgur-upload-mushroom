@@ -92,6 +92,9 @@
 <string name="upload_progress_sizecheck">calculate upload size...</string>
 <string name="upload_progress_digest">calculate digest...</string>
 
+<string name="storage_not_directory">external storage is not presented</string>
+<string name="storage_not_writable">external storage is not writable</string>
+
 <!-- ここから長いテキスト-->
 <string name="about_thisapp">About this app:\nthis is image uploader for Imgur, and also Mushroom IME extension.</string>
 <string name="about_imgur">

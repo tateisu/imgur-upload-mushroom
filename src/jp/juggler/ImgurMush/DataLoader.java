@@ -82,44 +82,12 @@ public class DataLoader {
 		if(worker!=null) worker.notifyEx();
 	}
 	
-//	// ImageViewにWeb上の画像データを設定する。
-//	// 注意：このメソッドはImageView の setTag をURLで上書きする。
-//	public void requestForImageView(final String url,final ImageView view){
-//		if(url == null || view == null ) return;
-//		view.setTag(url);
-//		request(url, DATATYPE_BITMAP, request_skip_limit_default, new DataLoader.Listener<Bitmap>(){
-//			@Override
-//			public void onData(File file,Bitmap data) {
-//				if( data != null && url.equals(view.getTag()) ){
-//					replaceImageViewBitmap(view,data);
-//				}
-//			}
-//		});
-//	}
-//	// ImageViewにWeb上のテキストデータを設定する。
-//	// 注意：このメソッドはTextView の setTag をURLで上書きする。
-//	public void requestForTextview(final String url,final TextView view){
-//		if(url == null || view == null ) return;
-//		view.setTag(url);
-//		request(url,DATATYPE_UTF8, request_skip_limit_default, new DataLoader.Listener<String>() {
-//			@Override
-//			public void onData(File file,String data) {
-//				if( data != null && url.equals(view.getTag()) ){
-//					view.setText(data);
-//				}
-//			}
-//		});
-//	}
-	
-	
-	
-	
 	final Context act;
 	final Handler ui_handler;
 	final boolean bClearAtResume;
 	final File cache_dir;
 	final LinkedBlockingQueue<Item> queue = new LinkedBlockingQueue<Item>();
-	final SoftCache<Item,Object> cache = new SoftCache<DataLoader.Item, Object>();
+	final SoftCache<Item,Object> cache = new SoftCache<Item, Object>();
 
 	// ミリ秒を指定すると適当な間隔でキャッシュをクリアする
 	public int default_expire = 0; 

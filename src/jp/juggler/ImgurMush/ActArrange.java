@@ -511,7 +511,6 @@ public class ActArrange extends BaseActivity{
 			    		try{
 			    			final File dst_path = ImageTempDir.makeTempFile(act);
 			    			if(dst_path==null){
-			    				show_toast(Toast.LENGTH_LONG,getString(R.string.file_temp_error));
 			    				abort();
 			    				return;
 			    			}

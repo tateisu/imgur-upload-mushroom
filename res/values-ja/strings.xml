@@ -92,6 +92,9 @@
 <string name="upload_progress_sizecheck">アップロードサイズを測定中です…</string>
 <string name="upload_progress_digest">署名ダイジェストを計算中です…</string>
 
+<string name="storage_not_directory">外部フラッシュメモリが提供されていません?</string>
+<string name="storage_not_writable">外部フラッシュメモリへの書き込み許可がありません?</string>
+
 <!-- ここから長いテキスト-->
 
 <string name="about_thisapp">Imgurマッシュ について\n画像をスマホから「Imgur」画像共有サービスにアップロードするアプリです。 \nアプリの不具合報告は Imgur運営ではなく tateisu@gmail.com 宛に送って下さい。\nなお、作者はアプリの使用によって発生した問題についていかなる責任も負わないものとします。</string>
