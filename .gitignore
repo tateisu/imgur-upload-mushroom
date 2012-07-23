@@ -1,0 +1,5 @@
+bin/
+gen/
+src/jp/juggler/ImgurMush/Config.java
+.classpath
+*.txt
