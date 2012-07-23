@@ -94,7 +94,6 @@ public class DataLoader {
 	
 	LifeCycleListener activity_listener = new LifeCycleListener(){
 		@Override public void onStart() {
-			if(worker!=null) worker.joinLoop(log,"DataLoader");
 			if( bClearAtResume ) queue.clear();
 			worker = new Worker();
 			worker.start();
@@ -167,6 +166,7 @@ public class DataLoader {
 			notifyEx();
 		}
 		
+		@SuppressWarnings("null")
 		@Override
 		public void run() {
 			log.d("worker start");
@@ -291,9 +291,11 @@ public class DataLoader {
 						continue;
 					}
 				}
+				
+				// ここでitemはnullのはずがないんだが、なぜか警告が出る…
 
 				// キャッシュが有効ならファイルから読む
-				if( item.data_type != DATATYPE_FILE && data == null && bOK ){
+				if( bOK && item.data_type != DATATYPE_FILE && data == null ){
 					try{
 						FileInputStream fis = new FileInputStream(item.file);
 						try{

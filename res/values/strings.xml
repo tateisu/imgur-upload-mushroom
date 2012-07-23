@@ -76,8 +76,6 @@
 <string name="resize_percent">scale %1$s percents</string>
 <string name="resize_preset_delete">delete this preset?</string>
 <string name="resize_value_title">value:</string>
-<string name="rotate_left">rot L</string>
-<string name="rotate_right">rot R</string>
 <string name="save">save</string>
 <string name="setting">settings</string>
 <string name="site_top">Imgur website toppage</string>
@@ -88,9 +86,9 @@
 
 <string name="delete_hash_missing">missing delete hash</string>
 <string name="uri_parse_error">cannot detect file path from URI:\n%1$s</string>
-<string name="upload_progress">Uploading...</string>
-<string name="upload_progress_sizecheck">calculate upload size...</string>
-<string name="upload_progress_digest">calculate digest...</string>
+<string name="upload_progress">Uploading&#8230;</string>
+<string name="upload_progress_sizecheck">calculate upload size&#8230;</string>
+<string name="upload_progress_digest">calculate digest&#8230;</string>
 
 <string name="storage_not_directory">external storage is not presented</string>
 <string name="storage_not_writable">external storage is not writable</string>

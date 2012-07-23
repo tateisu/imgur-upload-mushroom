@@ -2,6 +2,7 @@ package jp.juggler.ImgurMush.helper;
 
 import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.data.ImgurAccount;
+import jp.juggler.util.LifeCycleListener;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -16,14 +17,16 @@ public class AccountAdapter extends BaseAdapter{
 	final Cursor cursor;
 	final ImgurAccount.ColumnIndex colidx = new ImgurAccount.ColumnIndex();
 	final String strNonSelect;
+	final ContentObserver content_observer;
+	final DataSetObserver dataset_observer;
+	
 	boolean mDataValid = true;
 	
-	public AccountAdapter(BaseActivity act,Cursor _cursor,String strNonSelect){
+	public AccountAdapter(BaseActivity act,String strNonSelect){
 		this.act = act;
-		this.cursor = _cursor;
 		this.strNonSelect = strNonSelect;
-		
-		cursor.registerContentObserver(new ContentObserver(act.ui_handler) {
+       
+		this.content_observer = new ContentObserver(act.ui_handler) {
 			@Override
 			public boolean deliverSelfNotifications() {
 				return false;
@@ -31,25 +34,51 @@ public class AccountAdapter extends BaseAdapter{
 
 			@Override
 			public void onChange(boolean selfChange) {
-				mDataValid = cursor.requery();
+				reload();
 			}
-		});
-		cursor.registerDataSetObserver(new DataSetObserver() {
-
+		};
+		this.dataset_observer = new DataSetObserver() {
+		
 			@Override
 			public void onChanged() {
 				mDataValid = true;
 				notifyDataSetChanged();
 			}
-
+		
 			@Override
 			public void onInvalidated() {
 				mDataValid = false;
 				notifyDataSetInvalidated();
 			}
 			
-		});
+		};
+
+		this.cursor = act.cr.query(ImgurAccount.meta.uri,null,null,null,ImgurAccount.COL_NAME+" asc");
+		cursor.registerContentObserver(content_observer);
+		cursor.registerDataSetObserver(dataset_observer);
+		
+		act.lifecycle_manager.add(activity_listener);
 	}
+	
+	LifeCycleListener activity_listener = new LifeCycleListener(){
+
+		@Override
+		public void onDestroy() {
+			mDataValid = false;
+			cursor.close();
+		}
+
+		@Override
+		public void onResume() {
+			reload();
+		}
+		
+	};
+	
+	public void reload() {
+		mDataValid = cursor.requery();
+	}
+	
 	@Override
 	public int getCount() {
 		if( !mDataValid ) return 0;
@@ -106,38 +135,25 @@ public class AccountAdapter extends BaseAdapter{
 	}
 	
 	public void selectByName(AdapterView<?> listview, String name) {
-		if( cursor.moveToFirst() ){
-			int i=0;
-			do{
-				ImgurAccount item = ImgurAccount.loadFromCursor(cursor,colidx,i);
-				if( item != null && name.equals(item.name) ){
-					if( strNonSelect != null ) ++i;
-					listview.setSelection(i);
-					return;
-				}
-				++i;
-			}while(cursor.moveToNext());
-		}
-
-		if( strNonSelect != null || cursor.getCount() > 0 ){
-			listview.setSelection(0);
-			return;
-		}
+		int idx = findByName(name);
+		listview.setSelection(idx < 0 ? 0 : idx);
 	}
 	
-
-
-	public int findFromName(String target_account) {
-		if(target_account == null ){
-			if( strNonSelect !=null ) return 0;
-		}else{
-			int count = getCount();
-			for(int idx=(strNonSelect !=null ? 1: 0 );idx<count;++idx){
-				ImgurAccount item = (ImgurAccount)getItem(idx);
-				if(item != null && item.name.equals(target_account) ) return idx;
+	private int findByName(String target_account) {
+		int offset = ( strNonSelect !=null ? 1: 0);
+		if( target_account != null ){
+			if(mDataValid){
+				if( cursor.moveToFirst() ){
+					int i=0;
+					do{
+						ImgurAccount item = ImgurAccount.loadFromCursor(cursor,colidx);
+						if( item != null && target_account.equals(item.name) ) return offset + i;
+						++i;
+					}while(cursor.moveToNext());
+				}
 			}
 		}
-		return 0;
+		return -1;
 	}
 	
 

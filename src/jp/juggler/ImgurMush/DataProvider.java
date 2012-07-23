@@ -172,9 +172,6 @@ public class DataProvider  extends ContentProvider{
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			ImgurHistory.upgrade_table(db,oldVersion,newVersion);
 			ResizePreset.upgrade_table(db,oldVersion,newVersion);
-			
-
-
 		}
 	}
 }

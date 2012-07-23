@@ -81,10 +81,24 @@ public class AlbumAdapter extends BaseAdapter{
 		notifyDataSetChanged();
 	}
 
-	public void replace(ArrayList<ImgurAlbum> list, String strCaption) {
+	public void replace(Iterable<ImgurAlbum> new_data, String strCaption) {
 		notifyDataSetInvalidated();
 		strNonSelection = strCaption;
-		album_list = list;
+		album_list.clear();
+		for( ImgurAlbum album: new_data){
+			album_list.add(album);
+		}
 		notifyDataSetChanged();
+	}
+
+	public int findByName(String name) {
+		final int offset = (strNonSelection==null?0:1);
+		if( name != null ){
+			for(int i=0,ie=album_list.size();i<ie;++i){
+				ImgurAlbum album = album_list.get(i);
+				if( name.equals(album.album_name ) ) return offset + i;
+			}
+		}
+		return -1;
 	}
 }

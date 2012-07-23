@@ -61,9 +61,15 @@ public class AlbumLoader {
 		if(set==null) return null;
 		return set.get(album_id);
 	}
-	public ArrayList<ImgurAlbum> findAlbumList(String account_name) {
-		if( account_name == null ) return null;
-		if(map2==null) return null;
+	public Iterable<ImgurAlbum> findAlbumList(String account_name) {
+		if( account_name == null ){
+			log.e("findAlbumList: target name is null");
+			return null;
+		}
+		if(map2==null){
+			log.e("findAlbumList: now loading..");
+			return null;
+		}
 		return map2.get(account_name);
 	}
 

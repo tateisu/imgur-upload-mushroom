@@ -76,8 +76,6 @@
 <string name="resize_percent">%1$s %%に縮小</string>
 <string name="resize_preset_delete">この指定を削除しますか?</string>
 <string name="resize_value_title">設定値：</string>
-<string name="rotate_left">左</string>
-<string name="rotate_right">右</string>
 <string name="save">作成</string>
 <string name="setting">設定</string>
 <string name="site_top">Imgurトップページ</string>

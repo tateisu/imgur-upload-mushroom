@@ -1,10 +1,6 @@
 package jp.juggler.ImgurMush.helper;
 
-import java.util.ArrayList;
-
-
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,7 +24,6 @@ public class UploadTargetManager {
 	
 	final Spinner spAccount;
 	final Spinner spAlbum;
-	final Cursor account_cursor;
 	
 	
 	public UploadTargetManager(BaseActivity act){
@@ -36,8 +31,7 @@ public class UploadTargetManager {
         spAccount = (Spinner)act.findViewById(R.id.account);
         spAlbum = (Spinner)act.findViewById(R.id.album);
 
-        account_cursor = act.cr.query(ImgurAccount.meta.uri,null,null,null,null);
-	    account_adapter = new AccountAdapter(act,account_cursor,act.getString(R.string.account_anonymous) );
+	    account_adapter = new AccountAdapter(act,act.getString(R.string.account_anonymous) );
 
 	    album_loader = new AlbumLoader(act,new AlbumLoader.Callback() {
 			@Override
@@ -69,31 +63,18 @@ public class UploadTargetManager {
 		});
         
 		setWillSelect();
+		
+		act.lifecycle_manager.add(activity_listener);
 	}
 	
 	LifeCycleListener activity_listener = new LifeCycleListener(){
-
-		@Override
-		public void onDestroy() {
-			account_cursor.close();
-		}
-
 		@Override
 		public void onNewIntent() {
 			setWillSelect();
 		}
-
-		@Override
-		public void onResume() {
-			account_cursor.requery();
-		}
-		
 	};
 	
-	public void reloadAccount() {
-		account_cursor.requery();
-	}
-	
+
 	/////////////////////////////////////////////////////////////////////////////
 	
 	String lastused_account_name = null;
@@ -108,9 +89,7 @@ public class UploadTargetManager {
 		if( target_account.equals(PrefKey.VALUE_ACCOUNT_ANONYMOUS) ){
 			target_account = null;
 		}
-		int idx = account_adapter.findFromName( target_account );
-		if( idx >= 0 ) spAccount.setSelection(idx);
-
+		account_adapter.selectByName(spAccount,target_account);
 		// アルバムの選択を初期化するフラグを設定
 		lastused_account_name = target_account;
 	}
@@ -133,7 +112,7 @@ public class UploadTargetManager {
 				album_adapter.clear(act.getString(R.string.album_not_select));
 				return;
 			}
-			ArrayList<ImgurAlbum> list = album_loader.findAlbumList(account.name);
+			Iterable<ImgurAlbum> list = album_loader.findAlbumList(account.name);
 			if( list == null ){
 				log.d("missing album info");
 				album_adapter.clear(act.getString(R.string.album_loading));
@@ -147,22 +126,15 @@ public class UploadTargetManager {
 				String key = "album_name" + (account ==null ? "" : ("_" + account.name ) );
 				String last_album = pref.getString(key,null);
 				log.d("last_album=%s",last_album);
-				if( last_album != null ){
-					for(int i=0,ie=list.size();i<=ie;++i){
-						ImgurAlbum album = list.get(i);
-						log.d("  album name=%s",album.album_name);
-						if( last_album.equals(album.album_name ) ){
-							log.d("match!");
-							final int select_idx = i+1;
-							act.ui_handler.postDelayed(new Runnable() {
-								@Override
-								public void run() {
-									spAlbum.setSelection(select_idx);
-								}
-							},60);
-							return;
+				final int idx = album_adapter.findByName(last_album);
+				if( idx >= 0 ){
+					act.ui_handler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							spAlbum.setSelection(idx);
 						}
-					}
+					},60);
+					return;
 				}
 				spAlbum.setSelection(0);
 			}
@@ -185,6 +157,10 @@ public class UploadTargetManager {
 
 	public ImgurAccount getSelectedAccount() {
 		return (ImgurAccount)account_adapter.getItem(spAccount.getSelectedItemPosition()); 
+	}
+
+	public void reloadAccount() {
+		account_adapter.reload();
 	}
 
 

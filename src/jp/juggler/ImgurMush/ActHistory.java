@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -103,7 +102,7 @@ public class ActHistory extends BaseActivity {
 		strAlbumAll = getString(R.string.album_all);
 		strAlbumLoading = act.getString(R.string.album_loading);
 		
-		account_adapter = new AccountAdapter(act,cr.query(ImgurAccount.meta.uri,null,null,null,ImgurAccount.COL_NAME+" asc"),getString(R.string.account_all));
+		account_adapter = new AccountAdapter(act,getString(R.string.account_all));
 		album_adapter = new AlbumAdapter(this,strAlbumAll);
 		
 		spAccount = (Spinner)findViewById(R.id.account);
@@ -188,62 +187,60 @@ public class ActHistory extends BaseActivity {
 		lastused_album_name   = pref.getString(PrefKey.KEY_HISTORY_ALBUM,null);
 
 		// アカウントは初期化中でもアクセスできると思うので、選択する
-		int idx = account_adapter.findFromName( lastused_account_name );
-		if( idx >= 0 ) spAccount.setSelection(idx);
+		account_adapter.selectByName(spAccount,lastused_account_name );
 
 		// 初期状態のフィルタを設定する
 		onAccountChange(-2,-2,"init page");
 	}
 	
 	void onAccountChange(int account_idx,int album_idx,String reason){
+		// アカウント指定が-1なら選択位置を補う
 		if( account_idx == -2) account_idx = spAccount.getSelectedItemPosition();
-
+		// 選択中のアカウントを参照する
 		ImgurAccount account = (ImgurAccount)account_adapter.getItem(account_idx);
 		if( account == null ){
-			log.d("missing account info: %s",reason);
+			// アカウントが選択されていない場合
+			
 			if( album_idx == -2 ) album_adapter.clear(strAlbumAll);
 			history_adapter.clearFilter();
 			return;
 		}
-		ArrayList<ImgurAlbum> list = album_loader.findAlbumList(account.name);
+		
+		// アカウント別の
+		Iterable<ImgurAlbum> list = album_loader.findAlbumList(account.name);
 		if( list == null ){
 			log.d("missing album info: %s",reason);
 			if( album_idx == -2 ) album_adapter.clear(strAlbumLoading);
 			history_adapter.setFilter(account,null);
 			return;
-		}else{
-			if( album_idx == -2 ){
-				log.d("replace album list: %s",reason);
-				// アルバムをロードしなおす
-				album_adapter.replace(list,strAlbumAll);
-				// 最後にアップロードしたアルバムを選択する？
-				if( account.name.equals( lastused_account_name ) ){
-					lastused_account_name = null;
-					log.d("last_album=%s",lastused_album_name);
-					if( lastused_album_name != null ){
-						for(int i=0,ie=list.size();i<=ie;++i){
-							ImgurAlbum album = list.get(i);
-							log.d("  album name=%s",album.album_name);
-							if( lastused_album_name.equals(album.album_name ) ){
-								log.d("match!");
-								final int select_idx = i+1;
-								act.ui_handler.postDelayed(new Runnable() {
-									@Override
-									public void run() {
-										spAlbum.setSelection(select_idx);
-									}
-								},60);
-								return;
-							}
+		}
+		
+		if( album_idx == -2 ){
+			// アルバムをロードしなおす
+			album_adapter.replace(list,strAlbumAll);
+			// 最後にアップロードしたアルバムを選択する？
+			if( account.name.equals( lastused_account_name ) ){
+				lastused_account_name = null;
+				final int idx = album_adapter.findByName(lastused_album_name);
+				if(idx >= 0){
+					act.ui_handler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							spAlbum.setSelection(idx);
 						}
-					}
-					spAlbum.setSelection(0);
-					history_adapter.setFilter(account,null);
+					},60);
+					return;
 				}
-			}else{
-				ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(album_idx);
-				history_adapter.setFilter(account,album);
 			}
+			act.ui_handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					spAlbum.setSelection(0);
+				}
+			},60);
+		}else{
+			ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(album_idx);
+			history_adapter.setFilter(account,album);
 		}
 	}
 	
@@ -280,73 +277,72 @@ public class ActHistory extends BaseActivity {
 	
 	void delete_dialog(final ImgurHistory item){
 		dialog_manager.show_dialog(
-				new AlertDialog.Builder(this)
-				.setCancelable(true)
-				.setTitle(item.page)
-				.setMessage(R.string.history_delete_confirm)
-				.setNegativeButton(R.string.cancel,null)
-				.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						new Thread(){
+			new AlertDialog.Builder(this)
+			.setCancelable(true)
+			.setTitle(item.page)
+			.setMessage(R.string.history_delete_confirm)
+			.setNegativeButton(R.string.cancel,null)
+			.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					new Thread(){
 
-							@Override
-							public void run() {
-								Pattern reDeleteHash = Pattern.compile("([^/]+)$");
-								Matcher m = reDeleteHash.matcher(item.delete);
-								if( !m.find() ){
-									act.show_toast(Toast.LENGTH_LONG,act.getString(R.string.delete_hash_missing));
-									return;
-								}
-								String hash = m.group(1);
-								String url = "http://api.imgur.com/2/delete/"+hash+"?_format=json";
-								for(int nTry=0;nTry<10;++nTry){
-									try{
-										HttpURLConnection conn = (HttpURLConnection)new URL(url).openConnection();
-										conn.connect();
-										int rcode = conn.getResponseCode();
-										if( rcode == 200 || rcode==302){
-											InputStream in = conn.getInputStream();
-											try{
-												int capa = conn.getContentLength();
-												if( capa < 4096) capa = 4096;
-												ByteArrayOutputStream bao = new ByteArrayOutputStream( capa );
-												byte[] tmp = new byte[4096];
-												for(;;){
-													int delta = in.read(tmp,0,tmp.length);
-													if( delta <= 0 ) break;
-													bao.write(tmp,0,delta);
-												}
-												byte[] data = bao.toByteArray();
-												String res = TextUtil.decodeUTF8(data);
-												if( -1 != res.indexOf("\"Success\"") ){
-													item.delete(act.cr);
-												}else{
-													act.show_toast(Toast.LENGTH_LONG,res);
-												}
-											}finally{
-												in.close();
+						@Override
+						public void run() {
+							Pattern reDeleteHash = Pattern.compile("([^/]+)$");
+							Matcher m = reDeleteHash.matcher(item.delete);
+							if( !m.find() ){
+								act.show_toast(Toast.LENGTH_LONG,act.getString(R.string.delete_hash_missing));
+								return;
+							}
+							String hash = m.group(1);
+							String url = "http://api.imgur.com/2/delete/"+hash+"?_format=json";
+							for(int nTry=0;nTry<10;++nTry){
+								try{
+									HttpURLConnection conn = (HttpURLConnection)new URL(url).openConnection();
+									conn.connect();
+									int rcode = conn.getResponseCode();
+									if( rcode == 200 || rcode==302){
+										InputStream in = conn.getInputStream();
+										try{
+											int capa = conn.getContentLength();
+											if( capa < 4096) capa = 4096;
+											ByteArrayOutputStream bao = new ByteArrayOutputStream( capa );
+											byte[] tmp = new byte[4096];
+											for(;;){
+												int delta = in.read(tmp,0,tmp.length);
+												if( delta <= 0 ) break;
+												bao.write(tmp,0,delta);
 											}
-											return;
-										}
-										log.d("http error %d",rcode);
-										if( rcode >= 400 ){
-											act.show_toast(Toast.LENGTH_LONG,String.format("HTTP error %d",rcode));
-											// 400 が来たら履歴から削除する
-											if( rcode == 400 ){
+											byte[] data = bao.toByteArray();
+											String res = TextUtil.decodeUTF8(data);
+											if( -1 != res.indexOf("\"Success\"") ){
 												item.delete(act.cr);
+											}else{
+												act.show_toast(Toast.LENGTH_LONG,res);
 											}
-											break;
+										}finally{
+											in.close();
 										}
-									}catch(Throwable ex){
-										act.report_ex(ex);
+										return;
 									}
+									log.d("http error %d",rcode);
+									if( rcode >= 400 ){
+										act.show_toast(Toast.LENGTH_LONG,String.format("HTTP error %d",rcode));
+										// 400 が来たら履歴から削除する
+										if( rcode == 400 ){
+											item.delete(act.cr);
+										}
+										break;
+									}
+								}catch(Throwable ex){
+									act.report_ex(ex);
 								}
 							}
-						}.start();
-						
-					}
-				})
+						}
+					}.start();
+				}
+			})
 		);
 	}
 }
