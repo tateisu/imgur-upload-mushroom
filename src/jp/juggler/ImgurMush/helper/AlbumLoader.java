@@ -66,7 +66,7 @@ public class AlbumLoader {
 	static final ConcurrentHashMap<String,ArrayList<ImgurAlbum>> map2 = new ConcurrentHashMap<String,ArrayList<ImgurAlbum>>();
 	
 	public ImgurAlbum findAlbum(String account_name, String album_id) {
-		if( map1 !=null && account_name != null && album_id != null ){
+		if( account_name != null && album_id != null ){
 			HashMap<String,ImgurAlbum> set = map1.get(account_name);
 			if( set != null ) return set.get(album_id);
 		}
@@ -74,7 +74,7 @@ public class AlbumLoader {
 	}
 
 	public Iterable<ImgurAlbum> findAlbumList(String account_name) {
-		if( map2!=null && account_name != null ){
+		if( account_name != null ){
 			return map2.get(account_name);
 		}
 		return null;
