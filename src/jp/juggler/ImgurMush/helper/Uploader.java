@@ -9,10 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.Config;
-import jp.juggler.ImgurMush.PrefKey;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;
-import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.data.ImgurHistory;
 import jp.juggler.ImgurMush.data.ProgressHTTPEntity;
 import jp.juggler.ImgurMush.data.SignedClient;
@@ -27,7 +25,6 @@ import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -50,24 +47,10 @@ public class Uploader {
 	
     ProgressDialog progress_dialog;
     
-    public void image_upload(final ImgurAccount account,final ImgurAlbum album,final String file_path){
-    		
-    	// 現在の設定を保存する
-		SharedPreferences.Editor e = act.pref().edit();
-		if( account == null ){
-			e.remove(PrefKey.KEY_ACCOUNT_LAST_USED);
-		}else{
-			e.putString(PrefKey.KEY_ACCOUNT_LAST_USED, account.name );
-		}
-    	String album_key = "album_name" + (account ==null ? "" : ("_" + account.name ) );
-		if(album==null){
-			e.remove(album_key);
-		}else{
-			e.putString(album_key,album.album_name);
-		}
-		e.commit();
+    public void image_upload(final ImgurAccount account,final String album_id,final String file_path){
 
 		callback.onStatusChanged(true);
+
 		final ProgressDialog dialog = progress_dialog = new ProgressDialog(act);
 		dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		dialog.setIndeterminate(true);
@@ -179,10 +162,10 @@ public class Uploader {
 
 			    		client.error_report(act,result);
 			    		
-			    		if( result != null && album != null ){
+			    		if( result != null && album_id != null ){
 			    			try{
 			    				JSONObject image = result.getJSONObject("images").getJSONObject("image");
-				    			request = new HttpPost("http://api.imgur.com/2/account/albums/"+ album.album_id+".json");
+				    			request = new HttpPost("http://api.imgur.com/2/account/albums/"+ album_id +".json");
 					    		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 					    		ArrayList<NameValuePair> nameValuePair = new ArrayList<NameValuePair>();
 					    		nameValuePair.add(new BasicNameValuePair("add_images",image.getString("hash")));
@@ -213,12 +196,12 @@ public class Uploader {
 					if(result != null ){
 						if( result.has("upload") ){
 							JSONObject links=result.getJSONObject("upload").getJSONObject("links");
-							save_history(links,account,( album==null?null : album.album_id ) );
+							save_history(links,account,album_id );
 							callback.onComplete(links.getString("original"),links.getString("imgur_page"));
 						}
 						if( result.has("images") ){
 							JSONObject links=result.getJSONObject("images").getJSONObject("links");
-							save_history(links,account,( album==null?null : album.album_id ) );
+							save_history(links,account,album_id );
 							callback.onComplete(links.getString("original"),links.getString("imgur_page"));
 						}
 					}

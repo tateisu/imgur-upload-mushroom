@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
@@ -286,7 +288,13 @@ public class DataLoader {
 						last_error =String.format("bad URL:%s",ex.getMessage());
 						break;
 					}catch(IOException ex){
-						ex.printStackTrace();
+						if( ex instanceof SocketTimeoutException 
+						||  ex instanceof SocketException 
+						){
+							// no stack trace. this is common case.
+						}else{
+							ex.printStackTrace();
+						}
 						last_error =String.format("%s %s",ex.getClass().getSimpleName(),ex.getMessage());
 						continue;
 					}

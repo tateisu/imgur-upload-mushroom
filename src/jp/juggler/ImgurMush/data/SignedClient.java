@@ -56,6 +56,14 @@ public class SignedClient {
 			if(data!=null){
 				str = new String(data,"UTF-8");
 				if(debug) Log.d(TAG,str);
+
+				// Imgur の 特殊なエラー
+				int n = str.indexOf("<!doctype html>");
+				if( n != -1 && n < 10 ){
+					last_error="Imgur server over capacity.";
+					return null;
+				}
+				
 				return new JSONObject(str);
 			}
 		}catch(Throwable ex){

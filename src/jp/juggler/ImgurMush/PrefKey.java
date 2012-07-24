@@ -3,7 +3,7 @@ package jp.juggler.ImgurMush;
 public class PrefKey {
 	private PrefKey(){} // disable create instance
 
-	// v3まで
+	// v1.xまで
 	public static final String KEY_AUTO_UPLOAD = "cbAutoStart";
 	public static final String KEY_AUTO_PICK = "cbAutoPick";
 	public static final String KEY_DISABLE_PREVIEW = "cbDisablePreview";
@@ -20,7 +20,7 @@ public class PrefKey {
 	
 	
 	
-	// v4以降
+	// v2.x
 	public static final String KEY_LAST_RESIZE_MODE = "resize_preset_mode";
 	public static final String KEY_LAST_RESIZE_VALUE = "resize_preset_value";
 	public static final String KEY_TEMP_DIR="image_output_dir";
@@ -34,5 +34,9 @@ public class PrefKey {
 
 	public static final String KEY_HISTORY_ACCOUNT = "history_account";
 	public static final String KEY_HISTORY_ALBUM   = "history_album";
+	public static final String KEY_ALBUM_CACHE_COUNT = "album_cache_count";
+	public static final String KEY_ALBUM_CACHE_ACCOUNT_NAME = "album_cache_account_name";
+	public static final String KEY_ALBUM_CACHE_ALBUM_LIST = "album_cache_album_list";
+	public static final String KEY_AUTO_EDIT = "edit_autostart";
 
 }

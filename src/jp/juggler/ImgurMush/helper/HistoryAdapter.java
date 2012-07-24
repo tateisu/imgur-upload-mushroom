@@ -97,7 +97,7 @@ public class HistoryAdapter extends BaseAdapter {
 		String[] where_arg = null;
 		if( album != null ){
 			where = ImgurHistory.COL_ACCOUNT_NAME+"=? and "+ImgurHistory.COL_ALBUM_ID+"=?";
-			where_arg = new String[]{ album.account.name, album.album_id.toString() };
+			where_arg = new String[]{ album.account_name, album.album_id.toString() };
 		}else if( account != null ){
 			where = ImgurHistory.COL_ACCOUNT_NAME+"=?";
 			where_arg = new String[]{ account.name };

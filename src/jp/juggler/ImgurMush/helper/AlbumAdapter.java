@@ -22,6 +22,34 @@ public class AlbumAdapter extends BaseAdapter{
 		this.strNonSelection = no_album;
 	}
 
+	
+	public void clear(String strCaption) {
+		strNonSelection = strCaption;
+		album_list.clear();
+		notifyDataSetChanged();
+	}
+
+	public void replace(Iterable<ImgurAlbum> new_data, String strCaption) {
+		strNonSelection = strCaption;
+		album_list.clear();
+		for( ImgurAlbum album: new_data){
+			album_list.add(album);
+		}
+		notifyDataSetChanged();
+	}
+
+	public int findByName(String name) {
+		final int offset = (strNonSelection==null?0:1);
+		if( name != null ){
+			for(int i=0,ie=album_list.size();i<ie;++i){
+				ImgurAlbum album = album_list.get(i);
+				if( name.equals(album.album_name ) ) return offset + i;
+			}
+		}
+		return -1;
+	}
+	
+	
 	@Override
 	public int getCount() {
 		int n = album_list.size();
@@ -72,33 +100,5 @@ public class AlbumAdapter extends BaseAdapter{
 			
 		}
 		return view;
-	}
-
-	public void clear(String strCaption) {
-		notifyDataSetInvalidated();
-		strNonSelection = strCaption;
-		album_list.clear();
-		notifyDataSetChanged();
-	}
-
-	public void replace(Iterable<ImgurAlbum> new_data, String strCaption) {
-		notifyDataSetInvalidated();
-		strNonSelection = strCaption;
-		album_list.clear();
-		for( ImgurAlbum album: new_data){
-			album_list.add(album);
-		}
-		notifyDataSetChanged();
-	}
-
-	public int findByName(String name) {
-		final int offset = (strNonSelection==null?0:1);
-		if( name != null ){
-			for(int i=0,ie=album_list.size();i<ie;++i){
-				ImgurAlbum album = album_list.get(i);
-				if( name.equals(album.album_name ) ) return offset + i;
-			}
-		}
-		return -1;
 	}
 }

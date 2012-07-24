@@ -13,10 +13,6 @@
 	    	android:key="pref_del_account"
 	  		android:title="@string/account_delete_title"
 	    />
-	    <jp.juggler.ImgurMush.Pref_DefaultAccount
-	    	android:key="pref_default_account"
-	  		android:title="@string/account_default_title"
-	    />
 	</PreferenceCategory>
 
 	<!-- 操作の省略 -->	
@@ -25,6 +21,11 @@
 			android:key="cbAutoPick"
 		    android:title="@string/picker_autostart_title"
 	    	android:summary="@string/picker_autostart_summary"
+	    />
+		<CheckBoxPreference
+			android:key="edit_autostart"
+		    android:title="@string/edit_autostart_title"
+	    	android:summary="@string/edit_autostart_summary"
 	    />
 		<CheckBoxPreference
 			android:key="cbAutoStart"
@@ -53,6 +54,7 @@
 	    	android:dialogTitle="@string/jpeg_quality_title"  
       		android:dialogMessage="@string/jpeg_quality_desc"
       		android:defaultValue="85"
+      		android:inputType="number"
 	    />
 
 	</PreferenceCategory>

@@ -3,16 +3,20 @@ package jp.juggler.ImgurMush.helper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.widget.Toast;
 
 import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.Config;
+import jp.juggler.ImgurMush.PrefKey;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
@@ -36,43 +40,86 @@ public class AlbumLoader {
 		this.act = act;
 		this.callback = callback;
 		act.lifecycle_manager.add(activity_listener);
+		
+		cache_load();
+		
+		init();
 	}
 
 	LifeCycleListener activity_listener = new LifeCycleListener(){
-		@Override
-		public void onStart() {
-			load_thread = new LoadThread();
-			load_thread.start();
+		@Override public void onNewIntent() {
+			init();
 		}
-		@Override
-		public void onStop() {
+		@Override public void onDestroy() {
 			load_thread.joinASync(log,"album loader");
+			cache_save();
 		}
 	};
-	
-	HashMap<String,HashMap<String,ImgurAlbum>> map1;
-	HashMap<String,ArrayList<ImgurAlbum>> map2;
-	
-	
-	public ImgurAlbum findAlbum(String account_name, String album_id) {
-		if( account_name == null || album_id == null ) return null;
-		if(map1==null) return null;
-		HashMap<String,ImgurAlbum> set = map1.get(account_name);
-		if(set==null) return null;
-		return set.get(album_id);
-	}
-	public Iterable<ImgurAlbum> findAlbumList(String account_name) {
-		if( account_name == null ){
-			log.e("findAlbumList: target name is null");
-			return null;
-		}
-		if(map2==null){
-			log.e("findAlbumList: now loading..");
-			return null;
-		}
-		return map2.get(account_name);
+
+	void init(){
+		if(load_thread != null ) load_thread.joinASync(log,"album loader");
+		load_thread = new LoadThread();
+		load_thread.start();
 	}
 
+	static final ConcurrentHashMap<String,HashMap<String,ImgurAlbum>> map1 = new ConcurrentHashMap<String,HashMap<String,ImgurAlbum>>();
+	static final ConcurrentHashMap<String,ArrayList<ImgurAlbum>> map2 = new ConcurrentHashMap<String,ArrayList<ImgurAlbum>>();
+	
+	public ImgurAlbum findAlbum(String account_name, String album_id) {
+		if( map1 !=null && account_name != null && album_id != null ){
+			HashMap<String,ImgurAlbum> set = map1.get(account_name);
+			if( set != null ) return set.get(album_id);
+		}
+		return null;
+	}
+
+	public Iterable<ImgurAlbum> findAlbumList(String account_name) {
+		if( map2!=null && account_name != null ){
+			return map2.get(account_name);
+		}
+		return null;
+	}
+
+	void cache_load(){
+		// 既にロード済みならロードしない
+		if( map2.size() > 0 ) return;
+		//
+		SharedPreferences pref = act.pref();
+		int n = pref.getInt(PrefKey.KEY_ALBUM_CACHE_COUNT,0);
+		for(int i=0;i<n;++i){
+			try{
+				String account_name = pref.getString(PrefKey.KEY_ALBUM_CACHE_ACCOUNT_NAME+i,null);
+				JSONArray list = new JSONArray(pref.getString(PrefKey.KEY_ALBUM_CACHE_ALBUM_LIST+i,null));
+				ArrayList<ImgurAlbum> dst_list = new ArrayList<ImgurAlbum>();
+				for(int j=0,je=list.length();j<je;++j){
+					dst_list.add( new ImgurAlbum(account_name,list.getJSONObject(j)));
+				}
+				map2.put(account_name,dst_list);
+			}catch(Throwable ex){
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	void cache_save(){
+		SharedPreferences.Editor e = act.pref().edit();
+		int i=0;
+		for( Map.Entry<String,ArrayList<ImgurAlbum>> entry : map2.entrySet() ){
+			try{
+				JSONArray list = new JSONArray();
+				for( ImgurAlbum album : entry.getValue()){
+					list.put( album.toJSON() );
+				}
+				e.putString( PrefKey.KEY_ALBUM_CACHE_ACCOUNT_NAME+i, entry.getKey() );
+				e.putString( PrefKey.KEY_ALBUM_CACHE_ALBUM_LIST+i, list.toString() );
+			}catch(Throwable ex){
+				ex.printStackTrace();
+			}
+			++i;
+		}
+		e.putInt(PrefKey.KEY_ALBUM_CACHE_COUNT,i);
+		e.commit();
+	}
 	///////////////////////////
 	
 	
@@ -105,6 +152,7 @@ public class AlbumLoader {
 					c.close();
 				}
 			}catch(Throwable ex){
+				ex.printStackTrace();
 				return;
 			}
 			// 各アカウントのアルバム一覧をロードする
@@ -125,8 +173,12 @@ public class AlbumLoader {
 				@Override
 				public void run() {
 					if(bCancelled.get()) return;
-					map1 = tmp_map1;
-					map2 = tmp_map2;
+					for(Map.Entry<String,HashMap<String,ImgurAlbum>> entry : tmp_map1.entrySet() ){
+						map1.put( entry.getKey(), entry.getValue() );
+					}
+					for(Map.Entry<String,ArrayList<ImgurAlbum>> entry : tmp_map2.entrySet() ){
+						map2.put( entry.getKey(), entry.getValue() );
+					}
 					callback.onLoad();
 				}
 			});
@@ -147,7 +199,7 @@ public class AlbumLoader {
 					JSONArray src_list = result.getJSONArray("albums");
 					for(int j=0,je=src_list.length();j<je;++j){
 						JSONObject src = src_list.getJSONObject(j);
-						list.add(new ImgurAlbum(account,src));
+						list.add(new ImgurAlbum(account.name,src));
 					}
 					return list;
 				}

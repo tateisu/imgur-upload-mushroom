@@ -6,9 +6,7 @@
 <string name="account_add_title">add account</string>
 <string name="account_all">all account</string>
 <string name="account_anonymous">(anonymous)</string>
-<string name="account_default_title">default account</string>
 <string name="account_delete_title">remove account</string>
-<string name="account_last_used">(last used)</string>
 <string name="account_settings">account settings</string>
 <string name="act_appinfo"		 >Imgur Mushroom/ about this app</string>
 <string name="act_arrange"		 >Imgur Mushroom/ image arrange</string>
@@ -17,6 +15,7 @@
 <string name="act_oauth"		 >Imgur Mushroom/ Imgur account authorization</string>
 <string name="act_pref"			 >Imgur Mushroom/ setting</string>
 <string name="act_resize_preset" >Imgur Mushroom/ resize presets</string>
+<string name="app_name"			 >Imgur Mushroom</string>
 <string name="album_all">all albums</string>
 <string name="album_data_invalid">bad album data</string>
 <string name="album_loading">(loading..)</string>
@@ -31,6 +30,9 @@
 <string name="crop_top">top</string>
 <string name="dash3">&#8230;</string>
 <string name="edit">edit</string>
+<string name="edit_autostart_title">editor auto start</string>
+<string name="edit_autostart_summary">if checked, automatically start editor when image is picked.</string>
+
 <string name="edit_settings">image editor settings</string>
 <string name="edit_progress_title">processing..</string>
 <string name="file_not_selected">file is not selected.</string>
