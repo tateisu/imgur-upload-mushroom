@@ -3,6 +3,7 @@ package jp.juggler.ImgurMush.data;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.util.regex.Pattern;
 
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.util.CancelChecker;
@@ -87,14 +88,19 @@ public class SignedClient {
 					result.json = new JSONObject(result.str);
 				}catch(JSONException ex){
 					try{
-						String text = Html.fromHtml(result.str).toString();
+						Pattern reHTMLHead = Pattern.compile("<head>,+</head>",Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
+						Pattern reWhiteSpace = Pattern.compile("[\\x00-\\x20\\x7f]+");
+						String text = result.str;
+						text = reHTMLHead.matcher(text).replaceAll(" ");
+						text = Html.fromHtml(text).toString();
+						text =  reWhiteSpace.matcher(text).replaceAll(" ");
 						if( -1 != text.toLowerCase().indexOf("gateway") ){
 							continue;
 						}
 						result.err = text;
 						break;
 					}catch(Throwable ex2){
-						result.err = String.format("decode failed:%s",result.str);
+						result.err = String.format("decode failed.\n%s",result.str);
 						break;
 					}
 				}

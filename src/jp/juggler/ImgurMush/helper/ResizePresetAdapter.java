@@ -23,7 +23,7 @@ public class ResizePresetAdapter extends BaseAdapter{
 		this.act = act;
 		this.strNoResize = strNoResize;
 		this.strNewPreset = strNewPreset;
-		this.preset_cursor = act.cr.query(ResizePreset.meta.uri,null,null,null,ResizePreset.COL_ID+" asc");
+		this.preset_cursor = act.cr.query(ResizePreset.meta.uri,null,null,null,ResizePreset.COL_MODE+" asc,"+ResizePreset.COL_VALUE+" asc");
 		
 
 		preset_cursor.registerContentObserver(new ContentObserver(act.ui_handler) {
