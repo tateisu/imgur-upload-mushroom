@@ -216,9 +216,7 @@ public class UploadTargetManager {
 	}
 
 	public void reload() {
-		account_adapter.reload();
+		album_loader.reload();
 	}
-
-
 }
 

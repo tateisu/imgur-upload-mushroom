@@ -321,12 +321,6 @@ public class ActImgurMush extends BaseActivity {
 	String file_path;
 	int open_type;
 	
-	void setCurrentFile(int open_type, String path){
-		this.file_path = path;
-		this.open_type = open_type;
-		delay_open.run();
-	}
-
 	void save_status(){
 		log.d("save_status");
 		Intent intent = getIntent();
@@ -335,6 +329,11 @@ public class ActImgurMush extends BaseActivity {
 		setIntent(intent);
 	}
 
+	void setCurrentFile(int open_type, String path){
+		this.file_path = path;
+		this.open_type = open_type;
+		delay_open.run();
+	}
 	
 	Runnable delay_open = new Runnable() {
 		@Override

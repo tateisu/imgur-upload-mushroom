@@ -1,0 +1,78 @@
+* Imgur Mushroom
+
+This is Image file uploader for Imgur image sharing service.
+NOTICE: this app require other app that work as image picker.
+
+** feature
+- Imgur account and album supported. (upload only, no browse function)
+- and also, this app has in-app upload history. you can delete the image from server with/without account.
+- If start as Mushroom(IME extension), automatically input the URL that link to uploaded image.
+- or start as standalone, automatically copy the URL to clipboard.
+- or start with "share intent" from other apps.
+- In-app image editor supported. resize, rotate, crop, convert PNG to JPEG.
+- Android OS 1.6 supported.
+- This app is open-source. https://github.com/tateisu/imgur-upload-mushroom
+
+** tested hardware
+- Galaxy S2(docomo SC-02C)
+- Galaxy Nexus(docomo SC-04D)
+- Motorola XOOM2 MZ615
+- Huawei IDEOS
+- IS01
+
+** disclaimer
+The Imgur logo and "IMGUR" are trademarks of Imgur LLC and are used here for informational purposes only.
+"Imgur Mushroom" is not affiliated with Imgur and has not been reviewed or approved by Imgur.
+
+---------------------------------------------------
+* Imgur マッシュ
+
+画像をImgurのサーバにアップロードするアプリです。
+このアプリの使用には、画像を選択する機能を提供する他のアプリが必要になります。
+たとえば QuickPic とかと組み合わせるとよいでしょう。
+
+** 特徴
+- アップロード機能だけです。ギャラリーを閲覧する機能とかはありません。
+- マッシュルームから起動した場合、アップロードした画像のURLを自動入力します。
+- 単独で起動した場合、アップロード完了時にURLをクリップボードにコピーします。
+- また、画像閲覧アプリから共有インテント経由で起動することもできます。
+- 設定画面でImgurアカウントを追加することでImgurのサイトで画像を管理することができます。
+- また、アカウントなしの場合でもアップロード履歴から画像の削除を行えます。
+- リサイズ、回転、トリミングなどの加工を行えます。
+- 操作省略オプションを設定すると、非常に短い手数で画像選択～加工～アップロードを済ませることができます。
+- なんと未だにOS 1.6の端末に対応してます。
+- ソースコードを公開しています。 https://github.com/tateisu/imgur-upload-mushroom
+
+** 使用上の注意
+- 画像選択時のアプリ選択画面は「常にこれを使う」を設定するとアプリの選択を次回から省略できます。
+- 画像選択中に戻るを押してメニューボタンを押すと設定や履歴を開くことができます。
+- エラー報告はメールが一番助かります。adb logcat のログとかあると最高です。
+- 「アプリのバージョンアップが頻繁で困る」って方は自動更新をオフにするなりすればいいんじゃないでしょーか
+
+** 動作確認端末
+- Galaxy S2(docomo SC-02C)
+- Galaxy Nexus(docomo SC-04D)
+- Motorola XOOM 2 MZ615
+- Huawei IDEOS
+- IS01
+
+** 免責事項
+The Imgur logo and "IMGUR" are trademarks of Imgur LLC and are used here for informational purposes only.
+"Imgur マッシュ" is not affiliated with Imgur and has not been reviewed or approved by Imgur.
+---------------------------------------------------
+
+* 過去にあった不具合とその原因、対策
+
+操作の省略をONにしているとアルバムの選択が維持されない。
+アルバム選択肢の永続的なキャッシュを用意して解決した
+--
+アカウントの追加を行った直後にメイン画面に戻ると、アルバム選択肢がリロードされなかった。
+単純な実装漏れ。
+--
+履歴画面でアルバム選択肢が「全てのアルバム」の時にアカウントを選んでも、実際のフィルタが更新されない。
+アルバム選択肢の選択インデクスが変化しないため、アルバム選択変更のイベントが呼ばれないのが原因だった。
+--
+操作の省略をONにして加工中に回転してから加工を完了すると、加工前の画像がアップロードされる。
+レイアウトを待つために処理を遅延させる前後で、現在選択中のファイルの情報を上書きしてしまっていた。
+どの場合でも現在選択中のファイルを更新してから遅延処理を行うようにした
+--

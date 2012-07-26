@@ -40,12 +40,12 @@ public class AlbumLoader {
 		
 		cache_load();
 		
-		init();
+		reload();
 	}
 
 	LifeCycleListener activity_listener = new LifeCycleListener(){
 		@Override public void onNewIntent() {
-			init();
+			reload();
 		}
 		@Override public void onDestroy() {
 			load_thread.joinASync(log,"album loader");
@@ -53,7 +53,7 @@ public class AlbumLoader {
 		}
 	};
 
-	void init(){
+	public void reload() {
 		if(load_thread != null ) load_thread.joinASync(log,"album loader");
 		load_thread = new LoadThread();
 		load_thread.start();
@@ -193,4 +193,5 @@ public class AlbumLoader {
 			}
 		}
 	}
+
 }
