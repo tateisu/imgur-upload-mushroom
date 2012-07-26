@@ -1,5 +1,8 @@
 package jp.juggler.ImgurMush.data;
 
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import jp.juggler.ImgurMush.DataProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -107,5 +110,23 @@ public class ImgurAccount {
 		);
 		db.execSQL("create unique index if not exists account_name on account("+ImgurAccount.COL_NAME+")");
 		
+	}
+
+	public static ArrayList<ImgurAccount> loadAll(ContentResolver cr,AtomicBoolean bCancelled) {
+		ArrayList<ImgurAccount> list = new ArrayList<ImgurAccount>();
+		ImgurAccount.ColumnIndex colidx = new ImgurAccount.ColumnIndex();
+		Cursor c = cr.query(ImgurAccount.meta.uri,null,null,null,ImgurAccount.COL_NAME+" asc");
+		if( c!= null ){
+			try{
+				while( c.moveToNext() ){
+					if( bCancelled != null && bCancelled.get()) break;
+					ImgurAccount item = ImgurAccount.loadFromCursor(c,colidx);
+					if(item!=null) list.add(item);
+				}
+			}finally{
+				c.close();
+			}
+		}
+		return list;
 	}
 }

@@ -38,5 +38,11 @@ public class PrefKey {
 	public static final String KEY_ALBUM_CACHE_ACCOUNT_NAME = "album_cache_account_name";
 	public static final String KEY_ALBUM_CACHE_ALBUM_LIST = "album_cache_album_list";
 	public static final String KEY_AUTO_EDIT = "edit_autostart";
+	public static final String EXTRA_IS_STATUS_SAVE = "is_status_save";
+	public static final String EXTRA_EDIT_ROTATE = "edit_rotate";
+	public static final String EXTRA_CROP_L = "edit_crop_l";
+	public static final String EXTRA_CROP_R = "edit_crop_r";
+	public static final String EXTRA_CROP_T = "edit_crop_t";
+	public static final String EXTRA_CROP_B = "edit_crop_b";
 
 }

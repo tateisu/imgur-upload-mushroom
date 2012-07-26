@@ -1,11 +1,11 @@
 package jp.juggler.ImgurMush.helper;
 
-import jp.juggler.ImgurMush.BaseActivity;
+import jp.juggler.util.LogCategory;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 public class PreviewLoader{
-	
+	static final LogCategory log = new LogCategory("PreviewLoader");
 	public interface Callback{
 		void onMeasure(int w,int h);
 		void onLoad(Bitmap bitmap);
@@ -40,16 +40,18 @@ public class PreviewLoader{
 					});
 				    
 				    if(!measure_only){
-					    int shift = 1;
-						while( w > max_w || h > max_h ){
-							++shift;
+					    int sample_size = 1;
+					    int limit_w = (int)(0.5f + max_w * 1.5f);
+					    int limit_h = (int)(0.5f + max_h * 1.5f);
+						while( w > limit_w || h > limit_h ){
+							sample_size <<= 1;
 							w /= 2;
 							h /= 2;
 						}
 						
 						// 今度は画像を読み込む
 						options.inJustDecodeBounds = false;
-						options.inSampleSize = shift;
+						options.inSampleSize = sample_size;
 						options.inPurgeable = true;
 						options.inTargetDensity = 0;
 						options.inDensity = 0;
@@ -57,6 +59,12 @@ public class PreviewLoader{
 						options.inScaled = false;
 						final Bitmap image = BitmapFactory.decodeFile(path, options);
 					    if(image == null ) throw new RuntimeException("bitmap decode failed.");
+					    
+					    log.d("inSampleSize=%d, scaled=%f,%f"
+					    		,options.inSampleSize
+					    		,image.getWidth()/(float)orig_w
+					    		,image.getHeight()/(float)orig_h
+					    );
 					    
 					    act.ui_handler.post(new Runnable() {
 							

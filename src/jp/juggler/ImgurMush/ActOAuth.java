@@ -2,12 +2,10 @@ package jp.juggler.ImgurMush;
 
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.SignedClient;
-
-import org.json.JSONObject;
+import jp.juggler.ImgurMush.helper.BaseActivity;
 
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,27 +21,15 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class ActOAuth extends BaseActivity {
-    private static final String TAG = "OAuthActivity";
-    
-    public static final String REQUEST_TOKEN_ENDPOINT_URL = "request_token_endpoint_url";
-    public static final String ACCESS_TOKEN_ENDPOINT_URL = "access_token_endpoint_url";
-    public static final String AUTHORIZATION_WEBSITE_URL = "authorization_website_url";
-    public static final String CONSUMER_KEY = "consumer_key";
-    public static final String CONSUMER_SECRET = "consumer_secret";
-    public static final String CALLBACK = "callback";
-    
-    public static final String EXTRA_TOKEN = "token";
-    public static final String EXTRA_TOKEN_SECRET = "token_secret";
-    public static final String EXTRA_ACCOUNT_NAME = "account_name";
-    
-    public static final String OAUTH_VERIFIER = "oauth_verifier";
+	static final String TAG = "OAuthActivity";
+    static final String KEY_OAUTH_VERIFIER = "oauth_verifier";
+	static final String URL_REQUEST_TOKEN = "https://api.imgur.com/oauth/request_token";
+	static final String URL_ACCESS_TOKEN = "https://api.imgur.com/oauth/access_token";
+    static final String URL_WEB_AUTHORIZATION = "https://api.imgur.com/oauth/authorize";
+    static final String URL_LOGOUT = "http://imgur.com/logout";
+    static final String URL_CALLBACK = "http://juggler.jp/android/ImgurMush/callback";
 
-    String mRequestTokenEndpointUrl;
-    String mAccessTokenEndpointUrl;
-    String mAuthorizationWebsiteUrl;
-    String mConsumerKey;
-    String mConsumerSecret;
-    String mCallback;
+    final ActOAuth act = this;
     String mOAuthVerifier;
     CommonsHttpOAuthProvider mOAuthProvider;
     CommonsHttpOAuthConsumer mOAuthConsumer;
@@ -56,26 +42,23 @@ public class ActOAuth extends BaseActivity {
     	return s!= null && s.length() != 0;
     }
     
-    String logout_url = "http://imgur.com/logout";
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_PROGRESS);
+
+        setResult(RESULT_CANCELED);
+
         setContentView(R.layout.act_oauth);
         mWebView = (WebView)findViewById(R.id.webview);
-        btnSiteTop = (Button)findViewById(R.id.btnSiteTop);
-        btnOAuthStart = (Button)findViewById(R.id.btnOAuthStart);
-        
-        setResult(RESULT_CANCELED);
     	
-        btnSiteTop.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.btnSiteTop).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mWebView.loadUrl(logout_url);
+				mWebView.loadUrl(URL_LOGOUT);
 			}
 		});
-        btnOAuthStart.setOnClickListener(new OnClickListener() {
+        findViewById(R.id.btnOAuthStart).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				init();
@@ -115,12 +98,12 @@ public class ActOAuth extends BaseActivity {
     };
 
     boolean check_oauth_callback(String url){
-    	if( (url != null) && (url.startsWith(mCallback)) ){
+    	if( (url != null) && (url.startsWith(URL_CALLBACK)) ){
 	        mWebView.stopLoading();
 	        mWebView.setVisibility(View.INVISIBLE);
 	        if( mOAuthVerifier == null ){
 	            Uri uri = Uri.parse(url);
-	            mOAuthVerifier = uri.getQueryParameter(OAUTH_VERIFIER);
+	            mOAuthVerifier = uri.getQueryParameter(KEY_OAUTH_VERIFIER);
 	            if (mOAuthVerifier != null){
 	                new Thread(proc_after).start();
 	            } else {
@@ -133,30 +116,13 @@ public class ActOAuth extends BaseActivity {
 	}
 
     void init(){
-        Intent intent = getIntent();
-        mRequestTokenEndpointUrl = intent.getStringExtra(REQUEST_TOKEN_ENDPOINT_URL);
-        mAccessTokenEndpointUrl = intent.getStringExtra(ACCESS_TOKEN_ENDPOINT_URL);
-        mAuthorizationWebsiteUrl = intent.getStringExtra(AUTHORIZATION_WEBSITE_URL);
-        mConsumerKey = intent.getStringExtra(CONSUMER_KEY);
-        mConsumerSecret = intent.getStringExtra(CONSUMER_SECRET);
-        mCallback = intent.getStringExtra(CALLBACK);
-        if( validstr(mRequestTokenEndpointUrl ) 
-        &&  validstr(mAccessTokenEndpointUrl  ) 
-        &&  validstr(mAuthorizationWebsiteUrl ) 
-        &&  validstr(mConsumerKey             )
-        &&  validstr(mConsumerSecret          ) 
-        &&  validstr(mCallback                )
-        ){
-        	
-            mWebView.setWebViewClient(mWebViewClient);
-            mWebView.setWebChromeClient(mWebChromeClient);
-            WebSettings setting = mWebView.getSettings();
-            setting.setJavaScriptEnabled(true);
-            setting.setBuiltInZoomControls(true);
-            new Thread(proc_before).start();
-        } else {
-            finish();
-        }
+
+        mWebView.setWebViewClient(mWebViewClient);
+        mWebView.setWebChromeClient(mWebChromeClient);
+        WebSettings setting = mWebView.getSettings();
+        setting.setJavaScriptEnabled(true);
+        setting.setBuiltInZoomControls(true);
+        new Thread(proc_before).start();
     }
 
     private Runnable proc_before = new Runnable() {
@@ -165,9 +131,9 @@ public class ActOAuth extends BaseActivity {
         	String url = null;
         	for(int nTry=0;nTry<10;++nTry){
 	            try {
-		            mOAuthConsumer = new CommonsHttpOAuthConsumer( mConsumerKey, mConsumerSecret);
-		            mOAuthProvider = new CommonsHttpOAuthProvider( mRequestTokenEndpointUrl, mAccessTokenEndpointUrl, mAuthorizationWebsiteUrl);
-	            	url = mOAuthProvider.retrieveRequestToken(mOAuthConsumer, mCallback);
+		            mOAuthConsumer = new CommonsHttpOAuthConsumer( Config.CONSUMER_KEY, Config.CONSUMER_SECRET);
+		            mOAuthProvider = new CommonsHttpOAuthProvider( URL_REQUEST_TOKEN, URL_ACCESS_TOKEN, URL_WEB_AUTHORIZATION);
+	            	url = mOAuthProvider.retrieveRequestToken(mOAuthConsumer, URL_CALLBACK);
 	            	if( validstr(url) ) break;
 	            } catch (Throwable ex) {
 	            	report_ex(ex);
@@ -199,24 +165,30 @@ public class ActOAuth extends BaseActivity {
                 if( validstr(token)
                 &&  validstr(tokenSecret)
                 ){
-                	SignedClient client = new SignedClient();
-                	client.consumer = new CommonsHttpOAuthConsumer(mConsumerKey, mConsumerSecret);
-                	client.consumer.setTokenWithSecret(token, tokenSecret);
-                	
-                	JSONObject result = client.json_signed_get("http://api.imgur.com/2/account.json");
-                	client.error_report(act,result);
-                	// 認証されたアカウントを追加する
         			ImgurAccount account = new ImgurAccount();
-        			account.name = result.getJSONObject("account").getString("url");
         			account.token = token;
         			account.secret = tokenSecret;
-        			account.save(act.cr);
-        			show_toast(Toast.LENGTH_SHORT,R.string.account_added);
+        			//
+        			SignedClient client = new SignedClient();
+        			client.prepareConsumer(account,Config.CONSUMER_KEY, Config.CONSUMER_SECRET);
+        			SignedClient.JSONResult result = client.json_signed_get(act,"http://api.imgur.com/2/account.json");
+        			if( result.err != null ){
+    					act.show_toast(Toast.LENGTH_LONG,result.err);
+    					return;
+    				}
+    				if( result.json.isNull("account") ){
+    					act.show_toast(Toast.LENGTH_LONG,String.format("missing 'account' in response: %s",result.str));
+    					return;
+    				}
+    				// 認証されたアカウントを保存する
+		        	account.name = result.json.getJSONObject("account").getString("url");
+		        	account.save(act.cr);
+		        	show_toast(Toast.LENGTH_SHORT,R.string.account_added);
                 }
+            	finish();
             } catch (Throwable ex) {
             	report_ex(ex);
             }
-            finish();
         }
     };
 

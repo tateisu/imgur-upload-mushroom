@@ -11,13 +11,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.widget.Toast;
 
-import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.Config;
 import jp.juggler.ImgurMush.PrefKey;
-import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.data.SignedClient;
@@ -138,23 +135,7 @@ public class AlbumLoader {
 			final HashMap<String,HashMap<String,ImgurAlbum>> tmp_map1= new HashMap<String,HashMap<String,ImgurAlbum>> ();
 			final HashMap<String,ArrayList<ImgurAlbum>> tmp_map2 = new HashMap<String,ArrayList<ImgurAlbum>> ();
 			// アカウント一覧をロードする
-			final ArrayList<ImgurAccount> account_list = new ArrayList<ImgurAccount>();
-			try{
-				ImgurAccount.ColumnIndex colidx = new ImgurAccount.ColumnIndex();
-				Cursor c = act.cr.query(ImgurAccount.meta.uri,null,null,null,null);
-				try{
-					while( c.moveToNext() ){
-						ImgurAccount item = ImgurAccount.loadFromCursor(c,colidx);
-						if(item!=null) account_list.add(item);
-						if(bCancelled.get()) return;
-					}
-				}finally{
-					c.close();
-				}
-			}catch(Throwable ex){
-				ex.printStackTrace();
-				return;
-			}
+			final ArrayList<ImgurAccount> account_list = ImgurAccount.loadAll( act.cr ,bCancelled);
 			// 各アカウントのアルバム一覧をロードする
 			for( ImgurAccount account : account_list ){
 				if(bCancelled.get()) return;
@@ -185,28 +166,31 @@ public class AlbumLoader {
 		}
 
 		ArrayList<ImgurAlbum> load(ImgurAccount account){
+
 			try{
 				SignedClient client = new SignedClient();
 				client.prepareConsumer(account,Config.CONSUMER_KEY,Config.CONSUMER_SECRET);
-				JSONObject result = client.json_signed_get("http://api.imgur.com/2/account/albums.json?count=999");
-				if( client.last_rcode != 404 ) client.error_report(act,result);
-				if( result != null ){
-					if( ! result.has("albums") ){
-						act.show_toast(Toast.LENGTH_LONG,act.getString(R.string.album_data_invalid));
-						return null;
-					}
-					ArrayList<ImgurAlbum> list = new ArrayList<ImgurAlbum>();
-					JSONArray src_list = result.getJSONArray("albums");
-					for(int j=0,je=src_list.length();j<je;++j){
-						JSONObject src = src_list.getJSONObject(j);
-						list.add(new ImgurAlbum(account.name,src));
-					}
-					return list;
+				//
+				SignedClient.JSONResult result = client.json_signed_get(act,"http://api.imgur.com/2/account/albums.json?count=999");
+				if( result.err != null ){
+					act.show_toast(Toast.LENGTH_LONG,result.err);
+					return null;
 				}
+				if( result.json.isNull("albums") ){
+					act.show_toast(Toast.LENGTH_LONG,String.format("missing 'albums' in response: %s",result.str));
+					return null;
+				}
+				ArrayList<ImgurAlbum> list = new ArrayList<ImgurAlbum>();
+				JSONArray src_list = result.json.getJSONArray("albums");
+				for(int j=0,je=src_list.length();j<je;++j){
+					JSONObject src = src_list.getJSONObject(j);
+					list.add(new ImgurAlbum(account.name,src));
+				}
+				return list;
 			}catch(Throwable ex){
 				act.report_ex(ex);
+				return null;
 			}
-			return null;
 		}
 	}
 }

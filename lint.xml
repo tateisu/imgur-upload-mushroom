@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
     <issue id="BackButton" severity="informational" />
+    <issue id="ButtonOrder" severity="ignore" />
     <issue id="ContentDescription" severity="ignore" />
+    <issue id="ExportedActivity" severity="informational" />
+    <issue id="ExportedContentProvider" severity="informational" />
+    <issue id="ExportedReceiver" severity="informational" />
+    <issue id="ExportedService" severity="informational" />
     <issue id="HardcodedText" severity="informational" />
     <issue id="IconDensities" severity="informational" />
     <issue id="IconMissingDensityFolder" severity="informational" />
     <issue id="NestedWeights" severity="ignore" />
+    <issue id="NewApi" severity="informational" />
     <issue id="Registered" severity="ignore" />
+    <issue id="SetJavaScriptEnabled" severity="informational" />
     <issue id="UnusedResources" severity="informational" />
     <issue id="UseCompoundDrawables" severity="ignore" />
 </lint>

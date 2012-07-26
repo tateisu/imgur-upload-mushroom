@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
-import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.PrefKey;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;

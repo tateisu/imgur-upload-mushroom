@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Random;
 
-import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.PrefKey;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.util.LogCategory;

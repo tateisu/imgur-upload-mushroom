@@ -2,8 +2,6 @@ package jp.juggler.ImgurMush.helper;
 
 import java.io.File;
 
-import jp.juggler.ImgurMush.BaseActivity;
-import jp.juggler.ImgurMush.DataLoader;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
@@ -70,6 +68,7 @@ public class HistoryAdapter extends BaseAdapter {
 				return false;
 			}
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void onChange(boolean selfChange) {
 				mDataValid = cursor.requery();
@@ -102,7 +101,6 @@ public class HistoryAdapter extends BaseAdapter {
 			where = ImgurHistory.COL_ACCOUNT_NAME+"=?";
 			where_arg = new String[]{ account.name };
 		}
-		// TODO 自動生成されたメソッド・スタブ
 		if(cursor!=null) cursor.close();
 		cursor = act.cr.query(ImgurHistory.meta.uri,null,where,where_arg,ImgurHistory.COL_UPLOAD_TIME+" desc");
 		cursor.registerContentObserver(content_observer);

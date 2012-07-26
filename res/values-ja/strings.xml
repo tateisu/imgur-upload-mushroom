@@ -17,7 +17,6 @@
 <string name="act_resize_preset" >Imgur マッシュ/ リサイズ指定</string>
 <string name="app_name"			 >Imgur マッシュ</string>
 <string name="album_all">全アルバム</string>
-<string name="album_data_invalid">アルバムデータを正しく処理できませんでした</string>
 <string name="album_loading">(読み込み中…)</string>
 <string name="album_not_select">(アルバムなし)</string>
 <string name="autostart_settings">操作の省略</string>
@@ -90,6 +89,8 @@
 <string name="upload_progress">アップロード中です…</string>
 <string name="upload_progress_sizecheck">アップロードサイズを測定中です…</string>
 <string name="upload_progress_digest">署名ダイジェストを計算中です…</string>
+<string name="upload_wait_response">レスポンス待機中…</string>
+
 
 <string name="storage_not_directory">外部フラッシュメモリが提供されていません?</string>
 <string name="storage_not_writable">外部フラッシュメモリへの書き込み許可がありません?</string>

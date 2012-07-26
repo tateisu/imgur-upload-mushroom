@@ -1,5 +1,6 @@
 package jp.juggler.ImgurMush;
 
+import jp.juggler.ImgurMush.helper.BaseActivity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -16,13 +17,12 @@ public class ActAppInfo extends BaseActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.act_appinfo);
 		
-		Button btnAppName =(Button)findViewById(R.id.btnAppName);
-
+		final Button btnAppName =(Button)findViewById(R.id.btnAppName);
 		final String package_name = getPackageName();
 
+		// ボタンを押すとPlayストアを開く
 		btnAppName.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
+			@Override public void onClick(View v) {
 				try{
 					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://market.android.com/details?id="+package_name));  
 					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
@@ -30,20 +30,18 @@ public class ActAppInfo extends BaseActivity{
 				}catch(Throwable ex){
 					ex.printStackTrace();
 				}
-				
 			}
 		});
-		
+
+		// ボタンにアプリ名とバージョンを表記する
 		try{
 			PackageInfo pin = getPackageManager().getPackageInfo(package_name, 0);
-			btnAppName.setText(String.format("%s %s(%d)"
+			btnAppName.setText(String.format("%s %s"
 					,getString(R.string.app_name)
 					,pin.versionName
-					,pin.versionCode
 			));
 		}catch(NameNotFoundException ex){
 			ex.printStackTrace();
 		}
 	}
-
 }

@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ResizePreset;
 import jp.juggler.util.LifeCycleListener;
@@ -33,6 +32,7 @@ public class ResizePresetAdapter extends BaseAdapter{
 				return false;
 			}
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void onChange(boolean selfChange) {
 				mDataValid = preset_cursor.requery();

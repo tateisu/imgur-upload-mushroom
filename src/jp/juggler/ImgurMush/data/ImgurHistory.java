@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class ImgurHistory {
@@ -72,7 +71,7 @@ public class ImgurHistory {
 	}
 	
 	public static ImgurHistory load(ContentResolver cr,long id){
-		Cursor c = cr.query(Uri.withAppendedPath(meta.uri,"/"+id),null,null,null,null);
+		Cursor c = cr.query(meta.uriFromId(id),null,null,null,null);
 		if(c !=null){
 			try{
 				if(c.moveToNext() ){

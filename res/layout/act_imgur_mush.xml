@@ -1,106 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="4dp"
 >
 	<ImageView
 		android:layout_width="match_parent" 
-	    android:layout_height="0dp" 
+	    android:layout_height="0dp"
 	    android:layout_weight="1"
+	    android:layout_marginBottom="2dp"
 
 	    android:id="@+id/preview"
 	    android:scaleType="fitCenter"
-	    android:contentDescription=""
 	/>
-	
-	<LinearLayout 
-		android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_marginTop="2dp"
-	    android:background="@drawable/frame_imageinfo"
-	    android:orientation="horizontal"
-	    android:gravity="center_vertical"
-	>
-		<TextView
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-		    android:textColor="#eeffff"
-		    android:id="@+id/tvFileDesc"
-		/>
-		<LinearLayout 
-			android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:orientation="vertical"
-		    android:gravity="right"
-		>
-			<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/picker"
-			    android:id="@+id/btnPicker"
-			/>	
-			<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/edit"
-			    android:id="@+id/btnEdit"
-			/>	
-		</LinearLayout>
-	</LinearLayout>
-	
-	<LinearLayout
-		android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:orientation="horizontal"
-	    android:gravity="center"
-	>
-		<Spinner
-			android:layout_width="0dp" 
-	    	android:layout_height="wrap_content"
-	    	android:layout_weight="1"
-	    	android:id="@+id/account"
-	    />
-		<Spinner
-			android:layout_width="0dp" 
-	    	android:layout_height="wrap_content"
-	    	android:layout_weight="1"
-	    	android:id="@+id/album"
-	    />
-	</LinearLayout>
-
-	<LinearLayout
-		android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:orientation="horizontal"
-	>
-	    <View android:layout_width="12dp" android:layout_height="0dp" android:layout_weight="2" />
-		<Button
-			android:layout_width="wrap_content" 
-	    	android:layout_height="wrap_content"
-	    	android:layout_weight="1"
-	    	android:minWidth="48dp"
-	    	android:id="@+id/btnUpload"
-	    	android:text="@string/upload"
-	    />
-	    <Button
-			android:layout_width="wrap_content" 
-	    	android:layout_height="wrap_content"
-	    	android:layout_weight="0"
-	    	android:layout_marginLeft="12dp"
-	    	android:minWidth="48dp"
-	    	android:id="@+id/btnSetting"
-	    	android:text="@string/dash3"
-	    />
-		<Button
-			android:layout_width="wrap_content" 
-	    	android:layout_height="wrap_content"
-	    	android:layout_weight="0"
-	    	android:layout_marginLeft="12dp"
-	    	android:minWidth="48dp"
-	    	android:id="@+id/btnCancel"
-	    	android:text="@string/cancel"
-	    />
-	</LinearLayout>
+	<include layout="@layout/inc_main_desc" />
+	<include layout="@layout/inc_main_bottom" />
 </LinearLayout>

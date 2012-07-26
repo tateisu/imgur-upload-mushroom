@@ -1,12 +1,12 @@
 package jp.juggler.ImgurMush;
 
+import jp.juggler.util.LogCategory;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
@@ -31,6 +31,13 @@ public class ArrangeView extends View{
 	void init(Context context){
 		density = context.getResources().getDisplayMetrics().density;
 		handler = new Handler();
+		//
+		paint_bitmap.setFilterBitmap(true);
+		//
+		paint_shadow.setAntiAlias(false);
+		paint_shadow.setColor(0x80000000);
+
+		paint_line.setAntiAlias(false);
 	}
 
 	Bitmap bitmap;
@@ -63,125 +70,143 @@ public class ArrangeView extends View{
 		invalidate();
 	}
 	
+	Rect rect = new Rect();
+	Matrix matrix = new Matrix();
+	Paint paint_bitmap = new Paint();
+	Paint paint_shadow = new Paint();
+	Paint paint_line = new Paint();
+	LogCategory log = new LogCategory("view");
 	@Override
     protected void onDraw(Canvas canvas) {
-		float canvas_w = getWidth();
-		float canvas_h = getHeight();
-        float preview_padding = density * 3;
+		// 画像のサイズ
+        if( bitmap == null ) return;
+    	int img_w = bitmap.getWidth();
+    	int img_h = bitmap.getHeight();
+    	if( img_w <1 || img_h < 1 ) return;
+
+    	// 回転後のサイズ
+    	if( (rot_mode & 1) != 0 ){
+    		int tmp = img_w;img_w = img_h;img_h = tmp; 
+    	}
+
+    	// canvasのサイズ
+    	final int canvas_w = getWidth();
+    	final int canvas_h = getHeight();
+
+		// パディング
+    	final int preview_padding = to_int(density * 2);
+    	
+    	// パディングを引いたサイズ
         if( canvas_w < preview_padding*2 || canvas_h < preview_padding*2 ) return;
+        int preview_max_w = (canvas_w- preview_padding*2);
+        int preview_max_h = (canvas_h- preview_padding*2);
 
-        float preview_max_w = (canvas_w- preview_padding*2);
-        float preview_max_h = (canvas_h- preview_padding*2);
-        float preview_max_aspect = preview_max_w/preview_max_h;
+    	// 縦横比
+    	float img_aspect = img_w/(float)img_h;
+        float preview_max_aspect = preview_max_w/(float)preview_max_h;
         
-        if( bitmap != null ){
-        	int img_w = bitmap.getWidth();
-        	int img_h = bitmap.getHeight();
-        	if( img_w >=1 && img_h >= 1 ){
-	        	if( (rot_mode & 1) != 0 ){
-	        		int tmp = img_w;img_w = img_h;img_h = tmp; 
-	        	}
-	        	float img_aspect = img_w/(float)img_h;
-	        	float preview_w;
-	        	float preview_h;
-	        	float scale;
-	        	if( img_aspect >= preview_max_aspect ){
-	        		// 画像のほうが表示領域より横長なので、横幅基準でリサイズ
-	        		scale = preview_max_w/img_w;
-	        		preview_w = preview_max_w;
-	        		preview_h = preview_max_w / img_aspect;
-	        	}else{
-	        		// 画像のほうが表示領域より縦長なので、縦幅基準でリサイズ
-	        		scale = preview_max_h/img_h;
-	        		preview_w = preview_max_h * img_aspect;
-	        		preview_h = preview_max_h;
-	        	}
-	        	float offset_x = preview_padding + (preview_max_w - preview_w)/2;
-	        	float offset_y = preview_padding + (preview_max_h - preview_h)/2;
-	        	Matrix m = new Matrix();
-	        	m.postScale(scale,scale);
-	        	m.postRotate(rot_mode * 90);
-	        	switch(rot_mode){
-	        	case 1:
-	        		m.postTranslate( preview_w,0);
-	        		break;
-	        	case 2:
-	        		m.postTranslate( preview_w,preview_h);
-	        		break;
-	        	case 3:
-	        		m.postTranslate( 0,preview_h);
-	        		break;
-	        	}
-	        	m.postTranslate( offset_x,offset_y);
-	        	Paint paint = new Paint();
-	        	paint.setFilterBitmap(true);
-	        	canvas.drawBitmap(bitmap, m, paint);
-	        	
-	        	// draw outside of crop
-	        	float left  =  preview_w * crop_l;
-	        	float right =  preview_w * crop_r;
-	        	float top   =  preview_h * crop_t;
-	        	float bottom = preview_h * crop_b;
-	        	paint.setAntiAlias(true);
-	        	paint.setColor(0x80000000);
-	        	Rect rect = new Rect();
-	        	RectF rectf = new RectF();
-	        	if( left + right >= preview_w || top + bottom >= preview_h ){
-	        		rect.left  = to_int(offset_x );
-	        		rect.right = to_int(offset_x + preview_w); 
-	        		rect.top   = to_int(offset_y );
-	        		rect.bottom = to_int(offset_y + preview_h);
-	        		canvas.drawRect (rect,paint);
-	        	}else{
-	        		// top
-	        		rect.left  = to_int(offset_x );
-	        		rect.right = to_int(offset_x + preview_w); 
-	        		rect.top   = to_int(offset_y );
-	        		rect.bottom = to_int(offset_y + top);
-	        		canvas.drawRect (rect,paint);
-	        		// bottom
-	        		rect.top    = to_int(offset_y + preview_h - bottom );
-	        		rect.bottom = to_int(offset_y + preview_h);
-	        		canvas.drawRect (rect,paint);
-	        		// left
-	        		rect.top    = to_int(offset_y + top );
-	        		rect.bottom = to_int(offset_y + preview_h - bottom);
-	        		rect.left  = to_int(offset_x );
-	        		rect.right = to_int(offset_x + left); 
-	        		canvas.drawRect (rect,paint);
-	        		//right
-	        		rect.left  = to_int(offset_x + preview_w -right);
-	        		rect.right = to_int(offset_x + preview_w); 
-	        		canvas.drawRect (rect,paint);
-	        		
-	        		// draw line
-	        		paint.setColor(crop_color);
-	        		float line_width = preview_padding -1;
-	        		
+        // 画像をcanvasに合わせてリサイズ
+    	int preview_w;
+    	int preview_h;
+    	float scale;
+    	if( img_aspect >= preview_max_aspect ){
+    		// 画像のほうが表示領域より横長なので、横幅基準でリサイズ
+    		scale = preview_max_w/(float)img_w;
+    		preview_w = preview_max_w;
+    		preview_h = to_int(preview_max_w / img_aspect);
+    	}else{
+    		// 画像のほうが表示領域より縦長なので、縦幅基準でリサイズ
+    		scale = preview_max_h/(float)img_h;
+    		preview_w = to_int(preview_max_h * img_aspect);
+    		preview_h = preview_max_h;
+    	}
+    	if(preview_w < 1 ) preview_w = 1;
+    	if(preview_h < 1 ) preview_h = 1;
+    	
+    	// 中央揃えを考慮した描画位置
+    	final int offset_x = to_int(preview_padding + (preview_max_w - preview_w)/2);
+    	final int offset_y = to_int(preview_padding + (preview_max_h - preview_h)/2);
+    	
+    	// 画像を描画するためのマトリクスを計算
+    	matrix.reset();
+    	matrix.postScale(scale,scale);
+    	matrix.postRotate(rot_mode * 90);
+    	switch(rot_mode){
+    	case 1:
+    		matrix.postTranslate( preview_w,0);
+    		break;
+    	case 2:
+    		matrix.postTranslate( preview_w,preview_h);
+    		break;
+    	case 3:
+    		matrix.postTranslate( 0,preview_h);
+    		break;
+    	}
+    	matrix.postTranslate( offset_x,offset_y);
 
-	        		// top
-	        		rectf.left  = offset_x + left;
-	        		rectf.right = offset_x + preview_w -right;
-	        		rectf.top    = offset_y + top- line_width;
-	        		rectf.bottom = offset_y + top +1 ;
-	        		canvas.drawRect (rectf,paint);
-	        		// bottom
-	        		rectf.top    = offset_y + preview_h - bottom -1;
-	        		rectf.bottom = offset_y + preview_h - bottom + line_width;
-	        		canvas.drawRect (rectf,paint);
-	        		// left
-	        		rectf.top = offset_y + top;
-	        		rectf.bottom = offset_y + preview_h - bottom;
-	        		rectf.left  = offset_x + left - line_width;
-	        		rectf.right = offset_x + left +1;
-	        		canvas.drawRect (rectf,paint);
-	        		// right
-	        		rectf.left  = offset_x + preview_w -right -1;
-	        		rectf.right = offset_x + preview_w -right+ line_width;
-	        		canvas.drawRect (rectf,paint);
-	        	}
-        	}
-        }
+    	// 画像を描画
+    	canvas.drawBitmap(bitmap, matrix, paint_bitmap);
+    	
+    	// draw outside of crop
+    	int left  =  to_int(preview_w * crop_l);
+    	int right =  to_int(preview_w * crop_r);
+    	int top   =  to_int(preview_h * crop_t);
+    	int bottom = to_int(preview_h * crop_b);
+    	
+    	if( left + right >= preview_w || top + bottom >= preview_h ){
+    		rect.left  = to_int(offset_x );
+    		rect.right = to_int(offset_x + preview_w); 
+    		rect.top   = to_int(offset_y );
+    		rect.bottom = to_int(offset_y + preview_h);
+    		canvas.drawRect (rect,paint_shadow);
+    	}else{
+    		// top
+    		rect.left  = to_int(offset_x );
+    		rect.right = to_int(offset_x + preview_w); 
+    		rect.top   = to_int(offset_y );
+    		rect.bottom = to_int(offset_y + top);
+    		canvas.drawRect (rect,paint_shadow);
+    		// bottom
+    		rect.top    = to_int(offset_y + preview_h - bottom );
+    		rect.bottom = to_int(offset_y + preview_h);
+    		canvas.drawRect (rect,paint_shadow);
+    		// left
+    		rect.top    = to_int(offset_y + top );
+    		rect.bottom = to_int(offset_y + preview_h - bottom);
+    		rect.left  = to_int(offset_x );
+    		rect.right = to_int(offset_x + left); 
+    		canvas.drawRect (rect,paint_shadow);
+    		//right
+    		rect.left  = to_int(offset_x + preview_w -right);
+    		rect.right = to_int(offset_x + preview_w); 
+    		canvas.drawRect (rect,paint_shadow);
+    		
+    		// draw line
+    		
+    		int line_width = preview_padding;
+    		int line_width_inside = 0;
+
+    		// top
+    		rect.left  = offset_x + left;
+    		rect.right = offset_x + preview_w -right;
+    		rect.top    = offset_y + top- line_width;
+    		rect.bottom = offset_y + top +line_width_inside ;
+    		canvas.drawRect (rect,paint_line);
+    		// bottom
+    		rect.top    = offset_y + preview_h - bottom -line_width_inside;
+    		rect.bottom = offset_y + preview_h - bottom + line_width;
+    		canvas.drawRect (rect,paint_line);
+    		// left
+    		rect.top = offset_y + top;
+    		rect.bottom = offset_y + preview_h - bottom;
+    		rect.left  = offset_x + left - line_width;
+    		rect.right = offset_x + left +line_width_inside;
+    		canvas.drawRect (rect,paint_line);
+    		// right
+    		rect.left  = offset_x + preview_w -right -line_width_inside;
+    		rect.right = offset_x + preview_w -right+ line_width;
+    		canvas.drawRect (rect,paint_line);
+    	}
     }
 	
 	static final int to_int(float f){
@@ -199,7 +224,7 @@ public class ArrangeView extends View{
 		
 	}
 	int show_count = 0;
-	int crop_color = 0;
+	
 	Runnable showing_runnable = new Runnable() {
 		
 		@Override
@@ -208,12 +233,13 @@ public class ArrangeView extends View{
 			handler.postDelayed(showing_runnable,333);
 			++show_count;
 			
-			if( ((show_count/3)&1) == 0 ){
-				setBackgroundColor(0xff333333);
-			}else{
-				setBackgroundColor(0xff444444);
-			}
+//			if( ((show_count/3)&1) == 0 ){
+//				setBackgroundColor(0xff333333);
+//			}else{
+//				setBackgroundColor(0xff444444);
+//			}
 
+			int crop_color = 0;
 			switch( show_count%6 ){
 			case 0: crop_color = 0xffff8800; break;
 			case 1: crop_color = 0xff88ff00; break;
@@ -222,6 +248,8 @@ public class ArrangeView extends View{
 			case 4: crop_color = 0xff8800ff; break;
 			case 5: crop_color = 0xffff0088; break;
 			}
+			paint_line.setColor(crop_color);
+			
 			invalidate();
 		}
 	};

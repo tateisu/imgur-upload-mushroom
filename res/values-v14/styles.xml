@@ -1,0 +1,11 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+	<style name="AppTheme" parent="android:Theme.Holo" />
+
+	<style name="rot_left" >
+		<item name="android:src">@drawable/rot_left_white</item>
+	</style>
+	<style name="rot_right" >
+		<item name="android:src">@drawable/rot_right_white</item>
+	</style>
+		
+</resources>

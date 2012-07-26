@@ -1,0 +1,11 @@
+<resources>
+	<style name="AppTheme" parent="android:Theme.Black" />
+
+	<style name="rot_left" >
+		<item name="android:src">@drawable/rot_left</item>
+	</style>
+	<style name="rot_right" >
+		<item name="android:src">@drawable/rot_right</item>
+	</style>
+		
+</resources>

@@ -1,6 +1,5 @@
 package jp.juggler.ImgurMush.helper;
 
-import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.util.LifeCycleListener;
 import android.database.ContentObserver;
@@ -19,6 +18,7 @@ public class AccountAdapter extends BaseAdapter{
 	final String strNonSelect;
 	final ContentObserver content_observer;
 	final DataSetObserver dataset_observer;
+	final int min_height;
 	
 	boolean mDataValid = true;
 	
@@ -58,6 +58,9 @@ public class AccountAdapter extends BaseAdapter{
 		cursor.registerDataSetObserver(dataset_observer);
 		
 		act.lifecycle_manager.add(activity_listener);
+		
+		float density = act.getResources().getDisplayMetrics().density;
+		this.min_height = (int)(0.5f + density * 48 ); 
 	}
 	
 	LifeCycleListener activity_listener = new LifeCycleListener(){
@@ -75,6 +78,7 @@ public class AccountAdapter extends BaseAdapter{
 		
 	};
 	
+	@SuppressWarnings("deprecation")
 	public void reload() {
 		mDataValid = cursor.requery();
 	}
@@ -100,12 +104,12 @@ public class AccountAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-		return make_view( position,  view,  parent,android.R.layout.simple_spinner_item);
+		return make_view( position,  view,  parent,android.R.layout.simple_spinner_item ,false);
 	}
 
 	@Override
 	public View getDropDownView(int position, View view,ViewGroup parent) {
-		return make_view( position,  view,  parent,android.R.layout.simple_spinner_dropdown_item);
+		return make_view( position,  view,  parent,android.R.layout.simple_spinner_dropdown_item, true);
 	}
 	
 	
@@ -113,7 +117,7 @@ public class AccountAdapter extends BaseAdapter{
 		TextView tvName;
 	}
 
-	private View make_view(int idx, View view, ViewGroup parent,int layout){
+	private View make_view(int idx, View view, ViewGroup parent,int layout, boolean is_dropdown){
 		ViewHolder holder;
 		if(view!=null){
 			holder = (ViewHolder)view.getTag();
@@ -121,6 +125,7 @@ public class AccountAdapter extends BaseAdapter{
 			view = act.inflater.inflate(layout ,null );
 			view.setTag( holder = new ViewHolder() );
 			holder.tvName = (TextView)view.findViewById(android.R.id.text1);
+			if(is_dropdown) view.setMinimumHeight(min_height);
 		}
 		//
 		ImgurAccount item = (ImgurAccount)getItem(idx);

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.Config;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;
@@ -236,8 +235,13 @@ public class Uploader {
 		public void run() {
 			act.ui_handler.removeCallbacks(progress_runnable);
 			if(act.isFinishing()) return;
-			progress_dialog.setMax(progress_max.get());
-			progress_dialog.setProgress(progress_value.get());
+			int v = progress_value.get();
+			int max = progress_max.get();
+			progress_dialog.setMax(max);
+			progress_dialog.setProgress(v);
+			if(max > 0 && v==max){
+				progress_dialog.setMessage(act.getString(R.string.upload_wait_response));
+			}
 		}
 	};
 
@@ -247,7 +251,7 @@ public class Uploader {
 	    	if(progress_busy) return;
 	    	progress_max.set( (int)size );
 	    	progress_value.set( (int)v );
-	    	act.ui_handler.postDelayed(progress_runnable,333);
+	    	act.ui_handler.postDelayed(progress_runnable,100);
 		}
 	};
 	

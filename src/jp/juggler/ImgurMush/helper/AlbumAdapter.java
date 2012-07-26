@@ -2,7 +2,6 @@ package jp.juggler.ImgurMush.helper;
 
 import java.util.ArrayList;
 
-import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 
 import android.view.View;
@@ -16,10 +15,14 @@ public class AlbumAdapter extends BaseAdapter{
 	
 	final BaseActivity act;
 	String strNonSelection;
+	final int min_height;
 	
 	public AlbumAdapter(BaseActivity act,String no_album) {
 		this.act = act;
 		this.strNonSelection = no_album;
+		
+		float density = act.getResources().getDisplayMetrics().density;
+		this.min_height = (int)(0.5f + density * 48 ); 
 	}
 
 	
@@ -71,24 +74,25 @@ public class AlbumAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-		return make_view( position,  view,  parent,android.R.layout.simple_spinner_item);
+		return make_view( position,  view,  parent,android.R.layout.simple_spinner_item,false);
 	}
 
 	@Override
 	public View getDropDownView(int position, View view,ViewGroup parent) {
-		return make_view( position,  view,  parent,android.R.layout.simple_spinner_dropdown_item);
+		return make_view( position,  view,  parent,android.R.layout.simple_spinner_dropdown_item,true);
 	}
 	
 	static class ViewHolder {
 		TextView tvName;
 	}
 	
-	private View make_view(int position, View view, ViewGroup parent,int layout){
+	private View make_view(int position, View view, ViewGroup parent,int layout, boolean is_dropdown){
 		ViewHolder holder;
 		if(view==null){
 			view = act.inflater.inflate(layout ,null );
 			view.setTag( holder = new ViewHolder() );
 			holder.tvName = (TextView)view.findViewById(android.R.id.text1);
+			if(is_dropdown) view.setMinimumHeight(min_height);
 		}else{
 			holder = (ViewHolder)view.getTag();
 		}

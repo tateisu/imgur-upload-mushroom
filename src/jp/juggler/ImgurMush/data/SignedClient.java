@@ -4,8 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.UnknownHostException;
 
-import jp.juggler.ImgurMush.BaseActivity;
+import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.util.CancelChecker;
+import jp.juggler.util.TextUtil;
 
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 
@@ -17,6 +18,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.text.Html;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -47,31 +49,72 @@ public class SignedClient {
 		consumer.setTokenWithSecret(account.token,account.secret);
 	}
 
-	public JSONObject json_signed_get(String url){
-		String str = null;
+	private byte[] signed_get(String url){
 		try{
 			HttpGet request = new HttpGet( url );
 			consumer.sign(request);
-			byte[] data = send_request(request);
-			if(data!=null){
-				str = new String(data,"UTF-8");
-				if(debug) Log.d(TAG,str);
-
-				// Imgur の 特殊なエラー
-				int n = str.indexOf("<!doctype html>");
-				if( n != -1 && n < 10 ){
-					last_error="Imgur server over capacity.";
-					return null;
-				}
-				
-				return new JSONObject(str);
-			}
+			return send_request(request);
 		}catch(Throwable ex){
 			ex.printStackTrace();
 			last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();
-			if( str !=null) Log.e(TAG,str);
 		}
 		return null;
+	}
+	
+	public static class JSONResult{
+		public byte[] data;
+		public String str;
+		public JSONObject json;
+		public String err;
+	}
+	
+	public JSONResult json_signed_get(BaseActivity act,String url){ 
+		JSONResult result = new JSONResult();
+		for( int nTry =0; nTry < 10; ++nTry ){
+			try{
+				result.data = signed_get(url);
+				if( result.data == null ){
+					result.err = String.format("%s %s",last_status,last_error);
+					Log.e(TAG,result.err);
+					if( last_rcode < 400 || last_rcode >= 500 ) continue;
+					break;
+				}
+				// parse UTF-8
+				result.str = TextUtil.decodeUTF8(result.data);
+				
+				// parse json
+				try{
+					result.json = new JSONObject(result.str);
+				}catch(JSONException ex){
+					try{
+						String text = Html.fromHtml(result.str).toString();
+						if( -1 != text.toLowerCase().indexOf("gateway") ){
+							continue;
+						}
+						result.err = text;
+						break;
+					}catch(Throwable ex2){
+						result.err = String.format("decode failed:%s",result.str);
+						break;
+					}
+				}
+				// レスポンスにエラーメッセージが含まれる
+				try{
+					result.err = "Imgur server returns error: "+result.json.getJSONObject("error").getString("message");
+				}catch(Throwable ex){
+				}
+				// エラーの種類によってはリトライをかける
+				if( result.err != null ){
+					if( -1 != result.err.indexOf("MySQL server has gone away")) continue;
+				}
+				// OK?
+			}catch(Throwable ex){
+				result.err = String.format("%s:%s",ex.getClass().getSimpleName(),ex.getMessage());
+			}
+			break;
+		}
+		if( result.err != null ) Log.e(TAG,result.err);
+		return result;
 	}
 
 	public JSONObject json_request(HttpRequestBase request){
@@ -128,4 +171,7 @@ public class SignedClient {
     	}
     	return null;
 	}
+
+
+
 }

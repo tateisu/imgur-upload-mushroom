@@ -1,8 +1,8 @@
 package jp.juggler.ImgurMush.data;
 
-import jp.juggler.ImgurMush.BaseActivity;
 import jp.juggler.ImgurMush.DataProvider;
 import jp.juggler.ImgurMush.R;
+import jp.juggler.ImgurMush.helper.BaseActivity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;

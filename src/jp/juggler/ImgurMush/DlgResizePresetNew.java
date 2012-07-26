@@ -1,6 +1,7 @@
 package jp.juggler.ImgurMush;
 
 import jp.juggler.ImgurMush.data.ResizePreset;
+import jp.juggler.ImgurMush.helper.BaseActivity;
 import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;

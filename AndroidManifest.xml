@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="jp.juggler.ImgurMush"
-      android:versionCode="24"
-      android:versionName="2.4"
+      android:versionCode="27"
+      android:versionName="2.7"
       android:installLocation="auto"
 >
 	<uses-sdk android:minSdkVersion="4" 
-              android:targetSdkVersion="10"
+              android:targetSdkVersion="16"
     />
     <supports-screens
         android:smallScreens="true" 
@@ -25,10 +25,11 @@
         <activity
         	android:name=".ActImgurMush"
             android:label="@string/act_main"
-            android:theme="@android:style/Theme.Black"
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode"
+            android:theme="@style/AppTheme"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|fontScale|uiMode"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden"
+            android:exported="true"
 		>
             <intent-filter>
                 <action android:name="com.adamrocker.android.simeji.ACTION_INTERCEPT" />
@@ -50,41 +51,43 @@
 		<activity
 			android:name="jp.juggler.ImgurMush.ActOAuth" 
             android:label="@string/act_oauth"
-            android:theme="@android:style/Theme.Black"
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode"
+            android:theme="@style/AppTheme"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|fontScale|uiMode"
 		/>
 		<activity
 			android:name="jp.juggler.ImgurMush.ActHistory" 
             android:label="@string/act_history"
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode"
+            android:theme="@style/AppTheme"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|fontScale|uiMode"
 		/>
 		<activity
 			android:name="jp.juggler.ImgurMush.ActPref" 
             android:label="@string/act_pref"
-            android:theme="@android:style/Theme.Black"
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode"
+            android:theme="@style/AppTheme"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|fontScale|uiMode"
 		/>
 		<activity
 			android:name="jp.juggler.ImgurMush.ActAppInfo" 
             android:label="@string/act_appinfo"
-            android:theme="@android:style/Theme.Black"
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode"
+            android:theme="@style/AppTheme"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|fontScale|uiMode"
 		/>
 		<activity
 			android:name="jp.juggler.ImgurMush.ActArrange" 
             android:label="@string/act_arrange"
-            android:theme="@android:style/Theme.Black"
-            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode"
+            android:theme="@style/AppTheme"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|fontScale|uiMode"
 		/>
 		<activity
 			android:name="jp.juggler.ImgurMush.ActResizePreset" 
             android:label="@string/act_resize_preset"
-            android:theme="@android:style/Theme.Black"
+            android:theme="@style/AppTheme"
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode"
 		/>
-				<provider
+		<provider
         	android:name="jp.juggler.ImgurMush.DataProvider"
         	android:authorities="jp.juggler.ImgurMush"
+        	android:exported="false"
         />
 
     </application>

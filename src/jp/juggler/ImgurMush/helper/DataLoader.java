@@ -1,4 +1,4 @@
-package jp.juggler.ImgurMush;
+package jp.juggler.ImgurMush.helper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

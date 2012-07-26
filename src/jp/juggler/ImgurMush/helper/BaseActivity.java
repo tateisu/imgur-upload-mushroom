@@ -1,4 +1,4 @@
-package jp.juggler.ImgurMush;
+package jp.juggler.ImgurMush.helper;
 
 import jp.juggler.util.DialogManager;
 import jp.juggler.util.LifeCycleManager;
@@ -14,7 +14,7 @@ import android.view.LayoutInflater;
 import android.widget.Toast;
 
 public class BaseActivity extends Activity {
-	BaseActivity act = this;
+
 	public Handler ui_handler;
 	public LayoutInflater inflater;
 	public ContentResolver cr;
@@ -27,7 +27,7 @@ public class BaseActivity extends Activity {
 		ui_handler = new Handler();
         inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         cr =getContentResolver();
-        dialog_manager = new DialogManager(act);
+        dialog_manager = new DialogManager(this);
 	}
 	
 	//////////////////////////////////////////////////
@@ -76,7 +76,7 @@ public class BaseActivity extends Activity {
 			@Override
 			public void run() {
 				if(isFinishing())return;
-				Toast.makeText(act,resid,length).show();
+				Toast.makeText(BaseActivity.this,resid,length).show();
 			}
 		});
     }
@@ -85,7 +85,7 @@ public class BaseActivity extends Activity {
 			@Override
 			public void run() {
 				if(isFinishing())return;
-				Toast.makeText(act,text,length).show();
+				Toast.makeText(BaseActivity.this,text,length).show();
 			}
 		});
     }

@@ -1,6 +1,7 @@
 package jp.juggler.ImgurMush;
 
 import jp.juggler.ImgurMush.data.ResizePreset;
+import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ResizePresetAdapter;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -13,9 +14,11 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
 public class ActResizePreset extends BaseActivity{
-	ResizePresetAdapter resize_preset_adapter;
 
+	final ActResizePreset act = this;
+	ResizePresetAdapter resize_preset_adapter;
 	ListView listview;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

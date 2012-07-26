@@ -13,6 +13,7 @@ import jp.juggler.ImgurMush.data.ImgurHistory;
 import jp.juggler.ImgurMush.helper.AccountAdapter;
 import jp.juggler.ImgurMush.helper.AlbumAdapter;
 import jp.juggler.ImgurMush.helper.AlbumLoader;
+import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.HistoryAdapter;
 import jp.juggler.util.LogCategory;
 import jp.juggler.util.TextUtil;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 public class ActHistory extends BaseActivity {
 	static final LogCategory log = new LogCategory("ActHistory");
 	
+	final ActHistory act = this;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -279,6 +281,7 @@ public class ActHistory extends BaseActivity {
 					if( old_selection != null && !account.name.equals(old_selection.account_name) ) old_selection = null;
 				
 					if( bLoadEvent || old_selection == null ){
+
 						// アルバム選択肢を設定する
 						album_adapter.replace(list,strAlbumAll);
 						spAlbum.setEnabled( album_adapter.getCount() > 1 );
@@ -287,18 +290,24 @@ public class ActHistory extends BaseActivity {
 						// 適用が可能(アカウントが一致する）なら一度だけ選択を行う
 						if( account.name.equals(lastused_account_name) ){
 							lastused_account_name = null;
-							final int idx = album_adapter.findByName(lastused_album_name);
-							spAlbum.setSelection(idx < 0 ? 0 : idx);
+							album_idx = album_adapter.findByName(lastused_album_name);
 						}else if( old_selection != null ){
 							// アカウントは変化していないが、データが更新されたかもしれない。
 							// なるべく以前の選択を維持する
-							int idx = album_adapter.findByName(old_selection.album_name);
-							spAlbum.setSelection(idx);
+							album_idx = album_adapter.findByName(old_selection.album_name);
 						}else{
 							// アカウントの選択が変わったので、アルバムの選択をリセットする
-							spAlbum.setSelection(0);
+							album_idx = 0;
 						}
-						// ただし、 selection changed イベントが発生するのはこれより少し後になる
+
+						// アルバムを選択する
+						spAlbum.setSelection(album_idx);
+						// ただし、 selection changed イベントが発生するのはこれより少し後になるし
+						// アカウントだけを変更した場合は selection changed イベントはこの直後には発生しない
+
+						// このタイミングでフィルタを更新しておく
+						ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(album_idx);
+						history_adapter.setFilter(account,album);
 					}
 				}
 			}

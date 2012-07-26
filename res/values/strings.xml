@@ -17,20 +17,19 @@
 <string name="act_resize_preset" >Imgur Mushroom/ resize presets</string>
 <string name="app_name"			 >Imgur Mushroom</string>
 <string name="album_all">all albums</string>
-<string name="album_data_invalid">bad album data</string>
 <string name="album_loading">(loading..)</string>
 <string name="album_not_select">(no album)</string>
 <string name="autostart_settings">laziness settings</string>
 <string name="cancel">Cancel</string>
 <string name="cancel_notice">cancelled..</string>
 <string name="copy_to_clipboard">URL is copied to clipboard</string>
-<string name="crop_bottom">bottom</string>
-<string name="crop_left">left</string>
-<string name="crop_right">right</string>
-<string name="crop_top">top</string>
+<string name="crop_bottom">B</string>
+<string name="crop_left">L</string>
+<string name="crop_right">R</string>
+<string name="crop_top">T</string>
 <string name="dash3">&#8230;</string>
 <string name="edit">edit</string>
-<string name="edit_autostart_title">editor auto start</string>
+<string name="edit_autostart_title">auto start editor</string>
 <string name="edit_autostart_summary">if checked, automatically start editor when image is picked.</string>
 
 <string name="edit_settings">image editor settings</string>
@@ -88,9 +87,10 @@
 
 <string name="delete_hash_missing">missing delete hash</string>
 <string name="uri_parse_error">cannot detect file path from URI:\n%1$s</string>
-<string name="upload_progress">Uploading&#8230;</string>
+<string name="upload_progress">uploading&#8230;</string>
 <string name="upload_progress_sizecheck">calculate upload size&#8230;</string>
 <string name="upload_progress_digest">calculate digest&#8230;</string>
+<string name="upload_wait_response">waiting response&#8230;</string>
 
 <string name="storage_not_directory">external storage is not presented</string>
 <string name="storage_not_writable">external storage is not writable</string>
@@ -101,7 +101,7 @@
 About Imgur:
 \nImgur is image sharing service by Imgur, LLC. please check http://imgur.com/ for more details. 
 \nThe Imgur logo and “IMGUR” are trademarks of Imgur LLC and are used here for informational purposes only.
-“Imgurマッシュ” is not affiliated with Imgur and has not been reviewed or approved by Imgur.
+“Imgur Mushroom” is not affiliated with Imgur and has not been reviewed or approved by Imgur.
 </string>
 
 <string name="about_oauth_signpost">
