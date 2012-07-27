@@ -9,7 +9,7 @@ import android.provider.BaseColumns;
 
 public class ImgurHistory {
 	public static TableMeta meta = new TableMeta(DataProvider.AUTHORITY,"history");
-	
+
 	public static final String COL_ID = BaseColumns._ID;
 	public static final String COL_IMGUR_PAGE = "imgur_page";
 	public static final String COL_DELETE_PAGE = "delete_page";
@@ -18,7 +18,7 @@ public class ImgurHistory {
 	public static final String COL_UPLOAD_TIME = "upload_time";
 	public static final String COL_ACCOUNT_NAME = "account_name";
 	public static final String COL_ALBUM_ID = "album_id";
-	
+
 	public static class ColumnIndex{
 		Cursor cursor;
 		int i_id;
@@ -43,8 +43,8 @@ public class ImgurHistory {
 			}
 		}
 	}
-	
-	
+
+
 	public long id = -1;
 	public String page;
 	public String delete;
@@ -53,7 +53,7 @@ public class ImgurHistory {
 	public long upload_time;
 	public String account_name;
 	public String album_id;
-	
+
 	public static ImgurHistory loadFromCursor(Cursor c, ColumnIndex colidx) {
 		if( colidx == null ) colidx = new ColumnIndex();
 		colidx.prepare(c);
@@ -67,9 +67,9 @@ public class ImgurHistory {
 		item.account_name =( c.isNull(colidx.i_account_name)? null : c.getString(colidx.i_account_name) );
 		item.album_id =( c.isNull(colidx.i_album_id)? null : c.getString(colidx.i_album_id) );
 		return item;
-		
+
 	}
-	
+
 	public static ImgurHistory load(ContentResolver cr,long id){
 		Cursor c = cr.query(meta.uriFromId(id),null,null,null,null);
 		if(c !=null){
@@ -83,7 +83,7 @@ public class ImgurHistory {
 		}
 		return null;
 	}
-	
+
 	public void save(ContentResolver cr){
 		if( id == -1 ){
 			Cursor cursor = cr.query(meta.uri,null,COL_IMAGE_LINK+"=?",new String[]{ image },null);
@@ -117,7 +117,7 @@ public class ImgurHistory {
 		v.put(ImgurHistory.COL_SQUARE,"");
 		cr.update(meta.uriFromId(id),v,null,null);
 	}
-	
+
 	public static void deleteById(ContentResolver cr, long id) {
 		cr.delete(meta.uriFromId(id),null,null);
 	}
@@ -129,14 +129,14 @@ public class ImgurHistory {
 	public static void create_table(SQLiteDatabase db) {
 		db.execSQL("create table if not exists history ("
 				+COL_ID          +" INTEGER PRIMARY KEY,"
-               	+COL_IMGUR_PAGE  +" text not null,"
-               	+COL_DELETE_PAGE +" text not null,"
-               	+COL_IMAGE_LINK  +" text not null,"
-               	+COL_SQUARE      +" text not null,"
-               	+COL_UPLOAD_TIME +" integer not null,"
-               	+COL_ACCOUNT_NAME +" text,"
-               	+COL_ALBUM_ID +" text"
-               	+");"
+				+COL_IMGUR_PAGE  +" text not null,"
+				+COL_DELETE_PAGE +" text not null,"
+				+COL_IMAGE_LINK  +" text not null,"
+				+COL_SQUARE      +" text not null,"
+				+COL_UPLOAD_TIME +" integer not null,"
+				+COL_ACCOUNT_NAME +" text,"
+				+COL_ALBUM_ID +" text"
+				+");"
 		);
 		create_index(db);
 	}

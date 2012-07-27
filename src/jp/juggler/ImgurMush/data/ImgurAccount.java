@@ -15,7 +15,7 @@ public class ImgurAccount {
 	public static final String COL_NAME   = "name";
 	public static final String COL_TOKEN  = "token";
 	public static final String COL_SECRET = "secret";
-	
+
 	public static class ColumnIndex{
 		Cursor cursor;
 		int i_id ;
@@ -32,14 +32,14 @@ public class ImgurAccount {
 			}
 		}
 	}
-	
+
 	public long id = -1;
 	public String name;
 	public String token;
 	public String secret;
-	
+
 	public static TableMeta meta = new TableMeta(DataProvider.AUTHORITY,"account");
-	
+
 	public void save(ContentResolver cr){
 		if( id == -1 ){
 			Cursor cursor = cr.query(meta.uri,null,"name=?",new String[]{ name },null);
@@ -63,14 +63,14 @@ public class ImgurAccount {
 			cr.update(meta.uriFromId(id),values,null,null);
 		}
 	}
-	
+
 	public void delete(ContentResolver cr){
 		if( id != -1 ){
 			cr.delete(meta.uriFromId(id),null,null);
 		}
 	}
 
-	
+
 	public static ImgurAccount loadByName(ContentResolver cr,String account_name) {
 		Cursor cursor = cr.query(ImgurAccount.meta.uri,null,ImgurAccount.COL_NAME+"=?",new String[]{ account_name },null);
 		if( cursor!= null ){
@@ -103,13 +103,13 @@ public class ImgurAccount {
 	public static void create_table(SQLiteDatabase db) {
 		db.execSQL("create table if not exists account ("
 				+COL_ID     +" INTEGER PRIMARY KEY,"
-               	+COL_NAME   +" text not null,"
-               	+COL_TOKEN  +" text not null,"
-               	+COL_SECRET +" text not null"
+				+COL_NAME   +" text not null,"
+				+COL_TOKEN  +" text not null,"
+				+COL_SECRET +" text not null"
 				+");"
 		);
 		db.execSQL("create unique index if not exists account_name on account("+ImgurAccount.COL_NAME+")");
-		
+
 	}
 
 	public static ArrayList<ImgurAccount> loadAll(ContentResolver cr,AtomicBoolean bCancelled) {

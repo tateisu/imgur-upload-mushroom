@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
 	android:orientation="horizontal"
 	android:baselineAligned="false"
 	android:paddingTop="4dp"
 >
 	<jp.juggler.ImgurMush.ArrangeView
-		android:layout_width="0dp" 
-	    android:layout_height="match_parent"
-	    android:layout_weight="1"
-	    android:layout_marginRight="2dp"
-	    
-	    android:id="@+id/preview"
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:layout_weight="1"
+		android:layout_marginRight="2dp"
+
+		android:id="@+id/preview"
 	/>
 	<LinearLayout
-	    android:layout_width="240dp"
-	    android:layout_height="match_parent"
-	    
+		android:layout_width="240dp"
+		android:layout_height="match_parent"
+
 		android:orientation="vertical"
 	>
 		<ScrollView
-		    android:layout_width="match_parent"
-		    android:layout_height="0dp"
-		    android:layout_weight="1"
-		    android:fillViewport="true"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:fillViewport="true"
 		>
 			<include layout="@layout/inc_edit_params" />
 		</ScrollView>

@@ -9,29 +9,29 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 
 public class ProgressHTTPEntity implements HttpEntity{
-	
+
 	public static abstract class ProgressListener{
 		abstract public void onProgress(long v,long size);
 	}
-	
+
 	HttpEntity src;
 	ProgressListener listener;
 	long length;
-	
+
 	public ProgressHTTPEntity(HttpEntity src,ProgressListener listener){
 		this.src = src;
 		this.listener = listener;
 		this.length = src.getContentLength();
 	}
-	
+
 	void fire_progress(long v){
 		if(listener!=null) listener.onProgress(v,length);
 	}
-	
-	
+
+
 	class MyInputStream extends InputStream {
 		InputStream in;
-    	long n;
+		long n;
 		public MyInputStream(InputStream in){
 			this.in = in;
 		}
@@ -55,24 +55,24 @@ public class ProgressHTTPEntity implements HttpEntity{
 		public void close() throws IOException {
 			in.close();
 		}
-		
+
 		@Override
 		public void mark(int readlimit) {
 			in.mark(readlimit);
 		}
-		
+
 		@Override
 		public boolean markSupported() {
 			return in.markSupported();
 		}
-		
+
 		@Override
 		public int read(byte[] b) throws IOException {
 			int delta  = in.read(b);
 			if( delta >= 0 ){ n += delta; fire_progress(n); }
-			return delta;			
+			return delta;
 		}
-		
+
 		@Override
 		public synchronized void reset() throws IOException {
 			in.reset();
@@ -84,7 +84,7 @@ public class ProgressHTTPEntity implements HttpEntity{
 			return delta;
 		}
 	}
-	
+
 
 	@Override
 	public void consumeContent() throws IOException {

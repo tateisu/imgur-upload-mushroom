@@ -6,47 +6,47 @@
   android:orientation="vertical"
 >
 	<LinearLayout
-		android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:orientation="horizontal"
-	    android:gravity="center"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:gravity="center"
 	>
 		<Spinner
-			android:layout_width="0dp" 
-	    	android:layout_height="wrap_content"
-	    	android:layout_weight="1"
-	    	android:minHeight="48dp"
-	    	android:id="@+id/account"
-	    />
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:minHeight="48dp"
+			android:id="@+id/account"
+		/>
 		<Spinner
-			android:layout_width="0dp" 
-	    	android:layout_height="wrap_content"
-	    	android:layout_weight="1"
-	    	android:minHeight="48dp"
-	    	android:id="@+id/album"
-	    />
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:minHeight="48dp"
+			android:id="@+id/album"
+		/>
 	</LinearLayout>
 	<ListView
 		android:layout_width="fill_parent"
-  		android:layout_height="0dp"
-  		android:layout_weight="1"
-  		android:id="@+id/list"
-  		android:fastScrollEnabled="true"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:id="@+id/list"
+		android:fastScrollEnabled="true"
 	/>
 	<LinearLayout
-		android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	    android:orientation="horizontal"
-	    android:gravity="center"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:gravity="center"
 	>
 		<Button
-			android:layout_width="wrap_content" 
-	    	android:layout_height="wrap_content"
-	    	android:minWidth="48dp"
-	    	android:text="@string/history_clear_title"
-	    	android:id="@+id/btnClearHistoryAll"
-	    />
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:minWidth="48dp"
+			android:text="@string/history_clear_title"
+			android:id="@+id/btnClearHistoryAll"
+		/>
 
 	</LinearLayout>
-	
+
 </LinearLayout>

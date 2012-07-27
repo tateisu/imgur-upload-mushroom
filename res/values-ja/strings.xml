@@ -101,7 +101,7 @@
 <string name="about_imgur">Imgur について\nImgur http://imgur.com/ は Imgur, LLC. が運営する画像共有サービスです。\n免責事項: The Imgur logo and “IMGUR” are trademarks of Imgur LLC and are used here for informational purposes only. Imgurマッシュ is not affiliated with Imgur and has not been reviewed or approved by Imgur.</string>
 
 <string name="about_oauth_signpost">
-このアプリは oauth-signpost のコードを利用しています。 https://github.com/kaeppler/signpost 
+このアプリは oauth-signpost のコードを利用しています。 https://github.com/kaeppler/signpost
 </string>
 
 <string name="about_google_data">

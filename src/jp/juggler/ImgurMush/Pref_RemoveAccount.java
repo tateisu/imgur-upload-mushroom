@@ -13,7 +13,7 @@ import android.util.AttributeSet;
 public class Pref_RemoveAccount extends ListPreference{
 	final Context context;
 	final ContentResolver cr;
-	
+
 	public Pref_RemoveAccount(Context context) {
 		super(context);
 		this.context = context;
@@ -37,7 +37,7 @@ public class Pref_RemoveAccount extends ListPreference{
 		setup();
 		super.onPrepareDialogBuilder(builder);
 	}
-	
+
 	void setup(){
 		ArrayList<ImgurAccount> list = ImgurAccount.loadAll(cr,null);
 		// 選択肢キャプションと値の配列に分ける

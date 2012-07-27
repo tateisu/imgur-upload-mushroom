@@ -21,7 +21,7 @@ public class DlgResizePresetNew {
 	int mode;
 	int value;
 
-	
+
 	public DlgResizePresetNew(BaseActivity _act){
 		this.act = _act;
 		this.root = act.inflater.inflate(R.layout.dlg_resize_preset_new,null);
@@ -36,7 +36,7 @@ public class DlgResizePresetNew {
 			}
 		});
 		btnOk.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
@@ -53,7 +53,7 @@ public class DlgResizePresetNew {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,int after) {
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable s) {
 				check();
@@ -61,7 +61,7 @@ public class DlgResizePresetNew {
 		});
 		check();
 	}
-	
+
 	public AlertDialog make_dialog(){
 		this.dialog = new AlertDialog.Builder(act)
 		.setCancelable(true)
@@ -69,10 +69,10 @@ public class DlgResizePresetNew {
 		.setTitle(R.string.resize_new_preset)
 		.setView(root)
 		.create();
-		
+
 		return dialog;
 	}
-	
+
 	boolean check(){
 		int id = radio_group.getCheckedRadioButtonId();
 		switch(id){
@@ -112,9 +112,9 @@ public class DlgResizePresetNew {
 		tvDesc.setVisibility(View.INVISIBLE);
 		return true;
 	}
-	
 
-	
+
+
 
 
 }

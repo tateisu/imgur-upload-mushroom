@@ -17,13 +17,13 @@ import android.util.SparseArray;
 
 public class DataProvider  extends ContentProvider{
 	static final String TAG="ImgurMush";
-	
+
 	public static final String DBNAME = "ImgurMush.db";
-	
+
 	public static final String AUTHORITY = "jp.juggler.ImgurMush";
-	
+
 	////////////////////////////////////////////
-	
+
 	static class MatchResult{
 		TableMeta meta;
 		boolean is_item;
@@ -32,21 +32,21 @@ public class DataProvider  extends ContentProvider{
 			this.is_item = is_item;
 		}
 	}
-	
+
 	DBHelper1 helper;
 	UriMatcher uri_matcher;
 	SparseArray<MatchResult> match_map;
-	
+
 	int  addUriMatching(int match_next,TableMeta meta){
 		int match_dir =  match_next;
 		int match_item = match_next+1;
 
 		uri_matcher.addURI(AUTHORITY, meta.table     ,match_dir);
 		uri_matcher.addURI(AUTHORITY, meta.table+"/#",match_item);
-		
+
 		match_map.put( match_dir  ,new MatchResult(meta,false) );
 		match_map.put( match_item ,new MatchResult(meta,true) );
-		
+
 		return match_next + 2;
 	}
 
@@ -63,16 +63,16 @@ public class DataProvider  extends ContentProvider{
 		match_next = addUriMatching( match_next,ImgurAccount.meta );
 		match_next = addUriMatching( match_next,ImgurHistory.meta );
 		match_next = addUriMatching( match_next,ResizePreset.meta );
-	    return true;
+		return true;
 	}
-	
+
 	final MatchResult matchUri(Uri uri){
 		int n = uri_matcher.match(uri);
 		MatchResult match = match_map.get(n );
 //		if(match==null) Log.d(TAG,"uri="+uri+",match="+n+","+match);
 		return match;
 	}
-	
+
 	//URIからリクエストされた種別に変換する
 	@Override
 	public String getType(Uri uri) {
@@ -93,8 +93,8 @@ public class DataProvider  extends ContentProvider{
 		final long id = db.insertOrThrow(meta.table, null, values);
 
 		// 変更を通知する
-	    final Uri newUri = ContentUris.withAppendedId(meta.uri, id);
-	    getContext().getContentResolver().notifyChange(newUri, null);
+		final Uri newUri = ContentUris.withAppendedId(meta.uri, id);
+		getContext().getContentResolver().notifyChange(newUri, null);
 
 		return newUri;
 	}
@@ -105,7 +105,7 @@ public class DataProvider  extends ContentProvider{
 		MatchResult match = matchUri(uri);
 		if(match==null) return 0;
 		TableMeta meta = match.meta;
-		
+
 		final SQLiteDatabase db = helper.getWritableDatabase();
 		int row_count;
 		if( match.is_item ){
@@ -123,7 +123,7 @@ public class DataProvider  extends ContentProvider{
 		MatchResult match = matchUri(uri);
 		if(match==null) return 0;
 		TableMeta meta = match.meta;
-		
+
 		final SQLiteDatabase db = helper.getWritableDatabase();
 		int row_count;
 		if( match.is_item ){
@@ -132,18 +132,18 @@ public class DataProvider  extends ContentProvider{
 		}else{
 			row_count = db.update(meta.table, values, selection, selectionArgs);
 			getContext().getContentResolver().notifyChange(uri, null);
-			
+
 		}
 		return row_count;
 	}
-	
+
 	//指定のクエリー
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,String[] selectionArgs, String sortOrder){
 		MatchResult match = matchUri(uri);
 		if(match==null) return null;
 		TableMeta meta = match.meta;
-		
+
 		final SQLiteDatabase db = helper.getWritableDatabase();
 		if( match.is_item ) selection = selection_with_id(uri,selection);
 		Cursor cursor = db.query(meta.table, projection, selection, selectionArgs, null, null, sortOrder);
@@ -156,8 +156,8 @@ public class DataProvider  extends ContentProvider{
 	static final String selection_with_id(Uri uri,String selection){
 		long id = Long.parseLong(uri.getPathSegments().get(1));
 		return android.provider.BaseColumns._ID + "=" + Long.toString(id) + (selection == null ? "" : "AND (" + selection + ")");
-	}	
-	
+	}
+
 	static final class DBHelper1 extends SQLiteOpenHelper {
 		DBHelper1(Context context) {
 			super(context, DBNAME, null, 4 ); // context,filename,CursorFactory,version

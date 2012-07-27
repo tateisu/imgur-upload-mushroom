@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
 	android:orientation="vertical"
 	android:paddingTop="4dp"
 >
 	<jp.juggler.ImgurMush.ArrangeView
-		android:layout_width="match_parent" 
-	    android:layout_height="0dp"
-	    android:layout_weight="1"
-	    android:layout_marginBottom="2dp"
-	    
-	    android:id="@+id/preview"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:layout_marginBottom="2dp"
+
+		android:id="@+id/preview"
 	/>
 	<include layout="@layout/inc_edit_params" />
 	<include layout="@layout/inc_edit_bottom" />

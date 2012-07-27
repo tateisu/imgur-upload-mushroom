@@ -3,7 +3,7 @@ import android.util.Log;
 
 public final class LogCategory {
 	public static final boolean enabled = true;
-	
+
 	String tag;
 	public LogCategory(String tag){
 		this.tag = tag;

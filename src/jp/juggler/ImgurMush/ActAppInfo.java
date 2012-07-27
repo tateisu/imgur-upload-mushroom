@@ -24,7 +24,7 @@ public class ActAppInfo extends BaseActivity{
 		btnAppName.setOnClickListener(new OnClickListener() {
 			@Override public void onClick(View v) {
 				try{
-					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://market.android.com/details?id="+package_name));  
+					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://market.android.com/details?id="+package_name));
 					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
 					startActivity(intent);
 				}catch(Throwable ex){

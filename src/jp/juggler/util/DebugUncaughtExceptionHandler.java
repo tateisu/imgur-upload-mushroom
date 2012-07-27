@@ -12,19 +12,19 @@ public class DebugUncaughtExceptionHandler implements UncaughtExceptionHandler {
 		// 設定する
 		Thread.setDefaultUncaughtExceptionHandler(new DebugUncaughtExceptionHandler (context));
 	}
-	
+
 	Context context;
 	private UncaughtExceptionHandler mDefaultUEH;
-	
+
 	public DebugUncaughtExceptionHandler(Context context){
 		this.context = context;
 		mDefaultUEH = Thread.getDefaultUncaughtExceptionHandler();
 	}
 
 	@Override
-    public void uncaughtException(Thread th, Throwable ex) {
-    	ex.printStackTrace();
-    	mDefaultUEH.uncaughtException(th, ex);
-    }
-    
+	public void uncaughtException(Thread th, Throwable ex) {
+		ex.printStackTrace();
+		mDefaultUEH.uncaughtException(th, ex);
+	}
+
 }

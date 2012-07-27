@@ -37,9 +37,9 @@ public class AlbumLoader {
 		this.act = act;
 		this.callback = callback;
 		act.lifecycle_manager.add(activity_listener);
-		
+
 		cache_load();
-		
+
 		reload();
 	}
 
@@ -61,7 +61,7 @@ public class AlbumLoader {
 
 	static final ConcurrentHashMap<String,HashMap<String,ImgurAlbum>> map1 = new ConcurrentHashMap<String,HashMap<String,ImgurAlbum>>();
 	static final ConcurrentHashMap<String,ArrayList<ImgurAlbum>> map2 = new ConcurrentHashMap<String,ArrayList<ImgurAlbum>>();
-	
+
 	public ImgurAlbum findAlbum(String account_name, String album_id) {
 		if( account_name != null && album_id != null ){
 			HashMap<String,ImgurAlbum> set = map1.get(account_name);
@@ -118,12 +118,12 @@ public class AlbumLoader {
 		e.commit();
 	}
 	///////////////////////////
-	
-	
+
+
 	LoadThread load_thread;
 	class LoadThread extends WorkerBase{
 		AtomicBoolean bCancelled = new AtomicBoolean(false);
-		
+
 		@Override
 		public void cancel() {
 			bCancelled.set(true);

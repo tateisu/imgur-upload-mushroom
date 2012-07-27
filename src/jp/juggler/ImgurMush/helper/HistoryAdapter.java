@@ -22,7 +22,7 @@ public class HistoryAdapter extends BaseAdapter {
 
 	final BaseActivity act;
 	final DataLoader thumbnail_loader;
-	final String strNoAccount;	
+	final String strNoAccount;
 	final String strNoAlbum;
 	final ImgurHistory.ColumnIndex colidx = new ImgurHistory.ColumnIndex();
 	final AlbumLoader album_loader;
@@ -31,7 +31,7 @@ public class HistoryAdapter extends BaseAdapter {
 
 	Cursor cursor;
 	boolean mDataValid;
-	
+
 	public HistoryAdapter(BaseActivity act) {
 		this.act =act;
 		this.album_loader = new AlbumLoader(act,new AlbumLoader.Callback() {
@@ -61,7 +61,7 @@ public class HistoryAdapter extends BaseAdapter {
 				notifyDataSetInvalidated();
 			}
 		};
-		
+
 		content_observer = new ContentObserver(act.ui_handler) {
 			@Override
 			public boolean deliverSelfNotifications() {
@@ -74,7 +74,7 @@ public class HistoryAdapter extends BaseAdapter {
 				mDataValid = cursor.requery();
 			}
 		};
-		
+
 		setFilter(null,null);
 	}
 
@@ -84,7 +84,7 @@ public class HistoryAdapter extends BaseAdapter {
 		public void onDestroy() {
 			if(cursor!=null) cursor.close();
 		}
-		
+
 	};
 
 
@@ -131,19 +131,19 @@ public class HistoryAdapter extends BaseAdapter {
 	}
 
 
-	
+
 	static class ViewHolder{
 		ImageView image;
 		TextView text;
 		long id;
 	}
-	
+
 	ColorDrawable loading_drawable = new ColorDrawable(0xff333333);
-	
+
 
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-		
+
 		ViewHolder holder;
 		if( view != null ){
 			holder = (ViewHolder)view.getTag();
@@ -156,7 +156,7 @@ public class HistoryAdapter extends BaseAdapter {
 		}
 
 		holder.image.setImageDrawable(loading_drawable);
-		
+
 		final ImgurHistory item = (ImgurHistory)getItem(position);
 		if( item == null ){
 			holder.text.setText("");

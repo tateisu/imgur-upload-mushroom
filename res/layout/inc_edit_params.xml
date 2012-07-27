@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
 	android:orientation="vertical"
 >
 	<LinearLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
 	>
 		<ImageButton
 			android:layout_width="48dp"
 			android:layout_height="48dp"
-	    	android:padding="4dp"
+			android:padding="4dp"
 			android:scaleType="centerInside"
-		    android:id="@+id/btnRotateLeft"
-		    style="@style/rot_left"
-		/>	
+			android:id="@+id/btnRotateLeft"
+			style="@style/rot_left"
+		/>
 		<ImageButton
 			android:layout_width="48dp"
 			android:layout_height="48dp"
-	    	android:padding="4dp"
+			android:padding="4dp"
 			android:scaleType="centerInside"
-		    android:id="@+id/btnRotateRight"
-		    style="@style/rot_right"
+			android:id="@+id/btnRotateRight"
+			style="@style/rot_right"
 		/>
 		<Button
-			android:layout_width="wrap_content" 
-	    	android:layout_height="wrap_content"
-	    	android:id="@+id/btnResize"
-	    	android:paddingLeft="7dp"
-	    	android:paddingRight="7dp"
-	    />
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/btnResize"
+			android:paddingLeft="7dp"
+			android:paddingRight="7dp"
+		/>
 		<View
-			android:layout_width="0dp" 
-	    	android:layout_height="0dp"
-	    	android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:layout_weight="1"
 		/>
 	</LinearLayout>
-	<TableLayout 
-		android:layout_width="match_parent" 
-    	android:layout_height="wrap_content"
-    	android:stretchColumns="0"
+	<TableLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:stretchColumns="0"
 	>
 		<TableRow
 			 android:minHeight="40dp"
@@ -53,11 +53,11 @@
 				android:paddingRight="24dp"
 				android:id="@+id/sbCropLeft"
 			/>
-			<TextView 
+			<TextView
 				android:textColor="#ffffff"
 				android:text="@string/crop_left"
 			/>
-			<TextView 
+			<TextView
 				android:layout_marginLeft="8dp"
 				android:gravity="right|center_vertical"
 				android:textColor="#ffffff"
@@ -73,11 +73,11 @@
 				android:paddingRight="24dp"
 				android:id="@+id/sbCropTop"
 			/>
-			<TextView 
+			<TextView
 				android:textColor="#ffffff"
 				android:text="@string/crop_top"
 			/>
-			<TextView 
+			<TextView
 				android:layout_marginLeft="8dp"
 				android:gravity="right|center_vertical"
 				android:textColor="#ffffff"
@@ -93,11 +93,11 @@
 				android:paddingRight="24dp"
 				android:id="@+id/sbCropRight"
 			/>
-			<TextView 
+			<TextView
 				android:textColor="#ffffff"
 				android:text="@string/crop_right"
 			/>
-			<TextView 
+			<TextView
 				android:layout_marginLeft="8dp"
 				android:gravity="right|center_vertical"
 				android:textColor="#ffffff"
@@ -113,11 +113,11 @@
 				android:paddingRight="24dp"
 				android:id="@+id/sbCropBottom"
 			/>
-			<TextView 
+			<TextView
 				android:textColor="#ffffff"
 				android:text="@string/crop_bottom"
 			/>
-			<TextView 
+			<TextView
 				android:layout_marginLeft="8dp"
 				android:gravity="right|center_vertical"
 				android:textColor="#ffffff"

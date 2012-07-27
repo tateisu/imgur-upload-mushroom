@@ -15,16 +15,16 @@ public class ResizePresetAdapter extends BaseAdapter{
 	final BaseActivity act;
 	final String strNoResize;
 	final String strNewPreset;
-	final Cursor preset_cursor; 
+	final Cursor preset_cursor;
 	final ResizePreset.ColumnIndex colidx = new ResizePreset.ColumnIndex();
 	boolean mDataValid = true;
-	
+
 	public ResizePresetAdapter(BaseActivity act,String strNoResize,String strNewPreset){
 		this.act = act;
 		this.strNoResize = strNoResize;
 		this.strNewPreset = strNewPreset;
 		this.preset_cursor = act.cr.query(ResizePreset.meta.uri,null,null,null,ResizePreset.COL_MODE+" asc,"+ResizePreset.COL_VALUE+" asc");
-		
+
 
 		preset_cursor.registerContentObserver(new ContentObserver(act.ui_handler) {
 			@Override
@@ -51,7 +51,7 @@ public class ResizePresetAdapter extends BaseAdapter{
 				mDataValid = false;
 				notifyDataSetInvalidated();
 			}
-			
+
 		});
 		act.lifecycle_manager.add(activity_listener);
 	}
@@ -63,13 +63,13 @@ public class ResizePresetAdapter extends BaseAdapter{
 			preset_cursor.close();
 		}
 	};
-	
+
 	@Override
 	public int getCount() {
 		if(!mDataValid) return 0;
 		return preset_cursor.getCount()+2;
 	}
-	
+
 	@Override
 	public Object getItem(int position) {
 		if(!mDataValid) return null;
@@ -86,11 +86,11 @@ public class ResizePresetAdapter extends BaseAdapter{
 	public View getView(int position, View view, ViewGroup parent) {
 		return make_view( position,  view,  parent,R.layout.lv_resize_preset);
 	}
-	
+
 	static class ViewHolder {
 		TextView tvName;
 	}
-	
+
 	private View make_view(int position, View view, ViewGroup parent,int layout){
 		ViewHolder holder;
 		if(view==null){

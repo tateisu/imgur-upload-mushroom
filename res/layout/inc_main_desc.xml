@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
+<LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="left|top"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:gravity="left|top"
 >
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-	    android:textColor="#ffffff"
-	    android:id="@+id/tvFileDesc"
-	    android:paddingLeft="8dp"
-	    android:paddingRight="8dp"
+		android:textColor="#ffffff"
+		android:id="@+id/tvFileDesc"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"
 	/>
-	<LinearLayout 
+	<LinearLayout
 		android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
 	>
 		<View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/picker"
-		    android:id="@+id/btnPicker"
-		/>	
+			android:id="@+id/btnPicker"
+		/>
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="@string/edit"
-		    android:id="@+id/btnEdit"
-		/>	
+			android:id="@+id/btnEdit"
+		/>
 	</LinearLayout>
 </LinearLayout>
 

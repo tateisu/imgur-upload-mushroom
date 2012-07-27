@@ -7,5 +7,5 @@
 	<style name="rot_right" >
 		<item name="android:src">@drawable/rot_right</item>
 	</style>
-		
+
 </resources>

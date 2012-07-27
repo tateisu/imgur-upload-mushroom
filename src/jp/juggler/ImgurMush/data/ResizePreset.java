@@ -13,13 +13,13 @@ public class ResizePreset {
 	public static final String COL_ID = BaseColumns._ID;
 	public static final String COL_MODE = "rp_mode";
 	public static final String COL_VALUE = "rp_value";
-	
+
 	public static void create_table(SQLiteDatabase db) {
 		db.execSQL("create table if not exists resize_preset ("
 				+COL_ID    +" INTEGER PRIMARY KEY,"
-               	+COL_MODE  +" integer not null,"
-               	+COL_VALUE +" integer not null"
-               	+");"
+				+COL_MODE  +" integer not null,"
+				+COL_VALUE +" integer not null"
+				+");"
 		);
 	}
 
@@ -28,7 +28,7 @@ public class ResizePreset {
 			create_table(db);
 		}
 	}
-	
+
 	public static class ColumnIndex{
 		Cursor cursor;
 		int i_id ;
@@ -43,13 +43,13 @@ public class ResizePreset {
 			}
 		}
 	}
-	
+
 	public long id = -1;
 	public int mode;  // 0:%指定 1:長辺px 2:短辺px
 	public int value;
-	
+
 	public static TableMeta meta = new TableMeta(DataProvider.AUTHORITY,"resize_preset");
-	
+
 	public void save(ContentResolver cr){
 		ContentValues values = new ContentValues();
 		values.put(COL_MODE,mode);
@@ -60,14 +60,14 @@ public class ResizePreset {
 			cr.update(meta.uriFromId(id),values,null,null);
 		}
 	}
-	
+
 	public void delete(ContentResolver cr){
 		if( id != -1 ){
 			cr.delete(meta.uriFromId(id),null,null);
 		}
 	}
 
-	
+
 	public static ResizePreset loadByName(ContentResolver cr,String account_name) {
 		Cursor cursor = cr.query(ImgurAccount.meta.uri,null,ImgurAccount.COL_NAME+"=?",new String[]{ account_name },null);
 		if( cursor!= null ){

@@ -10,16 +10,16 @@ public class PrefKey {
 	public static final String KEY_INSERT_SPACE_PRE = "cbInsertSpacePref";
 	public static final String KEY_INSERT_SPACE_SUF = "cbInsertSpaceSuff";
 	public static final String KEY_URL_MODE = "URL_mode";
-	
+
 	public static final String KEY_DEFAULT_ACCOUNT = "pref_default_account";
 	public static final String KEY_ACCOUNT_LAST_USED = "account_name";
-	
-	
+
+
 	public static final String VALUE_LAST_USED = "<>lastused";
 	public static final String VALUE_ACCOUNT_ANONYMOUS = "<>anonymous";
-	
-	
-	
+
+
+
 	// v2.x
 	public static final String KEY_LAST_RESIZE_MODE = "resize_preset_mode";
 	public static final String KEY_LAST_RESIZE_VALUE = "resize_preset_value";

@@ -40,16 +40,16 @@ import android.widget.Toast;
 
 public class ActHistory extends BaseActivity {
 	static final LogCategory log = new LogCategory("ActHistory");
-	
+
 	final ActHistory act = this;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initUI();
 		initPage();
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
@@ -72,13 +72,13 @@ public class ActHistory extends BaseActivity {
 	Spinner spAlbum;
 	String strAlbumAll;
 	String strAlbumLoading;
-	
+
 	static final int ACCOUNT_NOCHANGE = -2;
 	static final int ALBUM_DONTCARE = -2;
-	
+
 	void initUI(){
 		setContentView(R.layout.act_history);
-		
+
 		setResult(RESULT_CANCELED);
 
 
@@ -99,10 +99,10 @@ public class ActHistory extends BaseActivity {
 								@Override public void onClick(DialogInterface dialog, int which) {
 									switch(which){
 									case 0: return_url(item); break;
-									case 1: open_browser( item.image ); break; 
-									case 2: open_browser( item.page ); break; 
+									case 1: open_browser( item.image ); break;
+									case 2: open_browser( item.page ); break;
 									case 3: delete_dialog( item ); break;
-									case 4: item.delete(act.cr); break; 
+									case 4: item.delete(act.cr); break;
 									}
 								}
 							}
@@ -111,13 +111,13 @@ public class ActHistory extends BaseActivity {
 				}
 			}
 		});
-		
+
 		strAlbumAll = getString(R.string.album_all);
 		strAlbumLoading = act.getString(R.string.album_loading);
-		
+
 		account_adapter = new AccountAdapter(act,getString(R.string.account_all));
 		album_adapter = new AlbumAdapter(this,strAlbumAll);
-		
+
 		spAccount = (Spinner)findViewById(R.id.account);
 		spAccount.setAdapter(account_adapter);
 		spAccount.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -137,7 +137,7 @@ public class ActHistory extends BaseActivity {
 				onAccountChange(true,ACCOUNT_NOCHANGE,ALBUM_DONTCARE,"account dataset changed");
 			}
 		});
-		
+
 		spAlbum = (Spinner)findViewById(R.id.album);
 		spAlbum.setAdapter(album_adapter);
 		spAlbum.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -150,10 +150,10 @@ public class ActHistory extends BaseActivity {
 			}
 		});
 
-		
-		
+
+
 		findViewById(R.id.btnClearHistoryAll).setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				act.dialog_manager.show_dialog(
@@ -189,25 +189,25 @@ public class ActHistory extends BaseActivity {
 			}
 		});
 	}
-	
+
 	String lastused_account_name = null;
 	String lastused_album_name = null;
 	boolean init_complete = false;
-	
+
 	void initPage(){
 		// 最後に選択したアカウントとアルバム
 		SharedPreferences pref = act.pref();
 		lastused_account_name = pref.getString(PrefKey.KEY_HISTORY_ACCOUNT,null);
 		lastused_album_name   = pref.getString(PrefKey.KEY_HISTORY_ALBUM,null);
 		init_complete = false;
-		
+
 		// アカウントは初期化中でもアクセスできると思うので、選択する
 		account_adapter.selectByName(spAccount,lastused_account_name );
 
 		// 初期状態のフィルタを設定する
 		onAccountChange(true,ACCOUNT_NOCHANGE,ALBUM_DONTCARE,"init page");
 	}
-	
+
 	void save_last_selection(){
 		// ロード中状態ならセーブしない
 		if( !init_complete ) return;
@@ -229,13 +229,13 @@ public class ActHistory extends BaseActivity {
 		}
 		e.commit();
 	}
-	
+
 	static final String ACCOUNT_NOT_SELECT = "<>ACCOUNT_NOT_SELECT";
-	
+
 	void onAccountChange(boolean bLoadEvent,int account_idx,int album_idx,String desc){
 		// アカウント指定が-1なら選択位置を補う
 		if( account_idx == ACCOUNT_NOCHANGE) account_idx = spAccount.getSelectedItemPosition();
-		
+
 		// 選択中のアカウントを参照する
 		ImgurAccount account = (ImgurAccount)account_adapter.getItem(account_idx);
 		if( account == null ){
@@ -252,7 +252,7 @@ public class ActHistory extends BaseActivity {
 			}
 		}else{
 			// アカウントが選択されている場合
-			
+
 			// アカウント別のアルバム一覧を取得するが、まだロード中かもしれない
 			Iterable<ImgurAlbum> list = album_loader.findAlbumList(account.name);
 			if( list == null ){
@@ -270,7 +270,7 @@ public class ActHistory extends BaseActivity {
 					// アルバム選択肢が明示されている場合はフィルタの更新のみ行う
 					ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(album_idx);
 					history_adapter.setFilter(account,album);
-					
+
 					// アルバム選択肢の変更だけの場合はリストの再設定は行わない。行うとループが発生する
 					return;
 				}else{
@@ -279,7 +279,7 @@ public class ActHistory extends BaseActivity {
 					// 直前までのアルバムの選択。ただしアカウントが異なる場合はnull扱い
 					ImgurAlbum old_selection = (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
 					if( old_selection != null && !account.name.equals(old_selection.account_name) ) old_selection = null;
-				
+
 					if( bLoadEvent || old_selection == null ){
 
 						// アルバム選択肢を設定する
@@ -341,7 +341,7 @@ public class ActHistory extends BaseActivity {
 			}
 		});
 	}
-	
+
 	void delete_dialog(final ImgurHistory item){
 		dialog_manager.show_dialog(
 			new AlertDialog.Builder(this)

@@ -24,9 +24,9 @@ public class ActResizePreset extends BaseActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.act_resize_preset);
 		setResult(RESULT_CANCELED);
-		
+
 		listview = (ListView)findViewById(R.id.list);
-		
+
 		resize_preset_adapter = new ResizePresetAdapter(act,getString(R.string.resize_disabled),getString(R.string.resize_new_preset));
 		listview.setAdapter(resize_preset_adapter);
 		listview.setOnItemLongClickListener(new OnItemLongClickListener() {

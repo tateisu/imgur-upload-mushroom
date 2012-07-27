@@ -15,18 +15,18 @@ import android.widget.Toast;
 
 public class ImageTempDir {
 	static final LogCategory log = new LogCategory("ImageTempDir");
-	
+
 	public static File getTempDir(final Activity act,SharedPreferences pref,Handler ui_handler) {
 		String path = pref.getString(PrefKey.KEY_TEMP_DIR,null);
 		if(path !=null && path.length() > 0){
 			File dir = new File( path );
 			if( dir.mkdirs() || dir.isDirectory() ){
 				if( dir.canWrite() ) return dir;
-				log.e("not writeable: %s",dir.getPath()); 
+				log.e("not writeable: %s",dir.getPath());
 				// ディレクトリはあるが書き込みできない
 			}else{
 				// ディレクトリを作成できない。ディレクトリではない。
-				log.e("not directory: %s",dir.getPath()); 
+				log.e("not directory: %s",dir.getPath());
 			}
 		}
 		// 初期化が必要なら初期化する
@@ -61,7 +61,7 @@ public class ImageTempDir {
 				File dir = new File(ext,dirname);
 				if( dir.mkdirs() || dir.isDirectory() ){
 					if(! dir.canWrite() ){
-						log.e("not writeable: %s",dir.getPath()); 
+						log.e("not writeable: %s",dir.getPath());
 						continue;
 					}
 					new File(dir,".nomedia").setLastModified(System.currentTimeMillis());
@@ -78,15 +78,15 @@ public class ImageTempDir {
 		}catch(Throwable ex){
 			ex.printStackTrace();
 		}
-		return null; // 
+		return null; //
 	}
-	
+
 	static Random r = new Random();
-	
+
 	public static File makeTempFile(BaseActivity act){
 		File dir = getTempDir(act,act.pref(),act.ui_handler);
 		if(dir==null) return null;
-		
+
 		for(;;){
 			File file = new File (dir,String.format("%x.jpg",r.nextInt()));
 			if( file.isFile() || file.isDirectory() ) continue;
@@ -100,7 +100,7 @@ public class ImageTempDir {
 				return null;
 			}
 		}
-		
+
 	}
 
 }

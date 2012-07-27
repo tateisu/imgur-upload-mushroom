@@ -11,9 +11,9 @@ public class TableMeta {
 	public final Uri uri;
 	// mime-type for dir
 	public final String mimetype_dir;
-	// mime-type for item 
+	// mime-type for item
 	public final String mimetype_item;
-	
+
 	// ctor
 	public TableMeta(String authority,String table){
 		this.authority = authority;

@@ -19,13 +19,13 @@ public class AccountAdapter extends BaseAdapter{
 	final ContentObserver content_observer;
 	final DataSetObserver dataset_observer;
 	final int min_height;
-	
+
 	boolean mDataValid = true;
-	
+
 	public AccountAdapter(BaseActivity act,String strNonSelect){
 		this.act = act;
 		this.strNonSelect = strNonSelect;
-       
+
 		this.content_observer = new ContentObserver(act.ui_handler) {
 			@Override
 			public boolean deliverSelfNotifications() {
@@ -38,31 +38,31 @@ public class AccountAdapter extends BaseAdapter{
 			}
 		};
 		this.dataset_observer = new DataSetObserver() {
-		
+
 			@Override
 			public void onChanged() {
 				mDataValid = true;
 				notifyDataSetChanged();
 			}
-		
+
 			@Override
 			public void onInvalidated() {
 				mDataValid = false;
 				notifyDataSetInvalidated();
 			}
-			
+
 		};
 
 		this.cursor = act.cr.query(ImgurAccount.meta.uri,null,null,null,ImgurAccount.COL_NAME+" asc");
 		cursor.registerContentObserver(content_observer);
 		cursor.registerDataSetObserver(dataset_observer);
-		
+
 		act.lifecycle_manager.add(activity_listener);
-		
+
 		float density = act.getResources().getDisplayMetrics().density;
-		this.min_height = (int)(0.5f + density * 48 ); 
+		this.min_height = (int)(0.5f + density * 48 );
 	}
-	
+
 	LifeCycleListener activity_listener = new LifeCycleListener(){
 
 		@Override
@@ -75,14 +75,14 @@ public class AccountAdapter extends BaseAdapter{
 		public void onResume() {
 			reload();
 		}
-		
+
 	};
-	
+
 	@SuppressWarnings("deprecation")
 	public void reload() {
 		mDataValid = cursor.requery();
 	}
-	
+
 	@Override
 	public int getCount() {
 		if( !mDataValid ) return 0;
@@ -111,8 +111,8 @@ public class AccountAdapter extends BaseAdapter{
 	public View getDropDownView(int position, View view,ViewGroup parent) {
 		return make_view( position,  view,  parent,android.R.layout.simple_spinner_dropdown_item, true);
 	}
-	
-	
+
+
 	static class ViewHolder{
 		TextView tvName;
 	}
@@ -138,12 +138,12 @@ public class AccountAdapter extends BaseAdapter{
 		//
 		return view;
 	}
-	
+
 	public void selectByName(AdapterView<?> listview, String name) {
 		int idx = findByName(name);
 		listview.setSelection(idx < 0 ? 0 : idx);
 	}
-	
+
 	private int findByName(String target_account) {
 		int offset = ( strNonSelect !=null ? 1: 0);
 		if( target_account != null ){
@@ -160,6 +160,6 @@ public class AccountAdapter extends BaseAdapter{
 		}
 		return -1;
 	}
-	
+
 
 }

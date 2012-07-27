@@ -1,12 +1,12 @@
 /*
 	複数のプロセスからデータファイルの読み書きを行うためのクラスです。
-	
+
 	データの読み込みには byte[] load_if_update() を使います。
 	まだデータを読んだことがないか、最後に読んだあとに変更されていればデータを読み込みます。
-	
+
 	データの書き出しには  transaction(TransactionProc) を呼び出します。
 	古いデータを加工して新しいデータを返すようなコードを TransactionProc#update に 実装してください。
-	
+
 	特徴
 	- 読み書きの際に flock (javaのFileLock) を取得して排他を行います。
 	- ヘッダ部分をmmap(javaの MappedByteBuffer)でメモリにマッピングして、更新チェックの負荷を下げています。
@@ -50,10 +50,10 @@ public class TransactionalFileAccess {
 	public interface TransactionProc{
 		byte[] update(byte[] old);
 	}
-	
+
 	////////////////////////////////////////
 	// 変数
-	
+
 	// ファイルのパーミッション
 	public final int permission;
 
@@ -71,7 +71,7 @@ public class TransactionalFileAccess {
 
 	// save_sub や validate_file で使うバッファ
 	ByteBuffer bb_tmp = ByteBuffer.allocate(pagesize);
-	
+
 	// 最後にロードしたデータ
 	private int last_version = -1;
 	private int last_hash_length = -1;
@@ -90,7 +90,7 @@ public class TransactionalFileAccess {
 	/*package access*/  File getDataFile(){ return datafile;}
 	/*package access*/  File getBackupFile(){ return backupfile;}
 	/*package access*/  int getPermission(){ return permission;}
-	
+
 	// 開く
 	public synchronized void open() throws IOException{
 		if( datafile_handle != null ) throw new IllegalStateException("already open.");
@@ -116,7 +116,7 @@ public class TransactionalFileAccess {
 			throw ex;
 		}
 	}
-	
+
 	// 閉じる
 	public synchronized void close(){
 		unlock();
@@ -128,7 +128,7 @@ public class TransactionalFileAccess {
 		}
 		if( datafile_handle != null ){
 			try{ datafile_handle.close(); } catch(Throwable ex){}
-			datafile_handle = null; 
+			datafile_handle = null;
 		}
 		if( backupfile_channel != null ){
 			try{ backupfile_channel.close(); }catch(Throwable ex){}
@@ -136,16 +136,16 @@ public class TransactionalFileAccess {
 		}
 		if( backupfile_handle != null ){
 			try{ backupfile_handle.close(); } catch(Throwable ex){}
-			backupfile_handle = null; 
+			backupfile_handle = null;
 		}
 	}
-	
+
 	// 閉じて、データとメタデータを削除して、開き直す
 	public synchronized void create() throws IOException {
 		close();
 		datafile.delete();
 		backupfile.delete();
-		
+
 		open();
 	}
 
@@ -173,13 +173,13 @@ public class TransactionalFileAccess {
 			unlock();
 		}
 	}
-	
+
 	// 最後に読んだデータを取得
 	public synchronized byte[] getLastLoad(){
 		return last_data;
 	}
 
-	// transaction update 
+	// transaction update
 	public synchronized void transaction(TransactionProc proc) throws IOException {
 		lock();
 		try{
@@ -196,7 +196,7 @@ public class TransactionalFileAccess {
 			unlock();
 		}
 	}
-	
+
 	/////////////////////////////////////////////////////////////
 
 	// データファイルが正常か確認する
@@ -214,7 +214,7 @@ public class TransactionalFileAccess {
 			b.position(0);
 			int data_length = b.getInt();
 			@SuppressWarnings("unused")
-			int version = b.getInt(); 
+			int version = b.getInt();
 			int digest_len = b.getInt();
 			byte[] digest = new byte[digest_len]; b.get( digest );
 			// データを読む
@@ -249,12 +249,12 @@ public class TransactionalFileAccess {
 			return false;
 		}
 	}
-	
+
 	// データファイルとバックアップファイルを確認して、必要ならリストアやデータの初期化を行う
 	private void restore_data() throws IOException{
 		//
 		if( validate_file( datafile_channel ,datafile.getName()) ) return;
-		
+
 		if( validate_file( backupfile_channel,backupfile.getName() ) ){
 			Log.w(TAG,"restore from back-up file..");
 			int length = (int)backupfile_channel.size();
@@ -280,7 +280,7 @@ public class TransactionalFileAccess {
 			Log.w(TAG,String.format("restore data complete. copy %s bytes.",length));
 			return;
 		}
-		
+
 		Log.w(TAG,String.format("initialize data file."));
 		datafile_channel.truncate(pagesize);
 		datafile_channel.position(0);
@@ -294,8 +294,8 @@ public class TransactionalFileAccess {
 		Log.w(TAG,String.format("initialize data file complete."));
 	}
 	//////////////////////////////////////////////////
-	// mmap 
-	
+	// mmap
+
 	private void meta_buffer_map() throws IOException{
 		if( datafile_map == null ){
 			restore_data();
@@ -308,7 +308,7 @@ public class TransactionalFileAccess {
 			if(debug) Log.d(TAG,"header mapping start");
 		}
 	}
-	
+
 	private void meta_buffer_unmap(){
 		if( datafile_map != null ){
 			datafile_map =null;
@@ -350,7 +350,7 @@ public class TransactionalFileAccess {
 	private boolean isMetaChanged(){
 		int version = datafile_map.getInt(4);
 		if( version != last_version ) return true;
-		
+
 		int hash_length = datafile_map.getInt(8);
 		if( hash_length != last_hash_length ) return true;
 
@@ -361,7 +361,7 @@ public class TransactionalFileAccess {
 		}
 		return false;
 	}
-	
+
 	// データのロード(内部処理のみで、ロックを行わない)
 	private byte[] load_sub() throws IOException{
 		// load metadata
@@ -395,19 +395,19 @@ public class TransactionalFileAccess {
 			}
 		}
 		last_data = data;
-		return data; 
+		return data;
 	}
-	
+
 	// データのセーブ(内部処理のみで、ロックを含まない)
 	private void save_sub(byte[] data) throws IOException{
 		int data_length = data.length;
-		
+
 		// ダイジェストを計算する
 		byte[] digest = check_digest(data);
-		
+
 		// バージョン番号を計算する
 		int new_version;
-		if( last_version == Integer.MAX_VALUE 
+		if( last_version == Integer.MAX_VALUE
 		||	last_version <= 0
 		){
 			new_version = 1;
@@ -420,7 +420,7 @@ public class TransactionalFileAccess {
 			,new_version
 			,digest.length
 		));
-		
+
 		// データを書き込む
 		{
 			datafile_channel.position(pagesize);
@@ -484,7 +484,7 @@ public class TransactionalFileAccess {
 			//
 			Class<?> clazz = Class.forName("android.os.FileUtils");
 			Method method= clazz.getMethod("setPermissions",String.class ,int.class ,int.class ,int.class);
-			// 
+			//
 			return ((Integer)(method.invoke(null,path,perms,uid,gid))).intValue();
 			// returns 0 or errno
 		}catch(Throwable ex){

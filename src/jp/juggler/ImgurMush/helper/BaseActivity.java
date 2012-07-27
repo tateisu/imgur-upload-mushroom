@@ -25,11 +25,11 @@ public class BaseActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ui_handler = new Handler();
-        inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-        cr =getContentResolver();
-        dialog_manager = new DialogManager(this);
+		inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+		cr =getContentResolver();
+		dialog_manager = new DialogManager(this);
 	}
-	
+
 	//////////////////////////////////////////////////
 
 	@Override protected void onDestroy() {
@@ -68,38 +68,38 @@ public class BaseActivity extends Activity {
 		super.onPause();
 		lifecycle_manager.fire_onPause();
 	}
-	
+
 	//////////////////////////////////////////////////
-	
+
 	public void show_toast(final int length,final int resid){
-    	ui_handler.post(new Runnable() {
+		ui_handler.post(new Runnable() {
 			@Override
 			public void run() {
 				if(isFinishing())return;
 				Toast.makeText(BaseActivity.this,resid,length).show();
 			}
 		});
-    }
-    public void show_toast(final int length,final String text){
-    	ui_handler.post(new Runnable() {
+	}
+	public void show_toast(final int length,final String text){
+		ui_handler.post(new Runnable() {
 			@Override
 			public void run() {
 				if(isFinishing())return;
 				Toast.makeText(BaseActivity.this,text,length).show();
 			}
 		});
-    }
-    
-    public void report_ex(Throwable ex){
+	}
+
+	public void report_ex(Throwable ex){
 		show_toast(Toast.LENGTH_LONG,String.format("%s %s",ex.getClass().getSimpleName(),ex.getMessage()));
 		ex.printStackTrace();
 	}
-	
-    public SharedPreferences pref(){
-    	return getPref(this);
-    }
 
-    public static SharedPreferences getPref(Context context){
-    	return PreferenceManager.getDefaultSharedPreferences(context);
-    }
+	public SharedPreferences pref(){
+		return getPref(this);
+	}
+
+	public static SharedPreferences getPref(Context context){
+		return PreferenceManager.getDefaultSharedPreferences(context);
+	}
 }

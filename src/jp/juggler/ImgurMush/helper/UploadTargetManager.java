@@ -16,23 +16,23 @@ import jp.juggler.util.LogCategory;
 
 public class UploadTargetManager {
 	static final LogCategory log = new LogCategory("UploadTargetManager");
-	
+
 	final BaseActivity act;
 	final AccountAdapter account_adapter;
 	final AlbumAdapter album_adapter;
 	final AlbumLoader album_loader;
-	
+
 	final Spinner spAccount;
 	final Spinner spAlbum;
-	
+
 	public UploadTargetManager(BaseActivity act){
 		this.act = act;
-        spAccount = (Spinner)act.findViewById(R.id.account);
-        spAlbum = (Spinner)act.findViewById(R.id.album);
+		spAccount = (Spinner)act.findViewById(R.id.account);
+		spAlbum = (Spinner)act.findViewById(R.id.album);
 
-	    account_adapter = new AccountAdapter(act,act.getString(R.string.account_anonymous) );
-	    album_adapter = new AlbumAdapter(act,act.getString(R.string.album_not_select));
-        spAccount.setAdapter(account_adapter);
+		account_adapter = new AccountAdapter(act,act.getString(R.string.account_anonymous) );
+		album_adapter = new AlbumAdapter(act,act.getString(R.string.album_not_select));
+		spAccount.setAdapter(account_adapter);
 		spAlbum.setAdapter(album_adapter);
 
 		spAccount.setOnItemSelectedListener(new OnItemSelectedListener() {
@@ -42,20 +42,20 @@ public class UploadTargetManager {
 			@Override public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
-	    album_loader = new AlbumLoader(act,new AlbumLoader.Callback() {
+		album_loader = new AlbumLoader(act,new AlbumLoader.Callback() {
 			@Override
 			public void onLoad() {
 				account_selection_changed(true,spAccount.getSelectedItemPosition(),"album loaded");
 			}
 		});
-	    account_adapter.registerDataSetObserver(new DataSetObserver() {
+		account_adapter.registerDataSetObserver(new DataSetObserver() {
 			@Override public void onChanged() {
 				super.onChanged();
 				account_selection_changed(true,spAccount.getSelectedItemPosition(),"account data changed");
 			}
 		});
-        
-	    spAlbum.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+		spAlbum.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override public void onItemSelected(AdapterView<?> arg0, View arg1,int pos, long arg3) {
 				log.d("album selection changed: %d",pos);
 			}
@@ -63,12 +63,12 @@ public class UploadTargetManager {
 				log.d("album selection loat");
 			}
 		});
-	    
+
 		act.lifecycle_manager.add(activity_listener);
 
 		selection_init();
 	}
-	
+
 	LifeCycleListener activity_listener = new LifeCycleListener(){
 		@Override
 		public void onNewIntent() {
@@ -82,14 +82,14 @@ public class UploadTargetManager {
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
-	
+
 	String  lastused_account_name = null;
 	String  lastused_album_name = null;
 	boolean init_complete = false;
-	
+
 	void selection_init(){
 		SharedPreferences pref = act.pref();
-		// 
+		//
 		init_complete = false;
 		//
 		lastused_account_name = pref.getString(PrefKey.KEY_ACCOUNT_LAST_USED,null);
@@ -105,7 +105,7 @@ public class UploadTargetManager {
 		account_adapter.selectByName(spAccount,lastused_account_name);
 		last_selection_change = SystemClock.uptimeMillis();
 	}
-	
+
 	void selection_save(){
 		if( isLoading() ) return;
 		//
@@ -150,7 +150,7 @@ public class UploadTargetManager {
 			log.d("missing account: %s",desc);
 			// アカウントが選択されていない
 			album_adapter.clear(act.getString(R.string.album_not_select));
-			
+
 			// 初期選択がカラならこの時点で初期化完了とみなす
 			if( lastused_account_name == null ){
 				if( !init_complete ){
@@ -204,15 +204,15 @@ public class UploadTargetManager {
 			}
 		}
 	}
-	
+
 	///////////////////////////////////
 
 	public ImgurAccount getSelectedAccount() {
-		return (ImgurAccount)account_adapter.getItem(spAccount.getSelectedItemPosition()); 
+		return (ImgurAccount)account_adapter.getItem(spAccount.getSelectedItemPosition());
 	}
 
 	public ImgurAlbum getSelectedAlbum() {
-		return (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition()); 
+		return (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
 	}
 
 	public void reload() {

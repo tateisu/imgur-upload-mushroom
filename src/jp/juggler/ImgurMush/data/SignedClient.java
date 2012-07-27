@@ -26,14 +26,14 @@ import android.widget.Toast;
 public class SignedClient {
 	static final String TAG="SignedClient";
 	static final boolean debug = false;
-	
+
 	public String last_error =null;
 	public String last_status =null;
 	public int last_rcode;
 	public CommonsHttpOAuthConsumer consumer;
 	public CancelChecker cancel_checker = null;
-	
-	
+
+
 	public void error_report(final BaseActivity activity,JSONObject result){
 		if(result == null){
 			activity.show_toast(Toast.LENGTH_LONG,String.format("%s %s",last_status,last_error));
@@ -44,7 +44,7 @@ public class SignedClient {
 			}
 		}
 	}
-	
+
 	public void prepareConsumer(ImgurAccount account,String ck,String cs){
 		consumer = new CommonsHttpOAuthConsumer(ck,cs);
 		consumer.setTokenWithSecret(account.token,account.secret);
@@ -61,15 +61,15 @@ public class SignedClient {
 		}
 		return null;
 	}
-	
+
 	public static class JSONResult{
 		public byte[] data;
 		public String str;
 		public JSONObject json;
 		public String err;
 	}
-	
-	public JSONResult json_signed_get(BaseActivity act,String url){ 
+
+	public JSONResult json_signed_get(BaseActivity act,String url){
 		JSONResult result = new JSONResult();
 		for( int nTry =0; nTry < 10; ++nTry ){
 			try{
@@ -82,7 +82,7 @@ public class SignedClient {
 				}
 				// parse UTF-8
 				result.str = TextUtil.decodeUTF8(result.data);
-				
+
 				// parse json
 				try{
 					result.json = new JSONObject(result.str);
@@ -137,45 +137,45 @@ public class SignedClient {
 		}
 		return null;
 	}
-	
+
 	private byte[] send_request(HttpRequestBase request){
 		byte[] tmp = new byte[1024];
 		DefaultHttpClient client=new DefaultHttpClient();
-		
+
 		for( Header header : request.getAllHeaders() ){
 			if(debug) Log.d(TAG,String.format("%s %s",header.getName(), header.getValue() ));
 		}
-		
+
 		for(int nTry=0;nTry<10;++nTry){
 			if( cancel_checker != null && cancel_checker.isCancelled() ) break;
-    		try{
-	        	HttpResponse response = client.execute(request);
-	        	last_rcode = response.getStatusLine().getStatusCode();
-	        	last_status = response.getStatusLine().toString();
-	        	if( last_rcode <0 ) continue;
-	        	InputStream in=response.getEntity().getContent();
-	        	try{
-	        		ByteArrayOutputStream bao = new ByteArrayOutputStream();
-	        		for(;;){
-	        			int delta = in.read(tmp,0,tmp.length);
-	        			if( delta < 0 ) break;
-	        			bao.write(tmp,0,delta);
-	        		}
-	        		if( bao.size() > 0 ) return bao.toByteArray();
-	        		Log.e(TAG,"read failed. status="+response.getStatusLine()+", url="+request.getURI());
-	        	}finally{
-	        		in.close();
-	        	}
-    		}catch(UnknownHostException ex){
-        		last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();
-    			ex.printStackTrace();
-    			break;
-        	}catch(Throwable ex){
-        		last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();
-        		ex.printStackTrace();
-        	}
-    	}
-    	return null;
+			try{
+				HttpResponse response = client.execute(request);
+				last_rcode = response.getStatusLine().getStatusCode();
+				last_status = response.getStatusLine().toString();
+				if( last_rcode <0 ) continue;
+				InputStream in=response.getEntity().getContent();
+				try{
+					ByteArrayOutputStream bao = new ByteArrayOutputStream();
+					for(;;){
+						int delta = in.read(tmp,0,tmp.length);
+						if( delta < 0 ) break;
+						bao.write(tmp,0,delta);
+					}
+					if( bao.size() > 0 ) return bao.toByteArray();
+					Log.e(TAG,"read failed. status="+response.getStatusLine()+", url="+request.getURI());
+				}finally{
+					in.close();
+				}
+			}catch(UnknownHostException ex){
+				last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();
+				ex.printStackTrace();
+				break;
+			}catch(Throwable ex){
+				last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();
+				ex.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 

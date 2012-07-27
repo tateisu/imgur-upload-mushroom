@@ -2,7 +2,7 @@
 	キーと値のマップを保持するタイプの設定管理クラスです。
 	- インタフェースは SharedPreferences とおおむね互換があります。
 	- ファイル更新部分は複数プロセスからの読み書きに対応しています。
-	
+
 	ただし制限がいくつかあります。
 	- OnSharedPreferenceChangeListener をサポートしてません。実行時にUnsupportedOperationExceptionを出します。
 	- SharedPreferences.Editor#apply() をサポートしてません。実行時にUnsupportedOperationExceptionを出します。
@@ -25,7 +25,7 @@ import android.content.SharedPreferences;
 
 public class ConfigurationFileSP implements SharedPreferences{
 	static final String TAG="ConfigurationFileSP";
-	
+
 	///////////////////////////////////////////////////
 	// スレッド間でのインスタンスの共用
 
@@ -39,7 +39,7 @@ public class ConfigurationFileSP implements SharedPreferences{
 	}
 
 	//////////////////////////////////////////////////////////
-	
+
 	final Encoder encoder = new Encoder();
 	final TransactionalFileAccess datafile;
 	Map<String,?> mMap = null;
@@ -51,18 +51,18 @@ public class ConfigurationFileSP implements SharedPreferences{
 				,true
 		);
 	}
-	
+
 	// ファイルを削除して作成し直す
 	/*package access*/ TransactionalFileAccess getDataFile(){
 		return datafile;
 	}
-	
+
 	// ファイルを削除して作成し直す
 	public void create() throws IOException{
 		datafile.create();
 		reload();
 	}
-	
+
 	// 設定データをバイト配列にまとめてエクスポートする。
 	public byte[] exportBytes(){
 		return new Encoder().encode_map(getAll());
@@ -72,7 +72,7 @@ public class ConfigurationFileSP implements SharedPreferences{
 	public void importBytes(byte[] data){
 		importMap(new Encoder().parse_map(data));
 	}
-	
+
 	// SharedPreferencesなど外部から提供されたmapのデータをインポートする。
 	public void importMap(Map<String,?> src){
 		ConfigurationEditorSP e = (ConfigurationEditorSP)edit();
@@ -81,10 +81,10 @@ public class ConfigurationFileSP implements SharedPreferences{
 		}
 		e.commit();
 	}
-	
+
 	///////////////////////////////////////////////////
 	// 公開インタフェース
-	
+
 	@Override
 	public Map<String, ?> getAll() {
 		synchronized(this){
@@ -97,7 +97,7 @@ public class ConfigurationFileSP implements SharedPreferences{
 	public boolean contains(String key)  {
 		synchronized(this){
 			check_update();
-            return mMap.containsKey(key);
+			return mMap.containsKey(key);
 		}
 	}
 
@@ -105,8 +105,8 @@ public class ConfigurationFileSP implements SharedPreferences{
 	public boolean getBoolean(String key, boolean defValue) {
 		synchronized(this){
 			check_update();
-            Boolean v = (Boolean)mMap.get(key);
-            return v != null ? v : defValue;
+			Boolean v = (Boolean)mMap.get(key);
+			return v != null ? v : defValue;
 		}
 	}
 
@@ -114,8 +114,8 @@ public class ConfigurationFileSP implements SharedPreferences{
 	public float getFloat(String key, float defValue) {
 		synchronized(this){
 			check_update();
-            Float v = (Float)mMap.get(key);
-            return v != null ? v : defValue;
+			Float v = (Float)mMap.get(key);
+			return v != null ? v : defValue;
 		}
 	}
 
@@ -123,8 +123,8 @@ public class ConfigurationFileSP implements SharedPreferences{
 	public int getInt(String key, int defValue) {
 		synchronized(this){
 			check_update();
-            Integer v = (Integer)mMap.get(key);
-            return v != null ? v : defValue;
+			Integer v = (Integer)mMap.get(key);
+			return v != null ? v : defValue;
 
 		}
 	}
@@ -133,8 +133,8 @@ public class ConfigurationFileSP implements SharedPreferences{
 	public long getLong(String key, long defValue) {
 		synchronized(this){
 			check_update();
-            Long v = (Long)mMap.get(key);
-            return v != null ? v : defValue;
+			Long v = (Long)mMap.get(key);
+			return v != null ? v : defValue;
 		}
 	}
 
@@ -142,24 +142,25 @@ public class ConfigurationFileSP implements SharedPreferences{
 	public String getString(String key, String defValue) {
 		synchronized(this){
 			check_update();
-            String v = (String)mMap.get(key);
-            return v != null ? v : defValue;
+			String v = (String)mMap.get(key);
+			return v != null ? v : defValue;
 
 		}
 	}
-	
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public Set<String> getStringSet(String key, Set<String> defValues) {
 		synchronized(this){
 			check_update();
-	        Set<String> v = (Set<String>) mMap.get(key);
-	        return v != null ? v : defValues;
+			Set<String> v = (Set<String>) mMap.get(key);
+			return v != null ? v : defValues;
 		}
 	}
 
 	/////////////////////////////////////////////////////
 	// リスナの管理
-	
+
 	@Override
 	public void registerOnSharedPreferenceChangeListener( OnSharedPreferenceChangeListener listener){
 		throw new UnsupportedOperationException("registerOnSharedPreferenceChangeListener is not supported");
@@ -171,81 +172,83 @@ public class ConfigurationFileSP implements SharedPreferences{
 	}
 
 	///////////////////////////////////////////////////////////////
-	
+
 	public ConfigurationEditorSP createEditor() {
 		return new ConfigurationEditorSP();
 	}
-	
+
 	@Override
 	public Editor edit() {
 		return createEditor();
 	}
 
-    public final class ConfigurationEditorSP implements SharedPreferences.Editor {
-    	@Override
+	public final class ConfigurationEditorSP implements SharedPreferences.Editor {
+		@Override
 		public Editor putString(String key, String value) {
-    		synchronized (this) {
-    			mModified.put(key, value);
-    			return this;
-    		}
-    	}
-    	public Editor putStringSet(String key, Set<String> values) {
-   	          synchronized (this) {
-   	        	  mModified.put(key, values);
-   	        	  return this;
-   	          }
-    	}
-    	@Override
+			synchronized (this) {
+				mModified.put(key, value);
+				return this;
+			}
+		}
+		@Override
+		public Editor putStringSet(String key, Set<String> values) {
+			  synchronized (this) {
+				  mModified.put(key, values);
+				  return this;
+			  }
+		}
+		@Override
 		public Editor putInt(String key, int value) {
-    		synchronized (this) {
-    			mModified.put(key, value);
-    			return this;
-    		}
-    	}
-    	@Override
+			synchronized (this) {
+				mModified.put(key, value);
+				return this;
+			}
+		}
+		@Override
 		public Editor putLong(String key, long value) {
-    		synchronized (this) {
-    			mModified.put(key, value);
-    			return this;
-    		}
-    	}
-    	@Override
+			synchronized (this) {
+				mModified.put(key, value);
+				return this;
+			}
+		}
+		@Override
 		public Editor putFloat(String key, float value) {
-    		synchronized (this) {
-    			mModified.put(key, value);
-    			return this;
-    		}
-    	}
-    	@Override
+			synchronized (this) {
+				mModified.put(key, value);
+				return this;
+			}
+		}
+		@Override
 		public Editor putBoolean(String key, boolean value) {
-    		synchronized (this) {
-    			mModified.put(key, value);
-    			return this;
-    		}
-    	}
-    	
-        @Override
+			synchronized (this) {
+				mModified.put(key, value);
+				return this;
+			}
+		}
+
+		@Override
 		public Editor remove(String key) {
-            synchronized (this) {
-            	// 「削除された」を示す値はこのEditor自身
-                mModified.put(key, this);
-                return this;
-            }
-        }
-        
-        @Override
+			synchronized (this) {
+				// 「削除された」を示す値はこのEditor自身
+				mModified.put(key, this);
+				return this;
+			}
+		}
+
+		@Override
 		public Editor clear() {
-            synchronized (this) {
-                mClear = true;
-                return this;
-            }
-        }
+			synchronized (this) {
+				mClear = true;
+				return this;
+			}
+		}
 
-        /////////////////////////////////////////////////////////
-         
-        public boolean mClear = false;
-    	public HashMap<String, Object> mModified = new HashMap<String,Object>();
+		/////////////////////////////////////////////////////////
 
+		public boolean mClear = false;
+		public HashMap<String, Object> mModified = new HashMap<String,Object>();
+
+		@Override
 		public void apply() {
 			save_background(this);
 		}
@@ -254,9 +257,9 @@ public class ConfigurationFileSP implements SharedPreferences{
 		public boolean commit() {
 			return save_foreground(this);
 		}
-    }
-    
-    //////////////////////////////////////////////////////////////////////
+	}
+
+	//////////////////////////////////////////////////////////////////////
 
 	public void reload() {
 		try{
@@ -267,7 +270,7 @@ public class ConfigurationFileSP implements SharedPreferences{
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	void check_update(){
 		try{
 			synchronized(this){
@@ -282,11 +285,11 @@ public class ConfigurationFileSP implements SharedPreferences{
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	void save_background(final ConfigurationEditorSP cset){
 		throw new UnsupportedOperationException("background update is not supported");
 	}
-	
+
 	boolean save_foreground(final ConfigurationEditorSP cset){
 		try{
 			synchronized (this) {
@@ -318,17 +321,17 @@ public class ConfigurationFileSP implements SharedPreferences{
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	////////////////////////////////////////////////////////////
 	// マップとバイト配列のエンコード/デコード
-	
+
 	public static final class Encoder{
 		public static final int tmp_size = 1000;
 		public static final String UTF8="UTF-8";
-		
+
 		private byte[] tmp = new byte[tmp_size];
 		private ByteBuffer tmp_bb = ByteBuffer.wrap(tmp);
-		
+
 		private final String parse_string(ByteBuffer bb ){
 			try{
 				int bytesize = bb.getInt();
@@ -375,7 +378,7 @@ public class ConfigurationFileSP implements SharedPreferences{
 		private final void encode_long(ByteArrayOutputStream bao, long value) {
 			tmp_bb.clear(); tmp_bb.putLong(value); bao.write(tmp,0,tmp_bb.position());
 		}
-		
+
 		private final void encode_float(ByteArrayOutputStream bao, float value) {
 			tmp_bb.clear(); tmp_bb.putFloat(value); bao.write(tmp,0,tmp_bb.position());
 		}
@@ -403,7 +406,7 @@ public class ConfigurationFileSP implements SharedPreferences{
 			}
 			return map;
 		}
-		
+
 		// encode map to bytes
 		@SuppressWarnings("unchecked")
 		public final byte[] encode_map(Map<String,?> map){

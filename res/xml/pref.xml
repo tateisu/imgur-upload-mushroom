@@ -5,83 +5,83 @@
 
 	<!-- アカウント関連 -->
 	<PreferenceCategory android:title="@string/account_settings">
-	    <Preference
-	    	android:key="pref_add_account"
-	  		android:title="@string/account_add_title"
-	    />
-	    <jp.juggler.ImgurMush.Pref_RemoveAccount
-	    	android:key="pref_del_account"
-	  		android:title="@string/account_delete_title"
-	    />
+		<Preference
+			android:key="pref_add_account"
+			android:title="@string/account_add_title"
+		/>
+		<jp.juggler.ImgurMush.Pref_RemoveAccount
+			android:key="pref_del_account"
+			android:title="@string/account_delete_title"
+		/>
 	</PreferenceCategory>
 
-	<!-- 操作の省略 -->	
+	<!-- 操作の省略 -->
 	<PreferenceCategory android:title="@string/autostart_settings">
 		<CheckBoxPreference
 			android:key="cbAutoPick"
-		    android:title="@string/picker_autostart_title"
-	    	android:summary="@string/picker_autostart_summary"
-	    />
+			android:title="@string/picker_autostart_title"
+			android:summary="@string/picker_autostart_summary"
+		/>
 		<CheckBoxPreference
 			android:key="edit_autostart"
-		    android:title="@string/edit_autostart_title"
-	    	android:summary="@string/edit_autostart_summary"
-	    />
+			android:title="@string/edit_autostart_title"
+			android:summary="@string/edit_autostart_summary"
+		/>
 		<CheckBoxPreference
 			android:key="cbAutoStart"
-		    android:title="@string/upload_autostart_title"
-	    	android:summary="@string/upload_autostart_summary"
-	    />
+			android:title="@string/upload_autostart_title"
+			android:summary="@string/upload_autostart_summary"
+		/>
 		<CheckBoxPreference
 			android:key="cbDisablePreview"
-		    android:title="@string/preview_disabled_title"
-	    	android:summary="@string/preview_disabled_summary"
-	    />
+			android:title="@string/preview_disabled_title"
+			android:summary="@string/preview_disabled_summary"
+		/>
 	</PreferenceCategory>
 
 	<PreferenceCategory android:title="@string/edit_settings">
 		<EditTextPreference
 			android:key="image_output_dir"
-		    android:title="@string/image_output_dir_title"
-	    	android:summary="@string/image_output_dir_summary"
-	    	android:dialogTitle="@string/image_output_dir_title"  
-      		android:dialogMessage="@string/image_output_dir_desc"
-	    />
+			android:title="@string/image_output_dir_title"
+			android:summary="@string/image_output_dir_summary"
+			android:dialogTitle="@string/image_output_dir_title"
+			android:dialogMessage="@string/image_output_dir_desc"
+		/>
 		<EditTextPreference
 			android:key="jpeg_quality"
-		    android:title="@string/jpeg_quality_title"
-	    	android:summary="@string/jpeg_quality_summary"
-	    	android:dialogTitle="@string/jpeg_quality_title"  
-      		android:dialogMessage="@string/jpeg_quality_desc"
-      		android:defaultValue="85"
-      		android:inputType="number"
-	    />
+			android:title="@string/jpeg_quality_title"
+			android:summary="@string/jpeg_quality_summary"
+			android:dialogTitle="@string/jpeg_quality_title"
+			android:dialogMessage="@string/jpeg_quality_desc"
+			android:defaultValue="85"
+			android:inputType="number"
+		/>
 
 	</PreferenceCategory>
-			
+
 	<!-- 出力するURL -->
 	<PreferenceCategory android:title="@string/output_style_settings">
 
 		<ListPreference
 			android:key="URL_mode"
-	  		android:title="@string/output_style_title"
+			android:title="@string/output_style_title"
 			android:summary="@string/output_style_summary"
 			android:dialogTitle="@string/output_style_title"
-	    	android:entries="@array/output_style_list_captions"
-	    	android:entryValues="@array/output_style_list_values"
-	    />
-	    <CheckBoxPreference
+			android:entries="@array/output_style_list_captions"
+			android:entryValues="@array/output_style_list_values"
+		/>
+		<CheckBoxPreference
 			android:key="cbInsertSpacePref"
-		    android:title="@string/insert_space_pre_title"
-	    	android:summary="@string/insert_space_pre_summary"
-	    	android:defaultValue="false"
-	    />
-	    <CheckBoxPreference
+			android:title="@string/insert_space_pre_title"
+			android:summary="@string/insert_space_pre_summary"
+			android:defaultValue="false"
+		/>
+		<CheckBoxPreference
 			android:key="cbInsertSpaceSuff"
-		    android:title="@string/insert_space_suf_title"
-	    	android:summary="@string/insert_space_suf_summary"
-	    	android:defaultValue="true"
-	    />
+			android:title="@string/insert_space_suf_title"
+			android:summary="@string/insert_space_suf_summary"
+			android:defaultValue="true"
+		/>
 	</PreferenceCategory>
 
 </PreferenceScreen>

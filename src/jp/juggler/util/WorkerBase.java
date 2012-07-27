@@ -8,7 +8,7 @@ public abstract class WorkerBase extends Thread {
 	// 継承するクラスはrun() の実装が必要
 	@Override
 	public abstract void run();
-	
+
 
 	// cancel() を連打しつつjoin待機
 	public void joinLoop(LogCategory log,String caption){
@@ -17,7 +17,7 @@ public abstract class WorkerBase extends Thread {
 			cancel();
 
 			try{ join(100); }catch(InterruptedException ex){}
-			
+
 			if(!isAlive()) break;
 
 			// 待機状態が長い場合、定期的にログ出力
@@ -41,13 +41,13 @@ public abstract class WorkerBase extends Thread {
 			public void run() {
 				joinLoop(log,caption);
 			}
-			
+
 		}.start();
 	}
-	
+
 	/////////////////////////////////////
-	// 毎回catchを書くのが面倒なので用意した補助メソッド 
-	
+	// 毎回catchを書くのが面倒なので用意した補助メソッド
+
 	public synchronized void notifyEx(){ notify(); }
 	public synchronized void waitEx(long ms){
 		try{ wait(ms); }catch(InterruptedException ex){}
@@ -56,7 +56,7 @@ public abstract class WorkerBase extends Thread {
 		try{ wait(); }catch(InterruptedException ex){}
 	}
 
-	
+
 	public static void notify_object(Object o){
 		synchronized(o){ o.notify(); }
 	}

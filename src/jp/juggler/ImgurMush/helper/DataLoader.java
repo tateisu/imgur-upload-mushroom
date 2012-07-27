@@ -33,7 +33,7 @@ import android.os.Handler;
 public class DataLoader {
 	static final LogCategory log = new LogCategory("DataLoader");
 	static final boolean debug = false;
-	
+
 	public static abstract class Listener<T>{
 		public abstract void onData(File file,T data);
 		public void onError(String msg){}
@@ -54,13 +54,13 @@ public class DataLoader {
 
 		act.lifecycle_manager.add(activity_listener);
 	}
-	
+
 	public static final int DATATYPE_BYTES =0;
 	public static final int DATATYPE_BITMAP =1;
 	public static final int DATATYPE_UTF8 =2;
 	public static final int DATATYPE_FILE=3; // キャッシュにファイルがある場合はonDataのdata引数がnullになるかもしれない
 	static final int request_skip_limit_default = 1000 * 60 * 10;
-	
+
 	// URLのダウンロードを行い、終了したらリスナを呼ぶ。
 	// data_typeの指定によってリスナのonData data引数の型が変わる
 	public void request(String url,int data_type,int request_skip_limit, Listener<?> listener){
@@ -83,7 +83,7 @@ public class DataLoader {
 		}
 		if(worker!=null) worker.notifyEx();
 	}
-	
+
 	final Context act;
 	final Handler ui_handler;
 	final boolean bClearAtResume;
@@ -92,8 +92,8 @@ public class DataLoader {
 	final SoftCache<Item,Object> cache = new SoftCache<Item, Object>();
 
 	// ミリ秒を指定すると適当な間隔でキャッシュをクリアする
-	public int default_expire = 0; 
-	
+	public int default_expire = 0;
+
 	LifeCycleListener activity_listener = new LifeCycleListener(){
 		@Override public void onStart() {
 			if( bClearAtResume ) queue.clear();
@@ -112,17 +112,18 @@ public class DataLoader {
 		int data_type;
 		long request_skip_limit;
 		Listener<?> listener;
-		
+
 		@Override
 		public boolean equals(Object o){
 			if( ! (o instanceof Item) ) return false;
-			Item b = (Item)o; 
+			Item b = (Item)o;
 			return (url.equals(b.url) && data_type == b.data_type );
 		}
 		@Override
 		public int hashCode(){
 			return url.hashCode() ^ data_type;
 		}
+
 		@SuppressWarnings("unchecked")
 		public void fireCallback(Object _result) {
 			try{
@@ -136,7 +137,7 @@ public class DataLoader {
 			}catch(Throwable ex){
 				ex.printStackTrace();
 			}
-			
+
 		}
 	};
 	static class SoftCache<K,V> {
@@ -156,7 +157,7 @@ public class DataLoader {
 			}
 		}
 	}
-	
+
 	Worker worker;
 	class Worker extends WorkerBase {
 		AtomicBoolean bCancelled = new AtomicBoolean(false);
@@ -167,12 +168,11 @@ public class DataLoader {
 			interrupt();
 			notifyEx();
 		}
-		
-		@SuppressWarnings("null")
+
 		@Override
 		public void run() {
 			log.d("worker start");
-			
+
 			// 最後にキャッシュを掃除した時刻
 			long last_sweep = 0;
 
@@ -183,19 +183,19 @@ public class DataLoader {
 
 					// 自動sweepが有効なら、適当な周期でキャッシュフォルダを掃除する
 					if( default_expire > 0 ) cachedir_sweep( default_expire );
-					
+
 					// メモリ上のキャッシュの掃除
 					cache.sweepDeadEntry();
 					continue;
 				}
-				
+
 				// キューからデータを取り出す
 				final Item item = queue.poll();
 				if( item == null ){
 					waitEx(1000*60*10);
 					continue;
 				}
-				
+
 				final Object cached_data = cache.get(item);
 				if( cached_data != null ){
 					if(debug) log.d("using cache (BG)");
@@ -208,7 +208,7 @@ public class DataLoader {
 					});
 					continue;
 				}
-				
+
 				if(debug) log.d("load data..");
 				byte[] data = null;
 				String last_error = null;
@@ -288,8 +288,8 @@ public class DataLoader {
 						last_error =String.format("bad URL:%s",ex.getMessage());
 						break;
 					}catch(IOException ex){
-						if( ex instanceof SocketTimeoutException 
-						||  ex instanceof SocketException 
+						if( ex instanceof SocketTimeoutException
+						||  ex instanceof SocketException
 						){
 							// no stack trace. this is common case.
 						}else{
@@ -299,7 +299,7 @@ public class DataLoader {
 						continue;
 					}
 				}
-				
+
 				// ここでitemはnullのはずがないんだが、なぜか警告が出る…
 
 				// キャッシュが有効ならファイルから読む
@@ -324,9 +324,9 @@ public class DataLoader {
 						last_error =String.format("%s %s",ex.getClass().getSimpleName(),ex.getMessage());
 					}
 				}
-				
+
 				Object result = data;
-				
+
 				if( bOK && item.data_type == DATATYPE_BITMAP ){
 					try{
 						result = decodePurgeableBitmap(data);
@@ -381,7 +381,7 @@ public class DataLoader {
 			log.d("worker end");
 		}
 	}
-	
+
 	////////////////////////////////////////////////////
 	// キャッシュファイルの管理
 
@@ -397,7 +397,7 @@ public class DataLoader {
 		}
 		return dir;
 	}
-	
+
 	// 古いキャッシュを破棄
 	public void cachedir_sweep(long mtime_expire ){
 		try{
