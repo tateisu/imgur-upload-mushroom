@@ -87,7 +87,7 @@ public class ActArrange extends BaseActivity{
 
 	static final int REQUEST_RESIZE_PRESET = 1;
 	static final int SEEKBAR_MAX = 10000;
-
+	static final int SEEKBAR_KEY_INCREMENT = 100;
 	final ActArrange act = this;
 
 	jp.juggler.ImgurMush.ArrangeView avPreview;
@@ -144,6 +144,10 @@ public class ActArrange extends BaseActivity{
 		sbCropRight.setMax(SEEKBAR_MAX);
 		sbCropTop.setMax(SEEKBAR_MAX);
 		sbCropBottom.setMax(SEEKBAR_MAX);
+		sbCropLeft.setKeyProgressIncrement(SEEKBAR_KEY_INCREMENT);
+		sbCropRight.setKeyProgressIncrement(SEEKBAR_KEY_INCREMENT);
+		sbCropTop.setKeyProgressIncrement(SEEKBAR_KEY_INCREMENT);
+		sbCropBottom.setKeyProgressIncrement(SEEKBAR_KEY_INCREMENT);
 		seekbar_busy = false;
 
 		findViewById(R.id.btnCancel).setOnClickListener(new View.OnClickListener(){

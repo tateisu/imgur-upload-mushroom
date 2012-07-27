@@ -16,7 +16,7 @@
 		android:id="@+id/preview"
 	/>
 	<LinearLayout
-		android:layout_width="240dp"
+		android:layout_width="320dp"
 		android:layout_height="match_parent"
 
 		android:orientation="vertical"

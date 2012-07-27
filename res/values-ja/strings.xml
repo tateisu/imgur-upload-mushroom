@@ -33,7 +33,7 @@
 <string name="edit_autostart_summary">有効にすると、画像が選択されたらすぐに画像加工を開始します</string>
 <string name="edit_progress_title">処理中です…</string>
 <string name="edit_settings">画像加工の設定</string>
-<string name="file_not_selected">ファイルが選択されていません</string>
+<string name="image_not_selected">画像が選択されていません</string>
 <string name="file_temp_error">ファイルの作成に失敗しました</string>
 <string name="history">履歴</string>
 <string name="history_cleared">履歴データを消去しました</string>
@@ -55,7 +55,7 @@
 <string name="output_style_settings">テキスト出力の設定</string>
 <string name="output_style_summary">出力するURLの種別を、画像直リンかImgurの画像詳細ページから選べます</string>
 <string name="output_style_title">出力するURLの種別</string>
-<string name="picker">画像選択</string>
+<string name="picker">選択</string>
 <string name="picker_autostart_summary">有効にすると、開始したらすぐに画像選択を行います</string>
 <string name="picker_autostart_title">画像選択を自動開始</string>
 <string name="picker_missing">ファイル選択に使えるアプリがありません</string>
@@ -90,7 +90,8 @@
 <string name="upload_progress_sizecheck">アップロードサイズを測定中です…</string>
 <string name="upload_progress_digest">署名ダイジェストを計算中です…</string>
 <string name="upload_wait_response">レスポンス待機中…</string>
-
+<string name="capture">撮影</string>
+<string name="capture_missing">画像キャプチャに使えるアプリがありません</string>
 
 <string name="storage_not_directory">外部フラッシュメモリが提供されていません?</string>
 <string name="storage_not_writable">外部フラッシュメモリへの書き込み許可がありません?</string>

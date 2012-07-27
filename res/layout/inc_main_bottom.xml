@@ -35,29 +35,36 @@
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:paddingLeft="7dp"
+			android:paddingRight="7dp"
 			android:layout_weight="1"
 			android:minWidth="48dp"
-			android:id="@+id/btnUpload"
-			android:text="@string/upload"
 			android:singleLine="true"
+			android:text="@string/upload"
+			android:id="@+id/btnUpload"
+			android:nextFocusLeft="@+id/btnCancel"
+			android:nextFocusUp="@+id/account"
 		/>
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:paddingLeft="7dp"
+			android:paddingRight="7dp"
 			android:layout_weight="0"
 			android:minWidth="48dp"
-			android:id="@+id/btnSetting"
 			android:text="@string/dash3"
+			android:id="@+id/btnSetting"
 		/>
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:paddingLeft="7dp"
+			android:paddingRight="7dp"
 			android:layout_weight="0"
 			android:minWidth="48dp"
 			android:id="@+id/btnCancel"
 			android:text="@string/cancel"
-			android:paddingLeft="7dp"
-			android:paddingRight="7dp"
+			android:nextFocusRight="@+id/btnUpload"
 		/>
 	</LinearLayout>
 </LinearLayout>

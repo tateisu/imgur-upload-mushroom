@@ -6,6 +6,7 @@ import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ClipboardHelper10;
+import jp.juggler.ImgurMush.helper.ImageTempDir;
 import jp.juggler.ImgurMush.helper.PreviewLoader;
 import jp.juggler.ImgurMush.helper.TextFormat;
 import jp.juggler.ImgurMush.helper.UploadTargetManager;
@@ -39,7 +40,9 @@ public class ActImgurMush extends BaseActivity {
 	static final int REQ_PREF = 4;
 	static final int REQ_ARRANGE= 5;
 	static final int REQ_APPINFO = 6;
-
+	static final int REQ_CAPTURE = 7;
+	
+	
 	static final int FILE_FROM_PICK =1;
 	static final int FILE_FROM_EDIT =2;
 	static final int FILE_FROM_RESTORE =3;
@@ -99,7 +102,7 @@ public class ActImgurMush extends BaseActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent detail) {
-		log.d("onActivityResult req=%s detail=%s",requestCode,detail);
+		log.d("onActivityResult req=%s res=%sdetail=%s",requestCode,resultCode,detail);
 		switch(requestCode){
 		case REQ_FILEPICKER:
 			if( resultCode == RESULT_OK && detail != null ){
@@ -124,6 +127,18 @@ public class ActImgurMush extends BaseActivity {
 			}
 			break;
 		case REQ_APPINFO:
+			break;
+		case REQ_CAPTURE:
+			if(resultCode == RESULT_OK ){
+				Uri uri = (detail==null ? null : detail.getData());
+				if( uri == null ) uri = capture_uri;
+				if( uri == null ){
+					log.e("cannot get capture uri");
+				}else{
+					log.d("capture uri = %s", uri);
+					 setCurrentFile(FILE_FROM_PICK,uri_to_path(uri));
+				}
+			}
 			break;
 		}
 		super.onActivityResult(requestCode, resultCode, detail);
@@ -220,6 +235,13 @@ public class ActImgurMush extends BaseActivity {
 				open_file_picker();
 			}
 		});
+		
+		findViewById(R.id.btnCapture).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				open_capture();
+			}
+		});
 
 		btnEdit.setOnClickListener(new OnClickListener() {
 			@Override
@@ -240,6 +262,7 @@ public class ActImgurMush extends BaseActivity {
 				}
 			}
 		});
+
 	}
 
 	boolean upload_autostart = false;
@@ -256,6 +279,11 @@ public class ActImgurMush extends BaseActivity {
 		// 画像アプリの共有インテントなどから起動された場合、インテントの指定から画像を選択する
 		Intent intent = getIntent();
 		if( intent != null ){
+			String v = intent.getStringExtra(PrefKey.EXTRA_CAPTURE_URI);
+			if( v != null ) this.capture_uri = Uri.parse(v);
+
+			boolean bRestore = intent.getBooleanExtra(PrefKey.EXTRA_IS_STATUS_SAVE,false);
+
 			Uri uri = intent.getData();
 			if(uri == null){
 				Bundle extra = intent.getExtras();
@@ -265,7 +293,6 @@ public class ActImgurMush extends BaseActivity {
 			}
 			if( uri != null ){
 				String path = uri_to_path(uri);
-				boolean bRestore = intent.getBooleanExtra(PrefKey.EXTRA_IS_STATUS_SAVE,false);
 				if( path != null ) setCurrentFile( (bRestore?FILE_FROM_RESTORE:FILE_FROM_PICK),path);
 				return;
 			}
@@ -320,12 +347,14 @@ public class ActImgurMush extends BaseActivity {
 
 	String file_path;
 	int open_type;
-
+	Uri capture_uri;
+	
 	void save_status(){
 		log.d("save_status");
 		Intent intent = getIntent();
 		if( file_path != null ) intent.setData( Uri.fromFile(new File(file_path)));
 		intent.putExtra( PrefKey.EXTRA_IS_STATUS_SAVE , true );
+		if(capture_uri != null) intent.putExtra( PrefKey.EXTRA_CAPTURE_URI, capture_uri.toString() );
 		setIntent(intent);
 	}
 
@@ -344,7 +373,7 @@ public class ActImgurMush extends BaseActivity {
 
 			preview.setVisibility(View.INVISIBLE);
 			if( file_path == null ){
-				tvFileDesc.setText(getString(R.string.file_not_selected));
+				tvFileDesc.setText(getString(R.string.image_not_selected));
 				btnEdit.setVisibility(View.GONE);
 				btnUpload.setEnabled(false);
 				return;
@@ -431,7 +460,27 @@ public class ActImgurMush extends BaseActivity {
 		log.d("open_file_picker :finish");
 		finish_mush("");
 	}
-
+	
+	void open_capture(){
+		try{
+			capture_uri = Uri.fromFile(new File(
+					ImageTempDir.getTempDir(act,act.pref(),act.ui_handler)
+					,String.format("capture-%s",System.currentTimeMillis())
+			));
+		}catch(Throwable ex){
+			ex.printStackTrace();
+			return;
+		}
+		try{
+			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			intent.putExtra(MediaStore.EXTRA_OUTPUT,capture_uri);
+			startActivityForResult(intent,REQ_CAPTURE);
+			return;
+		}catch(ActivityNotFoundException ex ){
+			Toast.makeText(this,getText(R.string.capture_missing),Toast.LENGTH_SHORT).show();
+		}
+	}
+	
 	// 画像加工画面を開く
 	void open_editor(){
 		Intent intent = new Intent(ActImgurMush.this,ActArrange.class);

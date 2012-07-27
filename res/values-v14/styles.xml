@@ -7,5 +7,16 @@
 	<style name="rot_right" >
 		<item name="android:src">@drawable/rot_right_white</item>
 	</style>
-
+	
+	<style name="gallery" >
+		<item name="android:drawableLeft">@drawable/gallery_white</item>
+	</style>
+	<style name="camera" >
+		<item name="android:drawableLeft">@drawable/camera_white</item>
+	</style>
+	<style name="crop" >
+		<item name="android:drawableLeft">@drawable/crop_white</item>
+	</style>
+	
+	
 </resources>

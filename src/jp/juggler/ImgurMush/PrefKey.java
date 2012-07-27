@@ -44,5 +44,6 @@ public class PrefKey {
 	public static final String EXTRA_CROP_R = "edit_crop_r";
 	public static final String EXTRA_CROP_T = "edit_crop_t";
 	public static final String EXTRA_CROP_B = "edit_crop_b";
+	public static final String EXTRA_CAPTURE_URI = "capture_uri";
 
 }

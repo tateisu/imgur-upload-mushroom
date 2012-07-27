@@ -150,6 +150,7 @@ public class UploadTargetManager {
 			log.d("missing account: %s",desc);
 			// アカウントが選択されていない
 			album_adapter.clear(act.getString(R.string.album_not_select));
+			spAlbum.setEnabled(false);
 
 			// 初期選択がカラならこの時点で初期化完了とみなす
 			if( lastused_account_name == null ){
@@ -167,6 +168,7 @@ public class UploadTargetManager {
 				log.d("missing album: %s",desc);
 				// アルバム一覧を読めない。ロード中かエラーだろう
 				album_adapter.clear(act.getString(R.string.album_loading));
+				spAlbum.setEnabled(false);
 			}else{
 				// アルバムを読めたら初期化完了とみなす
 				if( !init_complete ){
@@ -182,6 +184,7 @@ public class UploadTargetManager {
 
 					// アルバム選択肢を設定する
 					album_adapter.replace(list,act.getString(R.string.album_not_select));
+					spAlbum.setEnabled(true);
 
 					if( account.name.equals( lastused_account_name ) ){
 						// 選択の初期化がまだおわっておらず現在のアカウントとマッチするのなら、アルバムを選択しなおす

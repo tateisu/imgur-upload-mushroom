@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
     <issue id="BackButton" severity="informational" />
+    <issue id="ButtonCase" severity="ignore" />
     <issue id="ButtonOrder" severity="ignore" />
     <issue id="ContentDescription" severity="ignore" />
     <issue id="ExportedActivity" severity="informational" />

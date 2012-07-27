@@ -8,4 +8,13 @@
 		<item name="android:src">@drawable/rot_right</item>
 	</style>
 
+	<style name="gallery" >
+		<item name="android:drawableLeft">@drawable/gallery_black</item>
+	</style>
+		<style name="camera" >
+		<item name="android:drawableLeft">@drawable/camera_black</item>
+	</style>
+	<style name="crop" >
+		<item name="android:drawableLeft">@drawable/crop_black</item>
+	</style>
 </resources>

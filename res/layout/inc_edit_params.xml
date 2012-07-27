@@ -15,28 +15,32 @@
 			android:layout_height="48dp"
 			android:padding="4dp"
 			android:scaleType="centerInside"
-			android:id="@+id/btnRotateLeft"
 			style="@style/rot_left"
+			android:id="@+id/btnRotateLeft"
+			android:nextFocusLeft="@+id/btnResize"
 		/>
 		<ImageButton
 			android:layout_width="48dp"
 			android:layout_height="48dp"
 			android:padding="4dp"
 			android:scaleType="centerInside"
-			android:id="@+id/btnRotateRight"
 			style="@style/rot_right"
-		/>
-		<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/btnResize"
-			android:paddingLeft="7dp"
-			android:paddingRight="7dp"
+			android:id="@+id/btnRotateRight"
+			android:nextFocusRight="@+id/btnResize"
 		/>
 		<View
 			android:layout_width="0dp"
 			android:layout_height="0dp"
 			android:layout_weight="1"
+		/>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingLeft="7dp"
+			android:paddingRight="7dp"
+			android:id="@+id/btnResize"
+			android:nextFocusLeft="@+id/btnRotateRight"
+			android:nextFocusRight="@+id/btnRotateLeft"
 		/>
 	</LinearLayout>
 	<TableLayout
@@ -52,6 +56,8 @@
 				android:paddingLeft="24dp"
 				android:paddingRight="24dp"
 				android:id="@+id/sbCropLeft"
+				android:nextFocusLeft="@+id/sbCropLeft"
+				android:nextFocusRight="@+id/sbCropLeft"
 			/>
 			<TextView
 				android:textColor="#ffffff"
@@ -72,6 +78,8 @@
 				android:paddingLeft="24dp"
 				android:paddingRight="24dp"
 				android:id="@+id/sbCropTop"
+				android:nextFocusLeft="@+id/sbCropTop"
+				android:nextFocusRight="@+id/sbCropTop"
 			/>
 			<TextView
 				android:textColor="#ffffff"
@@ -92,6 +100,8 @@
 				android:paddingLeft="24dp"
 				android:paddingRight="24dp"
 				android:id="@+id/sbCropRight"
+				android:nextFocusLeft="@+id/sbCropRight"
+				android:nextFocusRight="@+id/sbCropRight"
 			/>
 			<TextView
 				android:textColor="#ffffff"
@@ -112,6 +122,8 @@
 				android:paddingLeft="24dp"
 				android:paddingRight="24dp"
 				android:id="@+id/sbCropBottom"
+				android:nextFocusLeft="@+id/sbCropBottom"
+				android:nextFocusRight="@+id/sbCropBottom"
 			/>
 			<TextView
 				android:textColor="#ffffff"

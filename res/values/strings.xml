@@ -20,7 +20,7 @@
 <string name="album_loading">(loading..)</string>
 <string name="album_not_select">(no album)</string>
 <string name="autostart_settings">laziness settings</string>
-<string name="cancel">Cancel</string>
+<string name="cancel">cancel</string>
 <string name="cancel_notice">cancelled..</string>
 <string name="copy_to_clipboard">URL is copied to clipboard</string>
 <string name="crop_bottom">B</string>
@@ -34,7 +34,7 @@
 
 <string name="edit_settings">image editor settings</string>
 <string name="edit_progress_title">processing..</string>
-<string name="file_not_selected">file is not selected.</string>
+<string name="image_not_selected">image data is not selected.</string>
 <string name="file_temp_error">failed to prepare temporary file</string>
 <string name="history">history</string>
 <string name="history_cleared">history data is cleared.</string>
@@ -56,7 +56,7 @@
 <string name="output_style_settings">URL settings</string>
 <string name="output_style_summary">type of output URL</string>
 <string name="output_style_title">output type</string>
-<string name="picker">pick image</string>
+<string name="picker">gallery</string>
 <string name="picker_autostart_summary">if checked, automatically start file picker when start.</string>
 <string name="picker_autostart_title">auto start picker</string>
 <string name="picker_missing">missing app to choose the file.</string>
@@ -91,6 +91,8 @@
 <string name="upload_progress_sizecheck">calculate upload size&#8230;</string>
 <string name="upload_progress_digest">calculate digest&#8230;</string>
 <string name="upload_wait_response">waiting response&#8230;</string>
+<string name="capture">camera</string>
+<string name="capture_missing">missing app to capture image</string>
 
 <string name="storage_not_directory">external storage is not presented</string>
 <string name="storage_not_writable">external storage is not writable</string>
