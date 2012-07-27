@@ -60,19 +60,6 @@ The Imgur logo and "IMGUR" are trademarks of Imgur LLC and are used here for inf
 The Imgur logo and "IMGUR" are trademarks of Imgur LLC and are used here for informational purposes only.
 "Imgur マッシュ" is not affiliated with Imgur and has not been reviewed or approved by Imgur.
 ---------------------------------------------------
-
-* 過去にあった不具合とその原因、対策
-
-操作の省略をONにしているとアルバムの選択が維持されない。
-アルバム選択肢の永続的なキャッシュを用意して解決した
---
-アカウントの追加を行った直後にメイン画面に戻ると、アルバム選択肢がリロードされなかった。
-単純な実装漏れ。
---
-履歴画面でアルバム選択肢が「全てのアルバム」の時にアカウントを選んでも、実際のフィルタが更新されない。
-アルバム選択肢の選択インデクスが変化しないため、アルバム選択変更のイベントが呼ばれないのが原因だった。
---
-操作の省略をONにして加工中に回転してから加工を完了すると、加工前の画像がアップロードされる。
 レイアウトを待つために処理を遅延させる前後で、現在選択中のファイルの情報を上書きしてしまっていた。
 どの場合でも現在選択中のファイルを更新してから遅延処理を行うようにした
 --
