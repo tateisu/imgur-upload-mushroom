@@ -56,7 +56,6 @@
 			android:defaultValue="85"
 			android:inputType="number"
 		/>
-
 	</PreferenceCategory>
 
 	<!-- 出力するURL -->

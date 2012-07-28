@@ -1,8 +1,10 @@
 package jp.juggler.ImgurMush;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import jp.juggler.ImgurMush.data.ResizePreset;
 import jp.juggler.ImgurMush.helper.BaseActivity;
@@ -353,7 +355,7 @@ public class ActArrange extends BaseActivity{
 		}
 		return v<10?10:v>100?100:v;
 	}
-
+	
 	void save(){
 		final int rot_mode = avPreview.getRotate();
 		final int quality = getJPEGQuality();
@@ -503,11 +505,14 @@ public class ActArrange extends BaseActivity{
 								if( resized_h < 1 ) resized_h = 1;
 							}
 
-							if( rot_mode == 0
+							boolean is_jpeg = check_jpeg(src_path);
+							
+							// 画像がもともとJPEGで、回転なし、切り抜きもリサイズもなし…ってことは加工が必要ない
+							if( is_jpeg
+							&&  rot_mode == 0
 							&&  resized_w >= source_w
 							&&  resized_h >= source_h
 							){
-								// 回転なし、切り抜きもリサイズもなし…ってことは加工が必要ない
 								act.ui_handler.post(new Runnable() {
 									@Override
 									public void run() {
@@ -521,7 +526,6 @@ public class ActArrange extends BaseActivity{
 								});
 								return;
 							}
-
 
 							// 90/270度回転の場合、出力サイズは縦横が入れ替わる
 							if( (rot_mode &1) != 0 ){
@@ -636,4 +640,26 @@ public class ActArrange extends BaseActivity{
 			fos.close();
 		}
 	}
+	
+	// ファイルがJPEGなら真を返す
+	boolean check_jpeg(String path){
+		try{
+			FileInputStream fi = new FileInputStream(src_path);
+			try{
+				int c1 = fi.read();
+				int c2 = fi.read();
+				if( c1 == 0xff
+				&&  c2 == 0xD8
+				){
+					return true;
+				}
+			}finally{
+				fi.close();
+			}
+		}catch(Throwable ex){
+			ex.printStackTrace();
+		}
+		return false;
+	}
+
 }

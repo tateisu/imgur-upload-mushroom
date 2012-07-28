@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<merge
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:orientation="vertical"
 >
-	<View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -68,6 +64,7 @@
 				android:layout_marginLeft="8dp"
 				android:gravity="right|center_vertical"
 				android:textColor="#ffffff"
+				android:text="@string/crop_percent_max"
 				android:id="@+id/tvCropLeft"
 			/>
 		</TableRow>
@@ -90,6 +87,7 @@
 				android:layout_marginLeft="8dp"
 				android:gravity="right|center_vertical"
 				android:textColor="#ffffff"
+				android:text="@string/crop_percent_max"
 				android:id="@+id/tvCropTop"
 			/>
 		</TableRow>
@@ -112,7 +110,9 @@
 				android:layout_marginLeft="8dp"
 				android:gravity="right|center_vertical"
 				android:textColor="#ffffff"
+				android:text="@string/crop_percent_max"
 				android:id="@+id/tvCropRight"
+				
 			/>
 		</TableRow>
 		<TableRow
@@ -134,11 +134,10 @@
 				android:layout_marginLeft="8dp"
 				android:gravity="right|center_vertical"
 				android:textColor="#ffffff"
+				android:text="@string/crop_percent_max"
 				android:id="@+id/tvCropBottom"
-				android:text="99.99%"
 			/>
 		</TableRow>
-		<!-- 最後の行だけ 99.99% を指定してるのはレイアウト時にテキスト幅を確定させるため -->
 	</TableLayout>
-</LinearLayout>
+</merge>
 

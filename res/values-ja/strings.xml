@@ -15,31 +15,35 @@
 <string name="act_oauth"		 >Imgur マッシュ/ アカウントの追加</string>
 <string name="act_pref"			 >Imgur マッシュ/ 設定</string>
 <string name="act_resize_preset" >Imgur マッシュ/ リサイズ指定</string>
-<string name="app_name"			 >Imgur マッシュ</string>
 <string name="album_all">全アルバム</string>
 <string name="album_loading">(読み込み中…)</string>
 <string name="album_not_select">(アルバムなし)</string>
+<string name="app_name"			 >Imgur マッシュ</string>
 <string name="autostart_settings">操作の省略</string>
 <string name="cancel">キャンセル</string>
 <string name="cancel_notice">キャンセルします…</string>
+<string name="capture">撮影</string>
+<string name="capture_missing">画像キャプチャに使えるアプリがありません</string>
 <string name="copy_to_clipboard">URLをクリップボードにコピーしました</string>
 <string name="crop_bottom">下</string>
 <string name="crop_left">左</string>
+<string name="crop_percent_max">99.99%</string>
 <string name="crop_right">右</string>
 <string name="crop_top">上</string>
 <string name="dash3">&#8230;</string>
+<string name="delete_hash_missing">削除ハッシュが見つかりません</string>
 <string name="edit">加工</string>
-<string name="edit_autostart_title">画像加工を自動開始</string>
 <string name="edit_autostart_summary">有効にすると、画像が選択されたらすぐに画像加工を開始します</string>
+<string name="edit_autostart_title">画像加工を自動開始</string>
 <string name="edit_progress_title">処理中です…</string>
 <string name="edit_settings">画像加工の設定</string>
-<string name="image_not_selected">画像が選択されていません</string>
 <string name="file_temp_error">ファイルの作成に失敗しました</string>
 <string name="history">履歴</string>
 <string name="history_cleared">履歴データを消去しました</string>
 <string name="history_clear_message">端末上に保存された履歴を全て消去します。Imgurサーバ上の画像はそのまま残ります。アカウントを使ってアップロードした画像はImgurのWebサイトから管理することができます。よろしいですか？</string>
 <string name="history_clear_title">履歴を全て消去</string>
 <string name="history_delete_confirm">この画像をサーバから削除しますか?</string>
+<string name="image_not_selected">画像が選択されていません</string>
 <string name="image_output_dir_desc">加工した画像ファイルを出力するフォルダを指定してください。</string>
 <string name="image_output_dir_summary">加工した画像ファイルを出力するフォルダ</string>
 <string name="image_output_dir_title">出力フォルダ</string>
@@ -79,22 +83,17 @@
 <string name="save">作成</string>
 <string name="setting">設定</string>
 <string name="site_top">Imgurトップページ</string>
+<string name="storage_not_directory">外部フラッシュメモリが提供されていません?</string>
+<string name="storage_not_writable">外部フラッシュメモリへの書き込み許可がありません?</string>
 <string name="too_large_data">データサイズが大きすぎます</string>
 <string name="upload">アップロード</string>
 <string name="upload_autostart_summary">有効にすると、画像選択や加工が終わったらすぐにImgurへの送信を行います</string>
 <string name="upload_autostart_title">アップロードを自動開始</string>
-
-<string name="delete_hash_missing">削除ハッシュが見つかりません</string>
-<string name="uri_parse_error">ファイルパスを調べられません\n%1$s</string>
 <string name="upload_progress">アップロード中です…</string>
-<string name="upload_progress_sizecheck">アップロードサイズを測定中です…</string>
 <string name="upload_progress_digest">署名ダイジェストを計算中です…</string>
+<string name="upload_progress_sizecheck">アップロードサイズを測定中です…</string>
 <string name="upload_wait_response">レスポンス待機中…</string>
-<string name="capture">撮影</string>
-<string name="capture_missing">画像キャプチャに使えるアプリがありません</string>
-
-<string name="storage_not_directory">外部フラッシュメモリが提供されていません?</string>
-<string name="storage_not_writable">外部フラッシュメモリへの書き込み許可がありません?</string>
+<string name="uri_parse_error">ファイルパスを調べられません\n%1$s</string>
 
 <!-- ここから長いテキスト-->
 
