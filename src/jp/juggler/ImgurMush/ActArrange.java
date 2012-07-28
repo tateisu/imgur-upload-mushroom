@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 import jp.juggler.ImgurMush.data.ResizePreset;
 import jp.juggler.ImgurMush.helper.BaseActivity;

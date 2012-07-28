@@ -166,8 +166,6 @@ public class ActImgurMush extends BaseActivity {
 	UploadTargetManager upload_target_manager;
 	Uploader uploader;
 
-	boolean init_busy = true;
-
 	void initUI(){
 		setContentView(R.layout.act_imgur_mush);
 
@@ -273,17 +271,22 @@ public class ActImgurMush extends BaseActivity {
 		editor_autostart = act.pref().getBoolean(PrefKey.KEY_AUTO_EDIT,false);
 		//
 		setCurrentFile(0,null);
-		//
-		init_busy = true;
-
+		
+		// 画面回転などからリストアしたなら真
+		boolean bRestore = false;
+		
 		// 画像アプリの共有インテントなどから起動された場合、インテントの指定から画像を選択する
 		Intent intent = getIntent();
 		if( intent != null ){
+
+			// リストアしたかどうか調べる
+			bRestore = intent.getBooleanExtra(PrefKey.EXTRA_IS_STATUS_SAVE,false);
+			
+			// カメラ画面を呼び出した際のURIを復旧
 			String v = intent.getStringExtra(PrefKey.EXTRA_CAPTURE_URI);
 			if( v != null ) this.capture_uri = Uri.parse(v);
-
-			boolean bRestore = intent.getBooleanExtra(PrefKey.EXTRA_IS_STATUS_SAVE,false);
-
+			
+			// 共有インテントで画像を指定されたとか、画像選択後の状態から復旧したとか
 			Uri uri = intent.getData();
 			if(uri == null){
 				Bundle extra = intent.getExtras();
@@ -299,11 +302,8 @@ public class ActImgurMush extends BaseActivity {
 		}
 
 		// それ以外の場合、設定されていれば自動的にピッカーを開く
-		if( pref().getBoolean(PrefKey.KEY_AUTO_PICK,false) ) open_file_picker();
-
+		if( !bRestore && pref().getBoolean(PrefKey.KEY_AUTO_PICK,false) ) open_file_picker();
 	}
-
-
 
 	boolean is_mushroom(){
 		Intent intent = getIntent();
