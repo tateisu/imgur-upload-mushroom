@@ -24,6 +24,7 @@
 <string name="cancel_notice">キャンセルします…</string>
 <string name="capture">撮影</string>
 <string name="capture_missing">画像キャプチャに使えるアプリがありません</string>
+<string name="close">閉じる</string>
 <string name="copy_to_clipboard">URLをクリップボードにコピーしました</string>
 <string name="crop_bottom">下</string>
 <string name="crop_left">左</string>
@@ -108,6 +109,10 @@
 このアプリは Google Data APIs Client Library のコードを利用しています。 https://developers.google.com/gdata/docs/client-libraries
 </string>
 
+<string name="oauth_error_server_certificate">
+お使いの端末は時計が合っていないか、搭載されているルート証明書が古いためにImgurのサーバと安全な通信を行うことができません。
+\n時計を合わせるか、可能なら端末のファームウェアをアップデートする等すれば改善されるかもしれません。
+</string>
 
 <string-array name="output_style_list_captions">
 	<item>画像リンク</item>

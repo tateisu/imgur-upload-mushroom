@@ -26,27 +26,38 @@
 			android:id="@+id/album"
 		/>
 	</LinearLayout>
-	<ListView
+	<FrameLayout
 		android:layout_width="fill_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1"
-		android:id="@+id/list"
-		android:fastScrollEnabled="true"
-	/>
-	<LinearLayout
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:gravity="center"
 	>
-		<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:minWidth="48dp"
-			android:text="@string/history_clear_title"
-			android:id="@+id/btnClearHistoryAll"
+		<ListView
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:id="@+id/list"
+			android:fastScrollEnabled="true"
+			android:footerDividersEnabled="false"
 		/>
-
-	</LinearLayout>
+		<LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:orientation="vertical"
+			android:gravity="right"
+		>
+			<View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+			<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="48dp"
+				android:paddingLeft="7dp"
+				android:paddingRight="7dp"
+				android:layout_weight="0"
+				android:minWidth="48dp"
+				android:text="@string/dash3"
+				android:id="@+id/btnSetting"
+				
+			/>
+		</LinearLayout>
+	</FrameLayout>
 
 </LinearLayout>

@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.SparseBooleanArray;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
@@ -29,8 +31,6 @@ public class BaseActivity extends Activity {
 		cr =getContentResolver();
 		dialog_manager = new DialogManager(this);
 	}
-
-	//////////////////////////////////////////////////
 
 	@Override protected void onDestroy() {
 		super.onDestroy();
@@ -69,6 +69,45 @@ public class BaseActivity extends Activity {
 		lifecycle_manager.fire_onPause();
 	}
 
+	SparseBooleanArray pressed_key = new SparseBooleanArray();
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if( event.getAction() == KeyEvent.ACTION_DOWN ){
+			switch(keyCode){
+			case KeyEvent.KEYCODE_BACK:
+			case KeyEvent.KEYCODE_MENU:
+				pressed_key.put(keyCode,true);
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if( event.getAction() == KeyEvent.ACTION_UP && pressed_key.get(keyCode) ){
+			pressed_key.delete(keyCode);
+			switch(keyCode){
+			case KeyEvent.KEYCODE_BACK:
+				procBackKey();
+				return true;
+			case KeyEvent.KEYCODE_MENU:
+				procMenuKey();
+				return true;
+			}
+		}
+		return super.onKeyUp(keyCode, event);
+	}
+	
+	protected void  procMenuKey() {
+	}
+
+
+	protected void  procBackKey() {
+		finish();
+	}
+	
 	//////////////////////////////////////////////////
 
 	public void show_toast(final int length,final int resid){

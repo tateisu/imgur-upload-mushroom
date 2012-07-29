@@ -23,8 +23,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.SparseBooleanArray;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -65,39 +63,6 @@ public class ActImgurMush extends BaseActivity {
 	protected void onPause() {
 		super.onPause();
 		save_status();
-	}
-
-
-
-	SparseBooleanArray pressed_key = new SparseBooleanArray();
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if( event.getAction() == KeyEvent.ACTION_DOWN ){
-			switch(keyCode){
-			case KeyEvent.KEYCODE_BACK:
-			case KeyEvent.KEYCODE_MENU:
-				pressed_key.put(keyCode,true);
-				return true;
-			}
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if( event.getAction() == KeyEvent.ACTION_UP && pressed_key.get(keyCode) ){
-			pressed_key.delete(keyCode);
-			switch(keyCode){
-			case KeyEvent.KEYCODE_BACK:
-				procBackKey();
-				return true;
-			case KeyEvent.KEYCODE_MENU:
-				procMenuKey();
-				return true;
-			}
-		}
-		return super.onKeyUp(keyCode, event);
 	}
 
 	@Override
@@ -145,13 +110,9 @@ public class ActImgurMush extends BaseActivity {
 	}
 
 
+	@Override
 	protected void  procMenuKey() {
 		menu_dialog();
-	}
-
-
-	protected void  procBackKey() {
-		finish();
 	}
 
 	//////////////////////////////////////////////////////////////
@@ -374,11 +335,11 @@ public class ActImgurMush extends BaseActivity {
 			preview.setVisibility(View.INVISIBLE);
 			if( file_path == null ){
 				tvFileDesc.setText(getString(R.string.image_not_selected));
-				btnEdit.setVisibility(View.GONE);
+				btnEdit.setEnabled(false);
 				btnUpload.setEnabled(false);
 				return;
 			}else{
-				btnEdit.setVisibility(View.VISIBLE);
+				btnEdit.setEnabled(true);
 				btnUpload.setEnabled(true);
 			}
 
@@ -495,25 +456,23 @@ public class ActImgurMush extends BaseActivity {
 			.setNegativeButton(R.string.cancel,null)
 			.setItems(
 				new String[]{
-					getString(R.string.about),
 					getString(R.string.history),
 					getString(R.string.setting),
-
+					getString(R.string.about),
 				},new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						switch(which){
 						case 0:
-							startActivityForResult(new Intent(act,ActAppInfo.class),REQ_APPINFO);
-							break;
-						case 1:
 							startActivityForResult(new Intent(act,ActHistory.class),REQ_HISTORY);
 							break;
-						case 2:
+						case 1:
 							startActivityForResult(new Intent(act,ActPref.class),REQ_PREF);
 							break;
+						case 2:
+							startActivityForResult(new Intent(act,ActAppInfo.class),REQ_APPINFO);
+							break;
 						}
-
 					}
 				}
 			)

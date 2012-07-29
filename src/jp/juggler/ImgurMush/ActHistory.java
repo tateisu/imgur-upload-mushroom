@@ -85,6 +85,12 @@ public class ActHistory extends BaseActivity {
 		history_adapter = new HistoryAdapter(this);
 
 		listview = (ListView)findViewById(R.id.list);
+		//
+		float density = getResources().getDisplayMetrics().density;
+		View view_padding = new View(this);
+		view_padding.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT,(int)(0.5f + density * 48)));
+		listview.addFooterView(view_padding);
+		//
 		listview.setAdapter(history_adapter);
 		listview.setOnItemClickListener(new OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int idx, long id) {
@@ -152,40 +158,11 @@ public class ActHistory extends BaseActivity {
 
 
 
-		findViewById(R.id.btnClearHistoryAll).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.btnSetting).setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				act.dialog_manager.show_dialog(
-					new AlertDialog.Builder(act)
-					.setCancelable(true)
-					.setNegativeButton(R.string.cancel,null)
-					.setTitle(R.string.history_clear_title)
-					.setMessage(R.string.history_clear_message)
-					.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
-						@Override public void onClick(DialogInterface dialog, int which) {
-							final ProgressDialog progress = new ProgressDialog(act);
-							progress.setIndeterminate(true);
-							progress.setMessage(getString(R.string.please_wait));
-							progress.setCancelable(true);
-							act.dialog_manager.show_dialog(progress);
-							new AsyncTask<Void,Void,String>(){
-								@Override
-								protected String doInBackground(Void... params) {
-									act.cr.delete(ImgurHistory.meta.uri,null,null);
-									return null;
-								}
-
-								@Override
-								protected void onPostExecute(String result) {
-									if(isFinishing()) return;
-									progress.dismiss();
-									Toast.makeText(act,R.string.history_cleared,Toast.LENGTH_SHORT).show();
-								}
-							}.execute();
-						}
-					})
-				);
+				menu_dialog();
 			}
 		});
 	}
@@ -428,6 +405,68 @@ public class ActHistory extends BaseActivity {
 						}
 					});
 					t.start();
+				}
+			})
+		);
+	}
+	
+	///////////////////////////////
+	
+	@Override
+	protected void  procMenuKey() {
+		menu_dialog();
+	}
+
+	void menu_dialog() {
+		dialog_manager.show_dialog(
+			new AlertDialog.Builder(this)
+			.setCancelable(true)
+			.setNegativeButton(R.string.cancel,null)
+			.setItems(
+				new String[]{
+					getString(R.string.history_clear_title),
+				},new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch(which){
+						case 0:
+							history_clear_dialog();
+							break;
+						}
+					}
+				}
+			)
+		);
+	}
+	
+	void history_clear_dialog() {
+		act.dialog_manager.show_dialog(
+			new AlertDialog.Builder(act)
+			.setCancelable(true)
+			.setNegativeButton(R.string.cancel,null)
+			.setTitle(R.string.history_clear_title)
+			.setMessage(R.string.history_clear_message)
+			.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
+				@Override public void onClick(DialogInterface dialog, int which) {
+					final ProgressDialog progress = new ProgressDialog(act);
+					progress.setIndeterminate(true);
+					progress.setMessage(getString(R.string.please_wait));
+					progress.setCancelable(true);
+					act.dialog_manager.show_dialog(progress);
+					new AsyncTask<Void,Void,String>(){
+						@Override
+						protected String doInBackground(Void... params) {
+							act.cr.delete(ImgurHistory.meta.uri,null,null);
+							return null;
+						}
+
+						@Override
+						protected void onPostExecute(String result) {
+							if(isFinishing()) return;
+							progress.dismiss();
+							Toast.makeText(act,R.string.history_cleared,Toast.LENGTH_SHORT).show();
+						}
+					}.execute();
 				}
 			})
 		);

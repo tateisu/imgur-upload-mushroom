@@ -1,11 +1,17 @@
 package jp.juggler.ImgurMush;
 
+import java.util.regex.Pattern;
+
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.SignedClient;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
+import oauth.signpost.exception.OAuthCommunicationException;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -125,22 +131,54 @@ public class ActOAuth extends BaseActivity {
 		new Thread(proc_before).start();
 	}
 
+	Pattern reCertificateError = Pattern.compile("Not trusted server certificate",Pattern.CASE_INSENSITIVE);
+	
 	private Runnable proc_before = new Runnable() {
+		
 		@Override
 		public void run() {
 			String url = null;
+			String last_error = null;
 			for(int nTry=0;nTry<10;++nTry){
 				try {
 					mOAuthConsumer = new CommonsHttpOAuthConsumer( Config.CONSUMER_KEY, Config.CONSUMER_SECRET);
 					mOAuthProvider = new CommonsHttpOAuthProvider( URL_REQUEST_TOKEN, URL_ACCESS_TOKEN, URL_WEB_AUTHORIZATION);
 					url = mOAuthProvider.retrieveRequestToken(mOAuthConsumer, URL_CALLBACK);
-					if( validstr(url) ) break;
+				}catch ( OAuthCommunicationException ex) {
+					ex.printStackTrace();
+					String msg = ex.getMessage();
+					if( reCertificateError.matcher(msg).find() ){
+						last_error = act.getString(R.string.oauth_error_server_certificate);
+						break;
+					}
+					last_error = ex.getClass().getSimpleName()+": "+ex.getMessage();
 				} catch (Throwable ex) {
-					report_ex(ex);
+					ex.printStackTrace();
+					last_error = ex.getClass().getSimpleName()+": "+ex.getMessage();
 				}
 			}
 			if( !validstr(url)  ) {
-				finish();
+				final String errmsg = last_error;
+				act.ui_handler.post(new Runnable() {
+					@Override
+					public void run() {
+						if(act.isFinishing()) return;
+						act.dialog_manager.show_dialog(new AlertDialog.Builder(act)
+							.setCancelable(true)
+							.setOnCancelListener(new OnCancelListener() {
+								@Override public void onCancel(DialogInterface dialog) {
+									finish();
+								}
+							})
+							.setNegativeButton(R.string.close,new DialogInterface.OnClickListener() {
+								@Override public void onClick(DialogInterface dialog, int which) {
+									finish();
+								}
+							})
+							.setMessage(errmsg)
+						);
+					}
+				});
 				return;
 			}
 			Log.d(TAG,"auth url="+url);

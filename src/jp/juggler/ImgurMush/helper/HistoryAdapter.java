@@ -76,6 +76,8 @@ public class HistoryAdapter extends BaseAdapter {
 		};
 
 		setFilter(null,null);
+		
+		act.lifecycle_manager.add(activity_listener);
 	}
 
 	LifeCycleListener activity_listener = new LifeCycleListener(){
@@ -127,7 +129,10 @@ public class HistoryAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(int position) {
-		return 0;
+		if(!mDataValid) return -1L;
+		if(!cursor.moveToPosition(position) ) return -1L;
+		ImgurHistory item = ImgurHistory.loadFromCursor(cursor,colidx);
+		return item.id;
 	}
 
 

@@ -24,6 +24,7 @@
 <string name="cancel_notice">cancelled..</string>
 <string name="capture">capture</string>
 <string name="capture_missing">missing app to capture image</string>
+<string name="close">close</string>
 <string name="copy_to_clipboard">URL is copied to clipboard</string>
 <string name="crop_bottom">B</string>
 <string name="crop_left">L</string>
@@ -110,6 +111,11 @@ this app contains the code from oauth-signpost. https://github.com/kaeppler/sign
 
 <string name="about_google_data">
 this app contains the code from Google Data APIs Client Library. https://developers.google.com/gdata/docs/client-libraries
+</string>
+
+<string name="oauth_error_server_certificate">
+This machine missing correct clock setting, or missing recent root certificates.
+these are required to SSL connection with server of Imgur.
 </string>
 
 <string-array name="output_style_list_captions">
