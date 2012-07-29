@@ -484,19 +484,12 @@ public class ActImgurMush extends BaseActivity {
 		@Override public void run() {
 			if(isFinishing()) return;
 			ui_handler.removeCallbacks(upload_starter);
-		//	upload_autostart = false;
 
 			// 画像が選択されていない
 			if( file_path == null ) return;
 
 			// 開始する指示が出されていない
 			if(!bUploadButtonPressed && !upload_autostart) return;
-
-			// アップロード先が初期化されていない
-			if( upload_target_manager.isLoading() ){
-				ui_handler.postDelayed(upload_starter,333);
-				return;
-			}
 
 			// アップロードを開始する
 			bUploadButtonPressed = false;
@@ -505,9 +498,9 @@ public class ActImgurMush extends BaseActivity {
 			ImgurAccount account = upload_target_manager.getSelectedAccount();
 			log.d("upload to account=%s,album_id=%s",(account==null?"OFF":"ON"),(album==null?"OFF":"ON"));
 			uploader.image_upload(
-					account
-					,(album==null?null : album.album_id)
-					,file_path
+				account
+				,(album==null?null : album.album_id)
+				,file_path
 			);
 		}
 	};

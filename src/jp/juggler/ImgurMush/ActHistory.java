@@ -12,6 +12,7 @@ import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.data.ImgurHistory;
 import jp.juggler.ImgurMush.helper.AccountAdapter;
 import jp.juggler.ImgurMush.helper.AlbumAdapter;
+import jp.juggler.ImgurMush.helper.AlbumList;
 import jp.juggler.ImgurMush.helper.AlbumLoader;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.HistoryAdapter;
@@ -158,14 +159,12 @@ public class ActHistory extends BaseActivity {
 
 	String lastused_account_name = null;
 	String lastused_album_name = null;
-	boolean init_complete = false;
 
 	void initPage(){
 		// 最後に選択したアカウントとアルバム
 		SharedPreferences pref = act.pref();
 		lastused_account_name = pref.getString(PrefKey.KEY_HISTORY_ACCOUNT,null);
 		lastused_album_name   = pref.getString(PrefKey.KEY_HISTORY_ALBUM,null);
-		init_complete = false;
 
 		// アカウントは初期化中でもアクセスできると思うので、選択する
 		account_adapter.selectByName(spAccount,lastused_account_name );
@@ -175,8 +174,6 @@ public class ActHistory extends BaseActivity {
 	}
 
 	void save_last_selection(){
-		// ロード中状態ならセーブしない
-		if( !init_complete ) return;
 		//
 		SharedPreferences.Editor e = act.pref().edit();
 		ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
@@ -196,8 +193,6 @@ public class ActHistory extends BaseActivity {
 		e.commit();
 	}
 
-	static final String ACCOUNT_NOT_SELECT = "<>ACCOUNT_NOT_SELECT";
-
 	void onAccountChange(boolean bLoadEvent,int account_idx,int album_idx,String desc){
 		// アカウント指定が-1なら選択位置を補う
 		if( account_idx == ACCOUNT_NOCHANGE) account_idx = spAccount.getSelectedItemPosition();
@@ -211,17 +206,13 @@ public class ActHistory extends BaseActivity {
 				history_adapter.clearFilter();
 				spAlbum.setEnabled(false);
 			}
-
-			// アカウント選択なしなら、この状態で初期化完了とみなす
-			if( lastused_account_name == null ){
-				init_complete = true;
-			}
 		}else{
 			// アカウントが選択されている場合
 
 			// アカウント別のアルバム一覧を取得するが、まだロード中かもしれない
-			Iterable<ImgurAlbum> list = album_loader.findAlbumList(account.name);
-			if( list == null ){
+			AlbumList album_list =  album_loader.findAlbumList(account.name);
+			if( album_list == null ){
+				log.d("album not found.");
 				// ロード中やエラー状態ではアルバム一覧を読めない
 				if( album_idx == ALBUM_DONTCARE ){
 					album_adapter.clear(strAlbumLoading);
@@ -229,9 +220,7 @@ public class ActHistory extends BaseActivity {
 					spAlbum.setEnabled(false);
 				}
 			}else{
-				// アルバムを読めたら初期化フェーズは終わったとみなす
-				init_complete = true;
-
+				log.d("album found.");
 				if( album_idx != ALBUM_DONTCARE ){
 					// アルバム選択肢が明示されている場合はフィルタの更新のみ行う
 					ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(album_idx);
@@ -249,8 +238,8 @@ public class ActHistory extends BaseActivity {
 					if( bLoadEvent || old_selection == null ){
 
 						// アルバム選択肢を設定する
-						album_adapter.replace(list,strAlbumAll);
-						spAlbum.setEnabled( album_adapter.getCount() > 1 );
+						album_adapter.replace(album_list.iter(),strAlbumAll);
+						spAlbum.setEnabled( album_list.size() > 0 );
 
 						// 保存された初期選択がまだ適用されておらず
 						// 適用が可能(アカウントが一致する）なら一度だけ選択を行う

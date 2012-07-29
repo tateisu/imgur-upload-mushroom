@@ -85,12 +85,9 @@ public class UploadTargetManager {
 
 	String  lastused_account_name = null;
 	String  lastused_album_name = null;
-	boolean init_complete = false;
 
 	void selection_init(){
 		SharedPreferences pref = act.pref();
-		//
-		init_complete = false;
 		//
 		lastused_account_name = pref.getString(PrefKey.KEY_ACCOUNT_LAST_USED,null);
 		if( PrefKey.VALUE_ACCOUNT_ANONYMOUS.equals(lastused_account_name) ) lastused_account_name = null;
@@ -103,12 +100,9 @@ public class UploadTargetManager {
 		log.d("load selection: account=%s,album=%s",lastused_account_name,lastused_album_name);
 		// アカウントは初期化中でもアクセスできるはず…
 		account_adapter.selectByName(spAccount,lastused_account_name);
-		last_selection_change = SystemClock.uptimeMillis();
 	}
 
 	void selection_save(){
-		if( isLoading() ) return;
-		//
 		SharedPreferences.Editor e = act.pref().edit();
 		ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
 		if( album != null ){
@@ -128,54 +122,28 @@ public class UploadTargetManager {
 		}
 		e.commit();
 	}
-	long last_selection_change = 0;
-	public boolean isLoading() {
-		if( !init_complete ){
-			log.d("isLoading: initialize is not complete");
-			return true;
-		}
-		long now = SystemClock.uptimeMillis();
-		if( now - last_selection_change <= 333 ){
-			log.d("isLoading: too short last event");
-			return true;
-		}
-		return false;
-	}
+	
+	AlbumList album_list;
 
 	void account_selection_changed(boolean bAlbumLoaded, int last_account_idx,String desc) {
-		last_selection_change = SystemClock.uptimeMillis();
-
 		ImgurAccount account = (ImgurAccount)account_adapter.getItem(last_account_idx);
 		if( account == null ){
 			log.d("missing account: %s",desc);
 			// アカウントが選択されていない
 			album_adapter.clear(act.getString(R.string.album_not_select));
 			spAlbum.setEnabled(false);
-
-			// 初期選択がカラならこの時点で初期化完了とみなす
-			if( lastused_account_name == null ){
-				if( !init_complete ){
-					init_complete = true;
-					log.d("init_complete(1): %s",desc);
-				}
-			}
+			album_list = null;
 		}else{
 			// アカウントが選択されている
 
 			// アルバム選択肢を読む
-			Iterable<ImgurAlbum> list = album_loader.findAlbumList(account.name);
-			if( list == null ){
+			album_list = album_loader.findAlbumList(account.name);
+			if( album_list == null ){
 				log.d("missing album: %s",desc);
 				// アルバム一覧を読めない。ロード中かエラーだろう
 				album_adapter.clear(act.getString(R.string.album_loading));
 				spAlbum.setEnabled(false);
 			}else{
-				// アルバムを読めたら初期化完了とみなす
-				if( !init_complete ){
-					init_complete = true;
-					log.d("init_complete(2): %s",desc);
-				}
-
 				// 直前までの選択。異なるアカウントのものはnullとする
 				ImgurAlbum old_selection= (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
 				if( old_selection != null && ! account.name.equals(old_selection.account_name) ) old_selection = null;
@@ -183,8 +151,8 @@ public class UploadTargetManager {
 				if( bAlbumLoaded || old_selection ==null  ){
 
 					// アルバム選択肢を設定する
-					album_adapter.replace(list,act.getString(R.string.album_not_select));
-					spAlbum.setEnabled(true);
+					album_adapter.replace(album_list.iter(),act.getString(R.string.album_not_select));
+					spAlbum.setEnabled( album_list.size() > 0);
 
 					if( account.name.equals( lastused_account_name ) ){
 						// 選択の初期化がまだおわっておらず現在のアカウントとマッチするのなら、アルバムを選択しなおす
@@ -203,6 +171,7 @@ public class UploadTargetManager {
 						spAlbum.setSelection(0);
 					}
 					// ただし、 selection changed イベントが発生するのはこれより少し後になる
+					// もしくは イベントが発生しない場合もある
 				}
 			}
 		}

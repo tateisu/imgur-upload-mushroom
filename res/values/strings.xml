@@ -12,7 +12,7 @@
 <string name="act_arrange"		 >Imgur Mushroom/ image arrange</string>
 <string name="act_history"		 >Imgur Mushroom/ upload history</string>
 <string name="act_main"			 >Imgur Mushroom</string>
-<string name="act_oauth"		 >Imgur Mushroom/ Imgur account authorization</string>
+<string name="act_oauth"		 >Imgur Mushroom/ account authorization</string>
 <string name="act_pref"			 >Imgur Mushroom/ setting</string>
 <string name="act_resize_preset" >Imgur Mushroom/ resize presets</string>
 <string name="album_all">all albums</string>
@@ -88,7 +88,7 @@
 <string name="storage_not_writable">external storage is not writable</string>
 <string name="too_large_data">too large data</string>
 <string name="upload">upload</string>
-<string name="upload_autostart_summary">if checked, automatically start upload when image is choose.</string>
+<string name="upload_autostart_summary">if checked, automatically start upload after image is selected.</string>
 <string name="upload_autostart_title">auto start upload</string>
 <string name="upload_progress">uploading&#8230;</string>
 <string name="upload_progress_digest">calculate digest&#8230;</string>
@@ -130,8 +130,8 @@ these are required to SSL connection with server of Imgur.
 	<item>Input this URL</item>
 	<item>Browse image URL</item>
 	<item>Browse Imgur\'s site</item>
-	<item>delete from server</item>
+	<item>delete image on the server</item>
 	<item>delete history</item>
-	<item>other&#8230;</item>
+	<item>other &#8230;</item>
 </string-array>
 </resources>

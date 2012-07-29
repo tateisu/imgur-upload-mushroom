@@ -89,10 +89,10 @@ public class HistoryAdapter extends BaseAdapter {
 
 	};
 
-
 	public void clearFilter() {
 		setFilter(null,null);
 	}
+
 	public void setFilter(ImgurAccount account, ImgurAlbum album) {
 		String where = null;
 		String[] where_arg = null;
@@ -111,13 +111,11 @@ public class HistoryAdapter extends BaseAdapter {
 		notifyDataSetChanged();
 	}
 
-
 	@Override
 	public int getCount() {
 		if(!mDataValid) return 0;
 		return cursor.getCount();
 	}
-
 
 	@Override
 	public Object getItem(int position) {
