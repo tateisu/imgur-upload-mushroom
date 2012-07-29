@@ -3,6 +3,7 @@ package jp.juggler.ImgurMush;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ImageTempDir;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.Preference;
@@ -16,7 +17,11 @@ public class ActPref  extends PreferenceActivity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		ImageTempDir.getTempDir(this,BaseActivity.getPref(this),new Handler());
+		SharedPreferences pref = BaseActivity.getPref(this);
+		
+		PrefKey.upgrade_config(pref);
+		
+		ImageTempDir.getTempDir(this,pref,new Handler());
 
 		addPreferencesFromResource(R.xml.pref);
 

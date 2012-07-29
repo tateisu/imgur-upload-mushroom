@@ -2,7 +2,6 @@ package jp.juggler.ImgurMush.helper;
 
 import android.content.SharedPreferences;
 import android.database.DataSetObserver;
-import android.os.SystemClock;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
@@ -60,7 +59,7 @@ public class UploadTargetManager {
 				log.d("album selection changed: %d",pos);
 			}
 			@Override public void onNothingSelected(AdapterView<?> arg0) {
-				log.d("album selection loat");
+				log.d("album selection nothing");
 			}
 		});
 

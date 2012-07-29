@@ -48,10 +48,6 @@
 <string name="image_output_dir_desc">加工した画像ファイルを出力するフォルダを指定してください。</string>
 <string name="image_output_dir_summary">加工した画像ファイルを出力するフォルダ</string>
 <string name="image_output_dir_title">出力フォルダ</string>
-<string name="insert_space_pre_summary">有効にすると、出力されるURLの直前に空白が挿入されます</string>
-<string name="insert_space_pre_title">URLの直前に空白を入れる</string>
-<string name="insert_space_suf_summary">有効にすると、出力されるURLの直後に空白が挿入されます</string>
-<string name="insert_space_suf_title">URLの直後に空白を入れる</string>
 <string name="jpeg_quality_desc">JPEG圧縮の品質を 10～100 の整数で指定してください</string>
 <string name="jpeg_quality_summary">JPEG圧縮の品質</string>
 <string name="jpeg_quality_title">JPEG品質</string>
@@ -60,6 +56,12 @@
 <string name="output_style_settings">テキスト出力の設定</string>
 <string name="output_style_summary">出力するURLの種別を、画像直リンかImgurの画像詳細ページから選べます</string>
 <string name="output_style_title">出力するURLの種別</string>
+
+<string name="text_output_prefix_summary">出力するURLの直前に追加するテキスト</string>
+<string name="text_output_prefix_title">直前に追加するテキスト</string>
+<string name="text_output_suffix_summary">出力するURLの直後に追加テキスト</string>
+<string name="text_output_suffix_title">直後に追加するテキスト</string>
+
 <string name="picker">選択</string>
 <string name="picker_autostart_summary">有効にすると、開始したらすぐに画像選択を行います</string>
 <string name="picker_autostart_title">画像選択を自動開始</string>

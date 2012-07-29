@@ -69,6 +69,7 @@
 			android:entries="@array/output_style_list_captions"
 			android:entryValues="@array/output_style_list_values"
 		/>
+<!--
 		<CheckBoxPreference
 			android:key="cbInsertSpacePref"
 			android:title="@string/insert_space_pre_title"
@@ -80,6 +81,25 @@
 			android:title="@string/insert_space_suf_title"
 			android:summary="@string/insert_space_suf_summary"
 			android:defaultValue="true"
+		/>
+-->
+		<EditTextPreference
+			android:key="text_output_prefix"
+			android:title="@string/text_output_prefix_title"
+			android:summary="@string/text_output_prefix_summary"
+			android:dialogTitle="@string/text_output_prefix_title"
+			android:dialogMessage="@string/text_output_prefix_summary"
+			android:inputType="textMultiLine"
+			android:defaultValue=""
+		/>
+		<EditTextPreference
+			android:key="text_output_suffix"
+			android:title="@string/text_output_suffix_title"
+			android:summary="@string/text_output_suffix_summary"
+			android:dialogTitle="@string/text_output_suffix_title"
+			android:dialogMessage="@string/text_output_suffix_summary"
+			android:inputType="textMultiLine"
+			android:defaultValue=" "
 		/>
 	</PreferenceCategory>
 

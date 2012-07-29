@@ -272,10 +272,11 @@ public class ActImgurMush extends BaseActivity {
 
 	void finish_mush(String text){
 		log.d("finish_mush text=%s",text);
+		
 		if( text != null && text.length() > 0 ){
 			SharedPreferences pref = pref();
-			if( pref.getBoolean(PrefKey.KEY_INSERT_SPACE_PRE,false) ) text = " "+text;
-			if( pref.getBoolean(PrefKey.KEY_INSERT_SPACE_SUF,true) ) text = text + " ";
+			PrefKey.upgrade_config(pref);
+			text = pref.getString(PrefKey.KEY_URL_PREFIX,"")+text+pref.getString(PrefKey.KEY_URL_SUFFIX,"");
 		}
 		if( is_mushroom() ){
 			Intent intent = new Intent();

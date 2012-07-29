@@ -1,5 +1,7 @@
 package jp.juggler.ImgurMush;
 
+import android.content.SharedPreferences;
+
 public class PrefKey {
 	private PrefKey(){} // disable create instance
 
@@ -45,5 +47,32 @@ public class PrefKey {
 	public static final String EXTRA_CROP_T = "edit_crop_t";
 	public static final String EXTRA_CROP_B = "edit_crop_b";
 	public static final String EXTRA_CAPTURE_URI = "capture_uri";
+	
+	public static final String KEY_URL_PREFIX = "text_output_prefix";
+	public static final String KEY_URL_SUFFIX = "text_output_suffix";
+	
+	public static void upgrade_config(SharedPreferences pref) {
+		SharedPreferences.Editor e = pref.edit();
+		boolean bChanged = false;
+		
+		// KEY_URL_PREFIX
+		String v = pref.getString(KEY_URL_PREFIX,null);
+		if( v == null ){
+			boolean b = pref.getBoolean(KEY_INSERT_SPACE_PRE,false);
+			e.putString(KEY_URL_PREFIX,(b?" ":""));
+			bChanged = true;
+		}
+		// KEY_URL_SUFFIX
+		v = pref.getString(KEY_URL_SUFFIX,null);
+		if( v == null ){
+			boolean b = pref.getBoolean(KEY_INSERT_SPACE_SUF,true);
+			e.putString(KEY_URL_SUFFIX,(b?" ":""));
+			bChanged = true;
+		}
+
+		
+		//
+		if(bChanged) e.commit();
+	}
 
 }

@@ -48,10 +48,6 @@
 <string name="image_output_dir_desc">please specify output folder</string>
 <string name="image_output_dir_summary"></string>
 <string name="image_output_dir_title">output folder</string>
-<string name="insert_space_pre_summary">if checked, whitespace will be inserted before URL</string>
-<string name="insert_space_pre_title">space before URL</string>
-<string name="insert_space_suf_summary">if checked, whitespace will be inserted after URL</string>
-<string name="insert_space_suf_title">space after URL</string>
 <string name="jpeg_quality_desc">please input JPEG compression quality (10..100)</string>
 <string name="jpeg_quality_summary">JPEG compression quality</string>
 <string name="jpeg_quality_title">JPEG quality</string>
@@ -60,6 +56,12 @@
 <string name="output_style_settings">URL settings</string>
 <string name="output_style_summary">type of output URL</string>
 <string name="output_style_title">output type</string>
+
+<string name="text_output_prefix_summary">this text is inserted to before the URL</string>
+<string name="text_output_prefix_title">prefix text</string>
+<string name="text_output_suffix_summary">this text is appended to after the URL</string>
+<string name="text_output_suffix_title">suffix text</string>
+
 <string name="picker">pick</string>
 <string name="picker_autostart_summary">if checked, automatically start file picker when start.</string>
 <string name="picker_autostart_title">auto start picker</string>
