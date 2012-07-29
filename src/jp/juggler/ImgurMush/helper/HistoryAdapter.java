@@ -126,16 +126,11 @@ public class HistoryAdapter extends BaseAdapter {
 		return ImgurHistory.loadFromCursor(cursor,colidx);
 	}
 
-
 	@Override
 	public long getItemId(int position) {
-		if(!mDataValid) return -1L;
-		if(!cursor.moveToPosition(position) ) return -1L;
-		ImgurHistory item = ImgurHistory.loadFromCursor(cursor,colidx);
-		return item.id;
+		ImgurHistory item = (ImgurHistory)getItem(position);
+		return item==null? -1L : item.id;
 	}
-
-
 
 	static class ViewHolder{
 		ImageView image;
@@ -144,7 +139,6 @@ public class HistoryAdapter extends BaseAdapter {
 	}
 
 	ColorDrawable loading_drawable = new ColorDrawable(0xff333333);
-
 
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {

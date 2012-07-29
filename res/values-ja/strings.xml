@@ -128,6 +128,7 @@
 	<item>画像詳細ページ</item>
 	<item>サーバから削除</item>
 	<item>履歴だけ削除</item>
+	<item>その他…</item>
 </string-array>
 
 </resources>

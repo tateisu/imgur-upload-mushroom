@@ -103,7 +103,6 @@ public class BaseActivity extends Activity {
 	protected void  procMenuKey() {
 	}
 
-
 	protected void  procBackKey() {
 		finish();
 	}

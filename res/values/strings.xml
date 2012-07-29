@@ -40,9 +40,9 @@
 <string name="edit_settings">image editor settings</string>
 <string name="file_temp_error">failed to prepare temporary file</string>
 <string name="history">history</string>
-<string name="history_cleared">history data is cleared.</string>
+<string name="history_cleared">history data was cleared.</string>
 <string name="history_clear_message">All history data that saved on this app will be deleted. the image data on Imgur\'s server is not deleted. Are You OK?</string>
-<string name="history_clear_title">clear history</string>
+<string name="history_clear_title">clear all history</string>
 <string name="history_delete_confirm">delete this image from server?</string>
 <string name="image_not_selected">image data is not selected.</string>
 <string name="image_output_dir_desc">please specify output folder</string>
@@ -131,6 +131,7 @@ these are required to SSL connection with server of Imgur.
 	<item>Browse image URL</item>
 	<item>Browse Imgur\'s site</item>
 	<item>delete from server</item>
-	<item>delete from history only</item>
+	<item>delete history</item>
+	<item>other&#8230;</item>
 </string-array>
 </resources>

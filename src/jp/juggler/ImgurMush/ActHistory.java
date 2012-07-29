@@ -81,15 +81,9 @@ public class ActHistory extends BaseActivity {
 
 		setResult(RESULT_CANCELED);
 
-
 		history_adapter = new HistoryAdapter(this);
 
 		listview = (ListView)findViewById(R.id.list);
-		//
-		float density = getResources().getDisplayMetrics().density;
-		View view_padding = new View(this);
-		view_padding.setLayoutParams(new ListView.LayoutParams(ListView.LayoutParams.MATCH_PARENT,(int)(0.5f + density * 48)));
-		listview.addFooterView(view_padding);
 		//
 		listview.setAdapter(history_adapter);
 		listview.setOnItemClickListener(new OnItemClickListener() {
@@ -109,6 +103,7 @@ public class ActHistory extends BaseActivity {
 									case 2: open_browser( item.page ); break;
 									case 3: delete_dialog( item ); break;
 									case 4: item.delete(act.cr); break;
+									case 5: menu_dialog(); break;
 									}
 								}
 							}
@@ -147,21 +142,15 @@ public class ActHistory extends BaseActivity {
 		spAlbum = (Spinner)findViewById(R.id.album);
 		spAlbum.setAdapter(album_adapter);
 		spAlbum.setOnItemSelectedListener(new OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,int pos, long arg3) {
+			@Override public void onItemSelected(AdapterView<?> arg0, View arg1,int pos, long arg3) {
 				onAccountChange(false,ACCOUNT_NOCHANGE,pos,"album select");
 			}
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
+			@Override public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
 
-
-
 		findViewById(R.id.btnSetting).setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
+			@Override public void onClick(View v) {
 				menu_dialog();
 			}
 		});

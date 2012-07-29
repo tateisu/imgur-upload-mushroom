@@ -25,39 +25,22 @@
 			android:minHeight="48dp"
 			android:id="@+id/album"
 		/>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingLeft="7dp"
+			android:paddingRight="7dp"
+			android:layout_weight="0"
+			android:minWidth="48dp"
+			android:text="@string/dash3"
+			android:id="@+id/btnSetting"
+		/>
 	</LinearLayout>
-	<FrameLayout
+	<ListView
 		android:layout_width="fill_parent"
 		android:layout_height="0dp"
 		android:layout_weight="1"
-	>
-		<ListView
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
-			android:id="@+id/list"
-			android:fastScrollEnabled="true"
-			android:footerDividersEnabled="false"
-		/>
-		<LinearLayout
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
-			android:orientation="vertical"
-			android:gravity="right"
-		>
-			<View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
-			<Button
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginRight="48dp"
-				android:paddingLeft="7dp"
-				android:paddingRight="7dp"
-				android:layout_weight="0"
-				android:minWidth="48dp"
-				android:text="@string/dash3"
-				android:id="@+id/btnSetting"
-				
-			/>
-		</LinearLayout>
-	</FrameLayout>
-
+		android:id="@+id/list"
+		android:fastScrollEnabled="true"
+	/>
 </LinearLayout>

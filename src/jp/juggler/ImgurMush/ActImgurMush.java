@@ -109,7 +109,6 @@ public class ActImgurMush extends BaseActivity {
 		super.onActivityResult(requestCode, resultCode, detail);
 	}
 
-
 	@Override
 	protected void  procMenuKey() {
 		menu_dialog();
