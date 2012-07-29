@@ -116,7 +116,7 @@ this app contains the code from Google Data APIs Client Library. https://develop
 </string>
 
 <string name="oauth_error_server_certificate">
-This machine missing correct clock setting, or missing recent root certificates.
+This machine missing correct clock setting, or missing recent Geotrust SSL certificates.
 these are required to SSL connection with server of Imgur.
 </string>
 
