@@ -212,6 +212,7 @@ public class ActMultiple extends BaseActivity{
 	void save_status(){
 		log.d("save_status");
 		Intent intent = getIntent();
+		
 		// リストアフラグ設定
 		intent.putExtra( PrefKey.EXTRA_IS_STATUS_SAVE , true );
 		// 最後にカメラ画面を呼び出した際に生成したURL
@@ -226,7 +227,7 @@ public class ActMultiple extends BaseActivity{
 			UploadItem item = (UploadItem)upload_list_adapter.getItem(i);
 			if( item != null ) list.add( Uri.fromFile(item.file));
 		}
-		intent.getExtras().putParcelableArrayList(Intent.EXTRA_STREAM,list);
+		intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM,list);
 		intent.setAction(Intent.ACTION_SEND_MULTIPLE);
 		setIntent(intent);
 	}

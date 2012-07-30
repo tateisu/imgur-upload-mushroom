@@ -5,8 +5,9 @@
       android:versionName="2.13"
       android:installLocation="auto"
 >
-	<uses-sdk android:minSdkVersion="4" 
-              android:targetSdkVersion="16"
+	<uses-sdk
+		android:minSdkVersion="4" 
+        android:targetSdkVersion="16"
     />
     <supports-screens
         android:smallScreens="true" 
@@ -106,6 +107,5 @@
         	android:authorities="jp.juggler.ImgurMush"
         	android:exported="false"
         />
-
     </application>
 </manifest>
