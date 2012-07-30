@@ -10,10 +10,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.SharedPreferences;
-import android.widget.Toast;
 
 import jp.juggler.ImgurMush.Config;
 import jp.juggler.ImgurMush.PrefKey;
+import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.data.SignedClient;
@@ -135,9 +135,20 @@ public class AlbumLoader {
 			// アカウント一覧をロードする
 			final ArrayList<ImgurAccount> account_list = ImgurAccount.loadAll( act.cr ,bCancelled);
 			// 各アカウントのアルバム一覧をロードする
+			StringBuilder sb = new StringBuilder();
 			for( ImgurAccount account : account_list ){
 				if(bCancelled.get()) return;
-				tmp_map.put( account.name, load(account) );
+				AlbumList data = load(account);
+				tmp_map.put( account.name, data );
+				if( data.from == AlbumList.FROM_ERROR && data.err != null ){
+					if(sb.length() > 0 ) sb.append("\n");
+					sb.append(account.name);
+					sb.append(": ");
+					sb.append(data.err);
+				}
+			}
+			if( sb.length() > 0 ){
+				act.show_toast(true,act.getString(R.string.album_load_error)+"\n"+sb.toString());
 			}
 			act.ui_handler.post(new Runnable() {
 				@Override
@@ -161,26 +172,24 @@ public class AlbumLoader {
 			});
 		}
 
-		AlbumList load(ImgurAccount account){
+		AlbumList load(ImgurAccount account) throws RuntimeException{
 			AlbumList data = new AlbumList();
 			data.from = AlbumList.FROM_ERROR;
 			try{
-				SignedClient client = new SignedClient();
+				SignedClient client = new SignedClient(act);
 				client.prepareConsumer(account,Config.CONSUMER_KEY,Config.CONSUMER_SECRET);
 				//
-				SignedClient.JSONResult result = client.json_signed_get(act,"http://api.imgur.com/2/account/albums.json?count=999");
+				SignedClient.JSONResult result = client.json_signed_get("http://api.imgur.com/2/account/albums.json?count=999");
 				if( result.err != null ){
+					data.err = result.err;
 					if( -1 != result.err.indexOf("No albums found") ){
 						log.d("No albums found.");
 						// アルバムがないのは正常ケース
 						data.from = AlbumList.FROM_RESPONSE;
-					}else{
-						act.show_toast(Toast.LENGTH_LONG,result.err);
 					}
 				}else if( result.json.isNull("albums") ){
-					act.show_toast(Toast.LENGTH_LONG,String.format("missing 'albums' in response: %s",result.str));
+					data.err = String.format("missing 'albums' in response: %s",result.str);
 				}else{
-					log.d("albums found.");
 					JSONArray src_list = result.json.getJSONArray("albums");
 					for(int j=0,je=src_list.length();j<je;++j){
 						JSONObject src = src_list.getJSONObject(j);
@@ -189,7 +198,8 @@ public class AlbumLoader {
 					data.from = AlbumList.FROM_RESPONSE;
 				}
 			}catch(Throwable ex){
-				act.report_ex(ex);
+				ex.printStackTrace();
+				data.err = String.format("%s: %s",ex.getClass().getSimpleName(),ex.getMessage());
 			}
 			data.update_map();
 			return data;

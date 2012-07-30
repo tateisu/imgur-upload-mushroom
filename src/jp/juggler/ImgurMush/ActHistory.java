@@ -17,7 +17,6 @@ import jp.juggler.ImgurMush.helper.AlbumLoader;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ClipboardHelper;
 import jp.juggler.ImgurMush.helper.HistoryAdapter;
-import jp.juggler.util.LogCategory;
 import jp.juggler.util.TextUtil;
 
 
@@ -39,12 +38,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class ActHistory extends BaseActivity {
-	static final LogCategory log = new LogCategory("ActHistory");
-
-	final ActHistory act = this;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +60,9 @@ public class ActHistory extends BaseActivity {
 		save_last_selection();
 	}
 
+	////////////////////////////////////
+	
+	final ActHistory act = this;
 	ListView listview;
 	HistoryAdapter history_adapter;
 	AccountAdapter account_adapter;
@@ -324,7 +322,7 @@ public class ActHistory extends BaseActivity {
 								Pattern reDeleteHash = Pattern.compile("([^/]+)$");
 								Matcher m = reDeleteHash.matcher(item.delete);
 								if( !m.find() ){
-									act.show_toast(Toast.LENGTH_LONG,act.getString(R.string.delete_hash_missing));
+									act.show_toast(true,act.getString(R.string.delete_hash_missing));
 									return;
 								}
 								String hash = m.group(1);
@@ -352,7 +350,7 @@ public class ActHistory extends BaseActivity {
 												if( -1 != res.indexOf("\"Success\"") ){
 													item.delete(act.cr);
 												}else{
-													act.show_toast(Toast.LENGTH_LONG,res);
+													act.show_toast(true,res);
 												}
 											}finally{
 												in.close();
@@ -361,7 +359,7 @@ public class ActHistory extends BaseActivity {
 										}
 										log.d("http error %d",rcode);
 										if( rcode >= 400 ){
-											act.show_toast(Toast.LENGTH_LONG,String.format("HTTP error %d",rcode));
+											act.show_toast(true,String.format("HTTP error %d",rcode));
 											// 400 が来たら履歴から削除する
 											if( rcode == 400 ){
 												item.delete(act.cr);
@@ -448,7 +446,7 @@ public class ActHistory extends BaseActivity {
 						protected void onPostExecute(String result) {
 							if(isFinishing()) return;
 							progress.dismiss();
-							Toast.makeText(act,R.string.history_cleared,Toast.LENGTH_SHORT).show();
+							act.show_toast(false,R.string.history_cleared);
 						}
 					}.execute();
 				}
@@ -488,9 +486,9 @@ public class ActHistory extends BaseActivity {
 									try{
 										ImgurHistory.ColumnIndex colidx = new ImgurHistory.ColumnIndex();
 										if( cursor.getCount() <= 0 ){
-											act.show_toast(Toast.LENGTH_LONG,R.string.history_empty);
+											act.show_toast(true,R.string.history_empty);
 										}else if(! cursor.moveToFirst() ){
-											act.show_toast(Toast.LENGTH_LONG,R.string.db_seek_error);
+											act.show_toast(true,R.string.db_seek_error);
 										}else{
 											int n=0;
 											StringBuffer sb = new StringBuffer();

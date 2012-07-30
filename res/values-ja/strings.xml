@@ -12,12 +12,14 @@
 <string name="act_arrange"		 >Imgur マッシュ/ 画像の加工</string>
 <string name="act_history"		 >Imgur マッシュ/ 投稿履歴</string>
 <string name="act_main"			 >Imgur マッシュ</string>
-<string name="act_multiple"		 >Imgur マッシュ/ 一括投稿 (試験機能)</string>
+<string name="act_multiple"		 >Imgur 一括投稿(仮)</string>
 <string name="act_oauth"		 >Imgur マッシュ/ アカウントの追加</string>
 <string name="act_pref"			 >Imgur マッシュ/ 設定</string>
 <string name="act_resize_preset" >Imgur マッシュ/ リサイズ指定</string>
 <string name="album_all">全アルバム</string>
 <string name="album_loading">(読み込み中…)</string>
+<string name="album_load_error">アルバム一覧の読み込みに失敗しました</string>
+
 <string name="album_not_select">(アルバムなし)</string>
 <string name="app_name"			 >Imgur マッシュ</string>
 <string name="autostart_settings">操作の省略</string>
@@ -32,8 +34,8 @@
 <string name="crop_right">右</string>
 <string name="crop_top">上</string>
 <string name="dash3">&#8230;</string>
-<string name="delete_hash_missing">削除ハッシュが見つかりません</string>
 <string name="db_seek_error">内部データベースのアクセスに失敗しました</string>
+<string name="delete_hash_missing">削除ハッシュが見つかりません</string>
 <string name="edit">加工</string>
 <string name="edit_autostart_summary">有効にすると、画像が選択されたらすぐに画像加工を開始します</string>
 <string name="edit_autostart_title">画像加工を自動開始</string>
@@ -47,8 +49,8 @@
 <string name="history_delete_confirm">この画像をサーバから削除しますか?</string>
 <string name="history_empty">履歴がありません</string>
 <string name="history_export">履歴をエクスポート</string>
-<string name="history_export_confirm">選択されたアカウント及びアルバムにマッチする履歴を、まとめてクリップボードにコピーします。削除URLなどが含まれるため、コピーされたデータの取り扱いには注意して下さい。よろしいですか?</string>
 <string name="history_export_complete">%1$s件の履歴をクリップボードにコピーしました</string>
+<string name="history_export_confirm">選択されたアカウント及びアルバムにマッチする履歴を、まとめてクリップボードにコピーします。削除URLなどが含まれるため、コピーされたデータの取り扱いには注意して下さい。よろしいですか?</string>
 <string name="image_not_selected">画像が選択されていません</string>
 <string name="image_output_dir_desc">加工した画像ファイルを出力するフォルダを指定してください。</string>
 <string name="image_output_dir_summary">加工した画像ファイルを出力するフォルダ</string>
@@ -56,18 +58,15 @@
 <string name="jpeg_quality_desc">JPEG圧縮の品質を 10～100 の整数で指定してください</string>
 <string name="jpeg_quality_summary">JPEG圧縮の品質</string>
 <string name="jpeg_quality_title">JPEG品質</string>
+<string name="net_error_resolver">ネットワーク エラー</string>
+<string name="net_error_timeout">ネットワーク タイムアウト(%1$s)</string>
+<string name="oauth_desc">認証処理</string>
 <string name="oauth_start">OAuth認証をやり直す</string>
 <string name="ok">OK</string>
 <string name="output_style_settings">テキスト出力の設定</string>
 <string name="output_style_summary">出力するURLの種別を、画像直リンかImgurの画像詳細ページから選べます</string>
 <string name="output_style_title">出力するURLの種別</string>
 <string name="output_to_clipboard">URLをクリップボードにコピーしました</string>
-
-<string name="text_output_prefix_summary">出力するURLの直前に追加するテキスト</string>
-<string name="text_output_prefix_title">直前に追加するテキスト</string>
-<string name="text_output_suffix_summary">出力するURLの直後に追加テキスト</string>
-<string name="text_output_suffix_title">直後に追加するテキスト</string>
-
 <string name="picker">選択</string>
 <string name="picker_autostart_summary">有効にすると、開始したらすぐに画像選択を行います</string>
 <string name="picker_autostart_title">画像選択を自動開始</string>
@@ -90,17 +89,21 @@
 <string name="resize_preset_delete">この指定を削除しますか?</string>
 <string name="resize_value_title">設定値：</string>
 <string name="save">作成</string>
-<string name="setting">設定</string>
-<string name="selection_remove">選択リストから除去</string>
 <string name="selection_added">選択/撮影 された画像は選択リストに追加されました</string>
-
+<string name="selection_remove">選択リストから除去</string>
+<string name="setting">設定</string>
 <string name="site_top">Imgurトップページ</string>
 <string name="storage_not_directory">外部フラッシュメモリが提供されていません?</string>
 <string name="storage_not_writable">外部フラッシュメモリへの書き込み許可がありません?</string>
+<string name="text_output_prefix_summary">出力するURLの直前に追加するテキスト</string>
+<string name="text_output_prefix_title">直前に追加するテキスト</string>
+<string name="text_output_suffix_summary">出力するURLの直後に追加テキスト</string>
+<string name="text_output_suffix_title">直後に追加するテキスト</string>
 <string name="too_large_data">データサイズが大きすぎます</string>
 <string name="upload">アップロード</string>
 <string name="upload_autostart_summary">有効にすると、画像選択や加工が終わったらすぐにImgurへの送信を行います</string>
 <string name="upload_autostart_title">アップロードを自動開始</string>
+<string name="upload_desc">画像アップロード</string>
 <string name="upload_progress">アップロード中です…</string>
 <string name="upload_progress_digest">署名ダイジェストを計算中です…</string>
 <string name="upload_progress_sizecheck">アップロードサイズを測定中です…</string>

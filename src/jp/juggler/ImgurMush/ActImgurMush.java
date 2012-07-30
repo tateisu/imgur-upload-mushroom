@@ -26,7 +26,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class ActImgurMush extends BaseActivity {
 	static final LogCategory log = new LogCategory("ActImgurMush");
@@ -142,7 +141,7 @@ public class ActImgurMush extends BaseActivity {
 			}
 
 			@Override public void onCancelled() {
-				show_toast(Toast.LENGTH_SHORT,getString(R.string.cancel_notice));
+				show_toast(false,getString(R.string.cancel_notice));
 			}
 
 			@Override public void onComplete(String image_url, String page_url) {
@@ -369,7 +368,7 @@ public class ActImgurMush extends BaseActivity {
 			startActivityForResult(intent,REQ_FILEPICKER);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			show_toast(Toast.LENGTH_LONG,R.string.picker_missing);
+			show_toast(true,R.string.picker_missing);
 		}
 		log.d("open_file_picker :finish");
 		uploader.finish_mush("");
@@ -391,7 +390,7 @@ public class ActImgurMush extends BaseActivity {
 			startActivityForResult(intent,REQ_CAPTURE);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			show_toast(Toast.LENGTH_LONG,R.string.capture_missing);
+			show_toast(true,R.string.capture_missing);
 		}
 	}
 	

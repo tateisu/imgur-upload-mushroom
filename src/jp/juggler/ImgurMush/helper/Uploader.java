@@ -33,7 +33,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
-import android.widget.Toast;
 
 public class Uploader {
 	static final LogCategory log = new LogCategory("Uploader");
@@ -86,12 +85,12 @@ public class Uploader {
 				File infile = new File(file_path);
 				long infile_size = infile.length();
 				if( infile_size >= 10* 1024 * 1024 ){
-					act.show_toast(Toast.LENGTH_SHORT,R.string.too_large_data);
+					act.show_toast(false,R.string.too_large_data);
 					return null;
 				}
 				final boolean is_base64 = true; // oAuthのPercentEscapeルールだと、Base64した方が小さい
 				try{
-					SignedClient client = new SignedClient();
+					SignedClient client = new SignedClient(act);
 					StreamSigner signer = new StreamSigner();
 					client.cancel_checker = cancel_checker;
 					signer.cancel_checker = cancel_checker;
@@ -99,7 +98,7 @@ public class Uploader {
 					signer.addParam(true,"image",infile,is_base64);
 
 					if( account==null ){
-						signer.addParam(true,"key","83003560cf25f217ba03ccfcbf603471");
+						signer.addParam(true,"key",Config.IMGUR_API_KEY);
 						HttpPost request = new HttpPost("http://api.imgur.com/2/upload.json");
 
 						act.ui_handler.post(new Runnable() {
@@ -169,6 +168,7 @@ public class Uploader {
 
 						client.error_report(act,result);
 
+						// 画像をアルバムに追加する
 						if( result != null && album_id != null ){
 							try{
 								JSONObject image = result.getJSONObject("images").getJSONObject("image");
@@ -329,7 +329,7 @@ public class Uploader {
 		}else if(uri.getScheme().equals("file") ){
 			return uri.getPath();
 		}
-		act.show_toast(Toast.LENGTH_LONG,R.string.uri_parse_error,uri.toString());
+		act.show_toast(true,R.string.uri_parse_error,uri.toString());
 		return null;
 	}
 	

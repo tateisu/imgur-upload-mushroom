@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class UploadItemAdapter extends BaseAdapter{
 
@@ -132,7 +131,7 @@ public class UploadItemAdapter extends BaseAdapter{
 	public void add(UploadItem item) {
 		item_list.add(item);
 		notifyDataSetChanged();
-		act.show_toast(Toast.LENGTH_SHORT,R.string.selection_added);
+		act.show_toast(false,R.string.selection_added);
 	}
 
 	public void replace_item(int idx, UploadItem item) {

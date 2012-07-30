@@ -17,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.helper.BaseActivity;
@@ -276,7 +275,7 @@ public class ActMultiple extends BaseActivity{
 			startActivityForResult(intent,REQ_FILEPICKER);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			show_toast(Toast.LENGTH_LONG,R.string.picker_missing);
+			show_toast(true,R.string.picker_missing);
 		}
 		log.d("open_file_picker :finish");
 		uploader.finish_mush("");
@@ -299,7 +298,7 @@ public class ActMultiple extends BaseActivity{
 			startActivityForResult(intent,REQ_CAPTURE);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			show_toast(Toast.LENGTH_LONG,R.string.capture_missing);
+			show_toast(true,R.string.capture_missing);
 		}
 	}
 	
@@ -350,7 +349,7 @@ public class ActMultiple extends BaseActivity{
 		
 		@Override public void onCancelled() {
 			upload_cancelled = true;
-			show_toast(Toast.LENGTH_SHORT,getString(R.string.cancel_notice));
+			show_toast(false,getString(R.string.cancel_notice));
 		}
 
 		@Override public void onStatusChanged(boolean bBusy) {

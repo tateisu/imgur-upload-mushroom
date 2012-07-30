@@ -10,8 +10,6 @@ import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ImageTempDir;
 import jp.juggler.ImgurMush.helper.PreviewLoader;
 
-import jp.juggler.util.LogCategory;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,7 +26,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class ActArrange extends BaseActivity{
-	static final LogCategory log = new LogCategory("ActArrange");
 	static final boolean debug = false;
 
 	@Override

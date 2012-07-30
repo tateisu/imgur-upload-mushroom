@@ -96,7 +96,7 @@ public class ImageTempDir {
 				return file;
 			}catch(Throwable ex){
 				log.e("cannot create temp file %s",file.getPath());
-				act.show_toast(Toast.LENGTH_LONG,act.getString(R.string.file_temp_error));
+				act.show_toast(true,act.getString(R.string.file_temp_error));
 				return null;
 			}
 		}

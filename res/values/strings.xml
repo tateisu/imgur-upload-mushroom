@@ -12,12 +12,13 @@
 <string name="act_arrange"		 >Imgur Mushroom/ image arrange</string>
 <string name="act_history"		 >Imgur Mushroom/ upload history</string>
 <string name="act_main"			 >Imgur Mushroom</string>
-<string name="act_multiple"		 >Imgur Mushroom/ (multiple, experimental)</string>
+<string name="act_multiple"		 >Imgur bulk upload (experimental)</string>
 <string name="act_oauth"		 >Imgur Mushroom/ account authorization</string>
 <string name="act_pref"			 >Imgur Mushroom/ setting</string>
 <string name="act_resize_preset" >Imgur Mushroom/ resize presets</string>
 <string name="album_all">all albums</string>
 <string name="album_loading">(loading..)</string>
+<string name="album_load_error">failed to loading album list</string>
 <string name="album_not_select">(no album)</string>
 <string name="app_name"			 >Imgur Mushroom</string>
 <string name="autostart_settings">laziness settings</string>
@@ -32,8 +33,8 @@
 <string name="crop_right">R</string>
 <string name="crop_top">T</string>
 <string name="dash3">&#8230;</string>
-<string name="delete_hash_missing">missing delete hash</string>
 <string name="db_seek_error">database access error</string>
+<string name="delete_hash_missing">missing delete hash</string>
 <string name="edit">edit</string>
 <string name="edit_autostart_summary">if checked, automatically start editor when image is picked.</string>
 <string name="edit_autostart_title">auto start editor</string>
@@ -47,9 +48,8 @@
 <string name="history_delete_confirm">delete this image from server?</string>
 <string name="history_empty">no history found.</string>
 <string name="history_export">export history</string>
-<string name="history_export_confirm">history data that matches selected account and album will be copied to clipboard.</string>
 <string name="history_export_complete">%1$s history data was copied to clipboard.</string>
-
+<string name="history_export_confirm">history data that matches selected account and album will be copied to clipboard.</string>
 <string name="image_not_selected">image data is not selected.</string>
 <string name="image_output_dir_desc">please specify output folder</string>
 <string name="image_output_dir_summary"></string>
@@ -57,18 +57,15 @@
 <string name="jpeg_quality_desc">please input JPEG compression quality (10..100)</string>
 <string name="jpeg_quality_summary">JPEG compression quality</string>
 <string name="jpeg_quality_title">JPEG quality</string>
+<string name="net_error_resolver">connection error(%1$s)</string>
+<string name="net_error_timeout">network timeout(%1$s)</string>
+<string name="oauth_desc">authentication</string>
 <string name="oauth_start">restart oAuth</string>
 <string name="ok">OK</string>
 <string name="output_style_settings">URL settings</string>
 <string name="output_style_summary">type of output URL</string>
 <string name="output_style_title">output type</string>
 <string name="output_to_clipboard">URL was copied to clipboard</string>
-
-<string name="text_output_prefix_summary">this text is inserted to before the URL</string>
-<string name="text_output_prefix_title">prefix text</string>
-<string name="text_output_suffix_summary">this text is appended to after the URL</string>
-<string name="text_output_suffix_title">suffix text</string>
-
 <string name="picker">pick</string>
 <string name="picker_autostart_summary">if checked, automatically start file picker when start.</string>
 <string name="picker_autostart_title">auto start picker</string>
@@ -91,16 +88,21 @@
 <string name="resize_preset_delete">delete this preset?</string>
 <string name="resize_value_title">value:</string>
 <string name="save">save</string>
-<string name="setting">settings</string>
-<string name="selection_remove">remove from selection</string>
 <string name="selection_added">picked/captured image was added to selection list</string>
+<string name="selection_remove">remove from selection</string>
+<string name="setting">settings</string>
 <string name="site_top">Imgur website toppage</string>
 <string name="storage_not_directory">external storage is not presented</string>
 <string name="storage_not_writable">external storage is not writable</string>
+<string name="text_output_prefix_summary">this text is inserted to before the URL</string>
+<string name="text_output_prefix_title">prefix text</string>
+<string name="text_output_suffix_summary">this text is appended to after the URL</string>
+<string name="text_output_suffix_title">suffix text</string>
 <string name="too_large_data">too large data</string>
 <string name="upload">upload</string>
 <string name="upload_autostart_summary">if checked, automatically start upload after image is selected.</string>
 <string name="upload_autostart_title">auto start upload</string>
+<string name="upload_desc">image upload</string>
 <string name="upload_progress">uploading&#8230;</string>
 <string name="upload_progress_digest">calculate digest&#8230;</string>
 <string name="upload_progress_sizecheck">calculate upload size&#8230;</string>

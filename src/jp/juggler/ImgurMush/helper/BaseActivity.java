@@ -2,6 +2,7 @@ package jp.juggler.ImgurMush.helper;
 
 import jp.juggler.util.DialogManager;
 import jp.juggler.util.LifeCycleManager;
+import jp.juggler.util.LogCategory;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.widget.Toast;
 
 public class BaseActivity extends Activity {
+	public static final LogCategory log = new LogCategory("Activity");
 
 	public Handler ui_handler;
 	public LayoutInflater inflater;
@@ -113,36 +115,32 @@ public class BaseActivity extends Activity {
 		 return Thread.currentThread().equals(getMainLooper().getThread());
 	}
 	
-	public void show_toast(final int length,final int resid,final Object... args){
+	public void show_toast(final boolean bLong,final int resid,final Object... args){
 		if( isUIThread() ){
-			Toast.makeText(BaseActivity.this,getString(resid,args),length).show();
+			Toast.makeText(BaseActivity.this,getString(resid,args),(bLong?Toast.LENGTH_LONG:Toast.LENGTH_SHORT)).show();
 			return;
 		}
 		ui_handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if(isFinishing())return;
-				Toast.makeText(BaseActivity.this,getString(resid,args),length).show();
+			@Override public void run() {
+				if(!isFinishing()) show_toast(bLong,resid,args);
 			}
 		});
 	}
-	public void show_toast(final int length,final String text){
+	public void show_toast(final boolean bLong,final String text){
 		if( isUIThread() ){
-			Toast.makeText(BaseActivity.this,text,length).show();
+			Toast.makeText(BaseActivity.this,text,(bLong?Toast.LENGTH_LONG:Toast.LENGTH_SHORT)).show();
 			return;
 		}
 		ui_handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if(isFinishing())return;
-				Toast.makeText(BaseActivity.this,text,length).show();
+			@Override public void run() {
+				if(!isFinishing()) show_toast(bLong,text); 
 			}
 		});
 	}
 
 	public void report_ex(Throwable ex){
 		ex.printStackTrace();
-		show_toast(Toast.LENGTH_LONG,String.format("%s %s",ex.getClass().getSimpleName(),ex.getMessage()));
+		show_toast(true,String.format("%s: %s",ex.getClass().getSimpleName(),ex.getMessage()));
 	}
 
 	public SharedPreferences pref(){

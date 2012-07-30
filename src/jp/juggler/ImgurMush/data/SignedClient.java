@@ -2,11 +2,14 @@ package jp.juggler.ImgurMush.data;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
+import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.util.CancelChecker;
+import jp.juggler.util.LogCategory;
 import jp.juggler.util.TextUtil;
 
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -20,11 +23,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.text.Html;
-import android.util.Log;
-import android.widget.Toast;
 
 public class SignedClient {
-	static final String TAG="SignedClient";
+	static final LogCategory log = new LogCategory("SignedClient");
 	static final boolean debug = false;
 
 	public String last_error =null;
@@ -32,14 +33,19 @@ public class SignedClient {
 	public int last_rcode;
 	public CommonsHttpOAuthConsumer consumer;
 	public CancelChecker cancel_checker = null;
-
-
+	final BaseActivity act;
+	
+	public SignedClient(BaseActivity act){
+		this.act = act;
+	}
+	
+	
 	public void error_report(final BaseActivity activity,JSONObject result){
 		if(result == null){
-			activity.show_toast(Toast.LENGTH_LONG,String.format("%s %s",last_status,last_error));
+			activity.show_toast(true,String.format("%s %s",last_status,last_error));
 		}else if( result.has("error") ){
 			try {
-				activity.show_toast(Toast.LENGTH_LONG,result.getJSONObject("error").getString("message"));
+				activity.show_toast(true,result.getJSONObject("error").getString("message"));
 			} catch (JSONException e) {
 			}
 		}
@@ -69,14 +75,17 @@ public class SignedClient {
 		public String err;
 	}
 
-	public JSONResult json_signed_get(BaseActivity act,String url){
+	public JSONResult json_signed_get(String url){
 		JSONResult result = new JSONResult();
 		for( int nTry =0; nTry < 10; ++nTry ){
 			try{
 				result.data = signed_get(url);
 				if( result.data == null ){
-					result.err = String.format("%s %s",last_status,last_error);
-					Log.e(TAG,result.err);
+					if( last_status != null ){
+						result.err = String.format("%s %s",last_status,last_error);
+					}else{
+						result.err = last_error;
+					}
 					if( last_rcode < 400 || last_rcode >= 500 ) continue;
 					break;
 				}
@@ -119,7 +128,7 @@ public class SignedClient {
 			}
 			break;
 		}
-		if( result.err != null ) Log.e(TAG,result.err);
+		if( result.err != null ) log.e(result.err);
 		return result;
 	}
 
@@ -128,7 +137,7 @@ public class SignedClient {
 			byte[] data = send_request(request);
 			if(data!=null){
 				String str = new String(data,"UTF-8");
-				if(debug) Log.d(TAG,str);
+				if(debug) log.d(str);
 				return new JSONObject(str);
 			}
 		}catch(Throwable ex){
@@ -142,8 +151,10 @@ public class SignedClient {
 		byte[] tmp = new byte[1024];
 		DefaultHttpClient client=new DefaultHttpClient();
 
-		for( Header header : request.getAllHeaders() ){
-			if(debug) Log.d(TAG,String.format("%s %s",header.getName(), header.getValue() ));
+		if(debug){
+			for( Header header : request.getAllHeaders() ){
+				log.d(String.format("%s %s",header.getName(), header.getValue() ));
+			}
 		}
 
 		for(int nTry=0;nTry<10;++nTry){
@@ -162,13 +173,15 @@ public class SignedClient {
 						bao.write(tmp,0,delta);
 					}
 					if( bao.size() > 0 ) return bao.toByteArray();
-					Log.e(TAG,"read failed. status="+response.getStatusLine()+", url="+request.getURI());
+					log.e("read failed. status="+response.getStatusLine()+", url="+request.getURI());
 				}finally{
 					in.close();
 				}
+			}catch(SocketTimeoutException ex){
+				last_error = act.getString(R.string.net_error_timeout,ex.getMessage());
+				break;
 			}catch(UnknownHostException ex){
-				last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();
-				ex.printStackTrace();
+				last_error = act.getString(R.string.net_error_resolver,ex.getMessage());
 				break;
 			}catch(Throwable ex){
 				last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();

@@ -14,7 +14,7 @@ public class AlbumList {
 	public static final int FROM_RESPONSE = 1; // レスポンスから
 	public static final int FROM_CACHE = 2; // パーマネントキャッシュから
 	public static final int FROM_ERROR = 3; // エラーレスポンス
-	
+	public String err;
 
 	public void update_map() {
 		Collections.sort(album_list);
