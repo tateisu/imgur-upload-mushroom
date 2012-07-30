@@ -342,6 +342,9 @@ public class ActMultiple extends BaseActivity{
 
 	boolean upload_cancelled = false;
 	StringBuilder sb_image_url;
+	int upload_next = 0;
+	int upload_complete = 0;
+	
 	Uploader.Callback uploader_callback = new Uploader.Callback() {
 		
 		@Override public void onCancelled() {
@@ -361,7 +364,7 @@ public class ActMultiple extends BaseActivity{
 			case 0: sb_image_url.append(uploader.trim_output_url(image_url)); break;
 			case 1: sb_image_url.append(uploader.trim_output_url(page_url));break;
 			}
-			upload_list_adapter.remove(0);
+			++upload_complete;
 		}
 		// XXX: アップロード中に画面を回転させると、アップロードがキャンセルされる…
 	};
@@ -373,16 +376,20 @@ public class ActMultiple extends BaseActivity{
 		// 画像が選択されていない
 		if( upload_list_adapter.getCount() <= 0 ) return;
 
-		
+		btnUpload.setEnabled(false);
 		upload_cancelled = false;
 		sb_image_url = new StringBuilder();
-		btnUpload.setEnabled(false);
+		upload_next = 0;
+		upload_complete = 0;
 		
 		upload_next();
 	}
 	void upload_next(){
-		UploadItem item = (UploadItem)upload_list_adapter.getItem(0);
-		if( item == null || upload_cancelled){
+		if( upload_next != upload_complete ){
+			upload_cancelled = true;
+		}
+		UploadItem item = (UploadItem)upload_list_adapter.getItem(upload_next);
+		if( item == null || upload_cancelled ){
 			if( sb_image_url.length() > 0 ){
 				ClipboardHelper.clipboard_copy(act,sb_image_url.toString(),act.getString(R.string.output_to_clipboard));
 			}
@@ -393,6 +400,7 @@ public class ActMultiple extends BaseActivity{
 		ImgurAlbum album = upload_target_manager.getSelectedAlbum();
 		ImgurAccount account = upload_target_manager.getSelectedAccount();
 		log.d("upload to account=%s,album_id=%s",(account==null?"OFF":"ON"),(album==null?"OFF":"ON"));
+		++upload_next;
 		uploader.image_upload(
 			account
 			,(album==null?null : album.album_id)

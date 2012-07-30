@@ -109,7 +109,15 @@ public class BaseActivity extends Activity {
 	
 	//////////////////////////////////////////////////
 
+	public boolean isUIThread(){
+		 return Thread.currentThread().equals(getMainLooper().getThread());
+	}
+	
 	public void show_toast(final int length,final int resid,final Object... args){
+		if( isUIThread() ){
+			Toast.makeText(BaseActivity.this,getString(resid,args),length).show();
+			return;
+		}
 		ui_handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -119,6 +127,10 @@ public class BaseActivity extends Activity {
 		});
 	}
 	public void show_toast(final int length,final String text){
+		if( isUIThread() ){
+			Toast.makeText(BaseActivity.this,text,length).show();
+			return;
+		}
 		ui_handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -129,8 +141,8 @@ public class BaseActivity extends Activity {
 	}
 
 	public void report_ex(Throwable ex){
-		show_toast(Toast.LENGTH_LONG,String.format("%s %s",ex.getClass().getSimpleName(),ex.getMessage()));
 		ex.printStackTrace();
+		show_toast(Toast.LENGTH_LONG,String.format("%s %s",ex.getClass().getSimpleName(),ex.getMessage()));
 	}
 
 	public SharedPreferences pref(){
