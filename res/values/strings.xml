@@ -12,7 +12,7 @@
 <string name="act_arrange"		 >Imgur Mushroom/ image arrange</string>
 <string name="act_history"		 >Imgur Mushroom/ upload history</string>
 <string name="act_main"			 >Imgur Mushroom</string>
-<string name="act_multiple"		 >Imgur bulk upload (experimental)</string>
+<string name="act_multiple"		 >Imgur bulk upload</string>
 <string name="act_oauth"		 >Imgur Mushroom/ account authorization</string>
 <string name="act_pref"			 >Imgur Mushroom/ setting</string>
 <string name="act_resize_preset" >Imgur Mushroom/ resize presets</string>

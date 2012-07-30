@@ -29,32 +29,6 @@ public class UploadItemAdapter extends BaseAdapter{
 		preview_loader = new MultiplePreviewLoader(act,true);
 	}
 
-
-	public void clear() {
-		item_list.clear();
-		notifyDataSetChanged();
-	}
-
-	public void replace( Iterable<UploadItem> new_data ){
-		item_list.clear();
-		for( UploadItem album: new_data){
-			item_list.add(album);
-		}
-		notifyDataSetChanged();
-	}
-
-//	public int findByName(String name) {
-//		final int offset = (strNonSelection==null?0:1);
-//		if( name != null ){
-//			for(int i=0,ie=album_list.size();i<ie;++i){
-//				UploadItem album = album_list.get(i);
-//				if( name.equals(album.album_name ) ) return offset + i;
-//			}
-//		}
-//		return -1;
-//	}
-
-
 	@Override
 	public int getCount() {
 		return item_list.size();
@@ -120,13 +94,25 @@ public class UploadItemAdapter extends BaseAdapter{
 	}
 
 
+	public void clear() {
+		item_list.clear();
+		notifyDataSetChanged();
+	}
+
+	public void replace( Iterable<UploadItem> new_data ){
+		item_list.clear();
+		for( UploadItem item: new_data){
+			item_list.add(item);
+		}
+		notifyDataSetChanged();
+	}
+
 	public void remove(int idx) {
 		if( idx >= 0 && idx < item_list.size() ){
 			item_list.remove(idx);
 			notifyDataSetChanged();
 		}
 	}
-
 
 	public void add(UploadItem item) {
 		item_list.add(item);
@@ -141,7 +127,4 @@ public class UploadItemAdapter extends BaseAdapter{
 			notifyDataSetChanged();
 		}
 	}
-
-
-
 }

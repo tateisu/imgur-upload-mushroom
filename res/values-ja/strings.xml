@@ -12,7 +12,7 @@
 <string name="act_arrange"		 >Imgur マッシュ/ 画像の加工</string>
 <string name="act_history"		 >Imgur マッシュ/ 投稿履歴</string>
 <string name="act_main"			 >Imgur マッシュ</string>
-<string name="act_multiple"		 >Imgur 一括投稿(仮)</string>
+<string name="act_multiple"		 >Imgur 一括投稿</string>
 <string name="act_oauth"		 >Imgur マッシュ/ アカウントの追加</string>
 <string name="act_pref"			 >Imgur マッシュ/ 設定</string>
 <string name="act_resize_preset" >Imgur マッシュ/ リサイズ指定</string>
