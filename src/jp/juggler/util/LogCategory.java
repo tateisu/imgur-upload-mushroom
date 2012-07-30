@@ -2,6 +2,8 @@ package jp.juggler.util;
 import android.util.Log;
 
 public final class LogCategory {
+	static final String app_tag = "ImgurMushroom";
+	
 	public static final boolean enabled = true;
 
 	String tag;
@@ -11,7 +13,7 @@ public final class LogCategory {
 	public final void log(String fmt,Object[] args,int level){
 		if(enabled){
 			if(args.length>0) fmt = String.format(fmt,args);
-			Log.println(level,tag,fmt);
+			Log.println(level,app_tag,tag+":"+fmt);
 		}
 	}
 	public final void d(String fmt,Object... args){ if(enabled) log(fmt,args,Log.DEBUG);}

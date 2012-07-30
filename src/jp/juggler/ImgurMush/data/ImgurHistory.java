@@ -1,6 +1,12 @@
 package jp.juggler.ImgurMush.data;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 import jp.juggler.ImgurMush.DataProvider;
+import jp.juggler.util.LogCategory;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -8,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 
 public class ImgurHistory {
+	static final LogCategory log = new LogCategory("ImgurHistory");
 	public static TableMeta meta = new TableMeta(DataProvider.AUTHORITY,"history");
 
 	public static final String COL_ID = BaseColumns._ID;
@@ -158,5 +165,40 @@ public class ImgurHistory {
 		create_index(db);
 	}
 
+	public static Cursor query(ContentResolver cr,ImgurAccount account, ImgurAlbum album){
+		String where = null;
+		String[] where_arg = null;
+		if( album != null ){
+			where = ImgurHistory.COL_ACCOUNT_NAME+"=? and "+ImgurHistory.COL_ALBUM_ID+"=?";
+			where_arg = new String[]{ album.account_name, album.album_id.toString() };
+		}else if( account != null ){
+			where = ImgurHistory.COL_ACCOUNT_NAME+"=?";
+			where_arg = new String[]{ account.name };
+		}
+		return cr.query(ImgurHistory.meta.uri,null,where,where_arg,ImgurHistory.COL_UPLOAD_TIME+" desc");
+	}
 
+	public void appendText(StringBuffer sb) {
+		sb.append(String.format("URL-Image: %s\n",image));
+		sb.append(String.format("URL-Delete: %s\n",delete));
+		sb.append(String.format("URL-Info: %s\n",page));
+		sb.append(String.format("URL-Thumbnail: %s\n",square));
+		sb.append(String.format("Time-Upload-Raw: %s\n",upload_time));
+		sb.append(String.format("Time-Upload-String: %s\n",formatTimeLong(upload_time)));
+		if(account_name != null) sb.append(String.format("Account-Name: %s\n",account_name));
+		if(album_id != null) sb.append(String.format("Album-ID: %s\n",album_id));
+	}
+	
+	static SimpleDateFormat time_format_iso8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	static final String formatTimeLong(long t ){
+		TimeZone tz = TimeZone.getDefault();
+		//
+		Calendar c = GregorianCalendar.getInstance(tz);
+		c.setTimeInMillis(t);
+		//
+		time_format_iso8601.setTimeZone(tz);
+		String s = time_format_iso8601.format( c.getTime() );
+		//
+		return s;
+	}
 }

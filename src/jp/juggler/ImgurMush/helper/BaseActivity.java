@@ -109,12 +109,12 @@ public class BaseActivity extends Activity {
 	
 	//////////////////////////////////////////////////
 
-	public void show_toast(final int length,final int resid){
+	public void show_toast(final int length,final int resid,final Object... args){
 		ui_handler.post(new Runnable() {
 			@Override
 			public void run() {
 				if(isFinishing())return;
-				Toast.makeText(BaseActivity.this,resid,length).show();
+				Toast.makeText(BaseActivity.this,getString(resid,args),length).show();
 			}
 		});
 	}

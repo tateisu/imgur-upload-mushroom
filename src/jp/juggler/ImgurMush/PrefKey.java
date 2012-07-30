@@ -50,6 +50,7 @@ public class PrefKey {
 	
 	public static final String KEY_URL_PREFIX = "text_output_prefix";
 	public static final String KEY_URL_SUFFIX = "text_output_suffix";
+	public static final String EXTRA_LAST_EDIT_INDEX = "last_edit_index";
 	
 	public static void upgrade_config(SharedPreferences pref) {
 		SharedPreferences.Editor e = pref.edit();

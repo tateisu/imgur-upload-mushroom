@@ -5,7 +5,6 @@ import java.io.File;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.helper.BaseActivity;
-import jp.juggler.ImgurMush.helper.ClipboardHelper10;
 import jp.juggler.ImgurMush.helper.ImageTempDir;
 import jp.juggler.ImgurMush.helper.PreviewLoader;
 import jp.juggler.ImgurMush.helper.TextFormat;
@@ -18,7 +17,6 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,7 +37,6 @@ public class ActImgurMush extends BaseActivity {
 	static final int REQ_ARRANGE= 5;
 	static final int REQ_APPINFO = 6;
 	static final int REQ_CAPTURE = 7;
-	
 	
 	static final int FILE_FROM_PICK =1;
 	static final int FILE_FROM_EDIT =2;
@@ -71,13 +68,13 @@ public class ActImgurMush extends BaseActivity {
 		switch(requestCode){
 		case REQ_FILEPICKER:
 			if( resultCode == RESULT_OK && detail != null ){
-				String path = uri_to_path(detail.getData());
+				String path = uploader.uri_to_path(detail.getData());
 				if(path != null ) setCurrentFile(FILE_FROM_PICK,path);
 			}
 			break;
 		case REQ_HISTORY:
 			if( resultCode == RESULT_OK && detail != null ){
-				finish_mush(detail.getStringExtra("url"));
+				uploader.finish_mush(detail.getStringExtra("url"));
 			}
 			break;
 		case REQ_PREF:
@@ -101,7 +98,7 @@ public class ActImgurMush extends BaseActivity {
 					log.e("cannot get capture uri");
 				}else{
 					log.d("capture uri = %s", uri);
-					 setCurrentFile(FILE_FROM_PICK,uri_to_path(uri));
+					 setCurrentFile(FILE_FROM_PICK,uploader.uri_to_path(uri));
 				}
 			}
 			break;
@@ -139,7 +136,6 @@ public class ActImgurMush extends BaseActivity {
 			@Override public void onStatusChanged(boolean bBusy) {
 				if(bBusy){
 					btnUpload.setEnabled(false);
-					// XXX: アップロード中に画面を回転させるとキャンセルされる…
 				}else{
 					btnUpload.setEnabled(true);
 				}
@@ -153,10 +149,12 @@ public class ActImgurMush extends BaseActivity {
 				int t = Integer.parseInt(act.pref().getString(PrefKey.KEY_URL_MODE,"0"));
 				switch(t){
 				default:
-				case 0: finish_mush(image_url); return;
-				case 1: finish_mush(page_url); return;
+				case 0: uploader.finish_mush(image_url); return;
+				case 1: uploader.finish_mush(page_url); return;
 				}
 			}
+
+			// XXX: アップロード中に画面を回転させると、アップロードがキャンセルされる…
 		});
 
 		upload_target_manager = new UploadTargetManager(this);
@@ -176,7 +174,7 @@ public class ActImgurMush extends BaseActivity {
 		findViewById(R.id.btnCancel).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				finish_mush("");
+				uploader.finish_mush("");
 			}
 		});
 
@@ -213,11 +211,7 @@ public class ActImgurMush extends BaseActivity {
 		btnUpload.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(!bUploadButtonPressed){
-					bUploadButtonPressed = true;
-					btnUpload.setEnabled(false);
-					upload_starter.run();
-				}
+				upload_start();
 			}
 		});
 
@@ -255,7 +249,7 @@ public class ActImgurMush extends BaseActivity {
 				}
 			}
 			if( uri != null ){
-				String path = uri_to_path(uri);
+				String path = uploader.uri_to_path(uri);
 				if( path != null ) setCurrentFile( (bRestore?FILE_FROM_RESTORE:FILE_FROM_PICK),path);
 				return;
 			}
@@ -264,47 +258,6 @@ public class ActImgurMush extends BaseActivity {
 		// それ以外の場合、設定されていれば自動的にピッカーを開く
 		if( !bRestore && pref().getBoolean(PrefKey.KEY_AUTO_PICK,false) ) open_file_picker();
 	}
-
-	boolean is_mushroom(){
-		Intent intent = getIntent();
-		return ( intent != null && "com.adamrocker.android.simeji.ACTION_INTERCEPT".equals(intent.getAction()) );
-	}
-
-	void finish_mush(String text){
-		log.d("finish_mush text=%s",text);
-		
-		if( text != null && text.length() > 0 ){
-			SharedPreferences pref = pref();
-			PrefKey.upgrade_config(pref);
-			text = pref.getString(PrefKey.KEY_URL_PREFIX,"")+text+pref.getString(PrefKey.KEY_URL_SUFFIX,"");
-		}
-		if( is_mushroom() ){
-			Intent intent = new Intent();
-			intent.putExtra("replace_key", text);
-			setResult(RESULT_OK, intent);
-		}else if(text !=null && text.length() > 0 ){
-			clipboard_copy(text);
-
-
-		}
-		finish();
-	}
-
-	private void clipboard_copy(String text) {
-		try{
-			ClipboardHelper10.copyText(this,text);
-			Toast.makeText(act,R.string.copy_to_clipboard,Toast.LENGTH_SHORT).show();
-		}catch(Throwable ex){
-			ex.printStackTrace();
-			Toast.makeText(act,ex.getClass().getSimpleName()+":"+ex.getMessage(),Toast.LENGTH_SHORT).show();
-
-//			if( Build.VERSION.SDK_INT >=11 ){
-//				ClipboardHelper11.copyText(this,text);
-//			}
-
-		}
-	}
-
 
 	String file_path;
 	int open_type;
@@ -357,8 +310,8 @@ public class ActImgurMush extends BaseActivity {
 				// 画像選択後に自動処理が設定されていれば、それを開始する
 				if( editor_autostart && open_type == FILE_FROM_PICK ){
 					open_editor();
-				}else{
-					upload_starter.run();
+				}else if( upload_autostart ){
+					upload_start();
 				}
 			}
 
@@ -416,10 +369,10 @@ public class ActImgurMush extends BaseActivity {
 			startActivityForResult(intent,REQ_FILEPICKER);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			Toast.makeText(this,getText(R.string.picker_missing),Toast.LENGTH_SHORT).show();
+			show_toast(Toast.LENGTH_LONG,R.string.picker_missing);
 		}
 		log.d("open_file_picker :finish");
-		finish_mush("");
+		uploader.finish_mush("");
 	}
 	
 	void open_capture(){
@@ -438,7 +391,7 @@ public class ActImgurMush extends BaseActivity {
 			startActivityForResult(intent,REQ_CAPTURE);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			Toast.makeText(this,getText(R.string.capture_missing),Toast.LENGTH_SHORT).show();
+			show_toast(Toast.LENGTH_LONG,R.string.capture_missing);
 		}
 	}
 	
@@ -479,49 +432,21 @@ public class ActImgurMush extends BaseActivity {
 		);
 	}
 
-	boolean bUploadButtonPressed = false;
+	void upload_start(){
+		if(isFinishing()) return;
 
-	Runnable upload_starter = new Runnable() {
-		@Override public void run() {
-			if(isFinishing()) return;
-			ui_handler.removeCallbacks(upload_starter);
+		// 画像が選択されていない
+		if( file_path == null ) return;
 
-			// 画像が選択されていない
-			if( file_path == null ) return;
-
-			// 開始する指示が出されていない
-			if(!bUploadButtonPressed && !upload_autostart) return;
-
-			// アップロードを開始する
-			bUploadButtonPressed = false;
-			btnUpload.setEnabled(false);
-			ImgurAlbum album = upload_target_manager.getSelectedAlbum();
-			ImgurAccount account = upload_target_manager.getSelectedAccount();
-			log.d("upload to account=%s,album_id=%s",(account==null?"OFF":"ON"),(album==null?"OFF":"ON"));
-			uploader.image_upload(
-				account
-				,(album==null?null : album.album_id)
-				,file_path
-			);
-		}
-	};
-
-	String uri_to_path(Uri uri){
-		if(uri==null) return null;
-		log.d("image uri=%s",uri.toString());
-		if(uri.getScheme().equals("content") ){
-			Cursor c = cr.query(uri, new String[]{MediaStore.Images.Media.DATA }, null, null, null);
-			if( c !=null ){
-				try{
-					if(c.moveToNext() ) return c.getString(0);
-				}finally{
-					c.close();
-				}
-			}
-		}else if(uri.getScheme().equals("file") ){
-			return uri.getPath();
-		}
-		Toast.makeText(this,getString(R.string.uri_parse_error,uri.toString()),Toast.LENGTH_LONG).show();
-		return null;
+		// アップロードを開始する
+		btnUpload.setEnabled(false);
+		ImgurAlbum album = upload_target_manager.getSelectedAlbum();
+		ImgurAccount account = upload_target_manager.getSelectedAccount();
+		log.d("upload to account=%s,album_id=%s",(account==null?"OFF":"ON"),(album==null?"OFF":"ON"));
+		uploader.image_upload(
+			account
+			,(album==null?null : album.album_id)
+			,file_path
+		);
 	}
 }

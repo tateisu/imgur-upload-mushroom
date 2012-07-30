@@ -94,17 +94,8 @@ public class HistoryAdapter extends BaseAdapter {
 	}
 
 	public void setFilter(ImgurAccount account, ImgurAlbum album) {
-		String where = null;
-		String[] where_arg = null;
-		if( album != null ){
-			where = ImgurHistory.COL_ACCOUNT_NAME+"=? and "+ImgurHistory.COL_ALBUM_ID+"=?";
-			where_arg = new String[]{ album.account_name, album.album_id.toString() };
-		}else if( account != null ){
-			where = ImgurHistory.COL_ACCOUNT_NAME+"=?";
-			where_arg = new String[]{ account.name };
-		}
 		if(cursor!=null) cursor.close();
-		cursor = act.cr.query(ImgurHistory.meta.uri,null,where,where_arg,ImgurHistory.COL_UPLOAD_TIME+" desc");
+		cursor = ImgurHistory.query(act.cr,account,album);
 		cursor.registerContentObserver(content_observer);
 		cursor.registerDataSetObserver(data_observer);
 		mDataValid = true;

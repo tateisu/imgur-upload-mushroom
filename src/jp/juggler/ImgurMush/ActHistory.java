@@ -15,6 +15,7 @@ import jp.juggler.ImgurMush.helper.AlbumAdapter;
 import jp.juggler.ImgurMush.helper.AlbumList;
 import jp.juggler.ImgurMush.helper.AlbumLoader;
 import jp.juggler.ImgurMush.helper.BaseActivity;
+import jp.juggler.ImgurMush.helper.ClipboardHelper;
 import jp.juggler.ImgurMush.helper.HistoryAdapter;
 import jp.juggler.util.LogCategory;
 import jp.juggler.util.TextUtil;
@@ -26,6 +27,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -403,12 +405,16 @@ public class ActHistory extends BaseActivity {
 			.setItems(
 				new String[]{
 					getString(R.string.history_clear_title),
+					getString(R.string.history_export),
 				},new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						switch(which){
 						case 0:
 							history_clear_dialog();
+							break;
+						case 1:
+							history_export();
 							break;
 						}
 					}
@@ -448,5 +454,78 @@ public class ActHistory extends BaseActivity {
 				}
 			})
 		);
+	}
+	
+	static class ExportData{
+		int count =0;
+		String text;
+	}
+	
+	void history_export(){
+		act.dialog_manager.show_dialog(
+				new AlertDialog.Builder(act)
+				.setCancelable(true)
+				.setNegativeButton(R.string.cancel,null)
+				.setTitle(R.string.history_export)
+				.setMessage(R.string.history_export_confirm)
+				.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
+					@Override public void onClick(DialogInterface dialog, int which) {
+						
+						final ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
+						final ImgurAccount account = (ImgurAccount)account_adapter.getItem( spAccount.getSelectedItemPosition());
+						
+						final ProgressDialog progress = new ProgressDialog(act);
+						progress.setIndeterminate(true);
+						progress.setMessage(getString(R.string.please_wait));
+						progress.setCancelable(true);
+						act.dialog_manager.show_dialog(progress);
+						new AsyncTask<Void,Void,ExportData>(){
+							@Override
+							protected ExportData doInBackground(Void... params) {
+								ExportData result = new ExportData();
+								try{
+									Cursor cursor = ImgurHistory.query(act.cr,account,album);
+									try{
+										ImgurHistory.ColumnIndex colidx = new ImgurHistory.ColumnIndex();
+										if( cursor.getCount() <= 0 ){
+											act.show_toast(Toast.LENGTH_LONG,R.string.history_empty);
+										}else if(! cursor.moveToFirst() ){
+											act.show_toast(Toast.LENGTH_LONG,R.string.db_seek_error);
+										}else{
+											int n=0;
+											StringBuffer sb = new StringBuffer();
+											do{
+												ImgurHistory history = ImgurHistory.loadFromCursor(cursor,colidx);
+												if(history!=null){
+													if(sb.length()>0) sb.append("--\n");
+													history.appendText(sb);
+													++n;
+												}
+											}while( cursor.moveToNext() );
+											result.count = n;
+											result.text = sb.toString();
+										}
+									}finally{
+										cursor.close();
+									}
+								}catch (Throwable ex) {
+									report_ex(ex);
+								}
+								return result;
+							}
+
+							@Override
+							protected void onPostExecute(ExportData result) {
+								if(isFinishing()) return;
+								progress.dismiss();
+								if( result != null && result.count > 0 ){
+									String ok_msg = getString(R.string.history_export_complete,result.count);
+									ClipboardHelper.clipboard_copy(act,result.text,ok_msg);
+								}
+							}
+						}.execute();
+					}
+				})
+			);
 	}
 }

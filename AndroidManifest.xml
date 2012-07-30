@@ -48,6 +48,23 @@
             </intent-filter>
         </activity>
 		
+        
+        <activity
+        	android:name=".ActMultiple"
+            android:label="@string/act_multiple"
+            android:theme="@style/AppTheme"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|fontScale|uiMode"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateHidden"
+            android:exported="true"
+		>
+            <intent-filter>
+            	<action android:name="android.intent.action.SEND_MULTIPLE" />
+            	<category android:name="android.intent.category.DEFAULT" />
+            	<data android:mimeType="image/*" />
+        	</intent-filter>
+        </activity>
+        
 		<activity
 			android:name="jp.juggler.ImgurMush.ActOAuth" 
             android:label="@string/act_oauth"

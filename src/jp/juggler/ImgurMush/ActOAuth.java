@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -122,7 +123,11 @@ public class ActOAuth extends BaseActivity {
 	}
 
 	void init(){
-
+		// クッキーを破棄
+		CookieManager cMgr = CookieManager.getInstance();
+		cMgr.removeAllCookie();
+		
+		//
 		mWebView.setWebViewClient(mWebViewClient);
 		mWebView.setWebChromeClient(mWebChromeClient);
 		WebSettings setting = mWebView.getSettings();

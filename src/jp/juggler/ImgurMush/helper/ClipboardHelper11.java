@@ -5,9 +5,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 
 public class ClipboardHelper11 {
-	public void copyText(Context context,String text){
+	public static void copyText(Context context,String text){
 		ClipData cd = ClipData.newPlainText(text,text);
 		ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 		cm.setPrimaryClip(cd);
 	}
+	// 3.x 以降では getSystemServiceはUIスレッドから呼び出さないといけない場合があるようだ
 }

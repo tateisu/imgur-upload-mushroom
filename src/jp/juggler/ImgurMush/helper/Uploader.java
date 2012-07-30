@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import jp.juggler.ImgurMush.Config;
+import jp.juggler.ImgurMush.PrefKey;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurHistory;
@@ -15,6 +16,7 @@ import jp.juggler.ImgurMush.data.ProgressHTTPEntity;
 import jp.juggler.ImgurMush.data.SignedClient;
 import jp.juggler.ImgurMush.data.StreamSigner;
 import jp.juggler.util.CancelChecker;
+import jp.juggler.util.LogCategory;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -24,11 +26,17 @@ import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnCancelListener;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.widget.Toast;
 
 public class Uploader {
+	static final LogCategory log = new LogCategory("Uploader");
 	final BaseActivity act;
 	final Callback callback;
 
@@ -190,7 +198,6 @@ public class Uploader {
 			protected void onPostExecute(JSONObject result) {
 				if(act.isFinishing()) return;
 				dialog.dismiss();
-				callback.onStatusChanged(false);
 				try{
 					if(result != null ){
 						if( result.has("upload") ){
@@ -207,6 +214,7 @@ public class Uploader {
 				}catch(Throwable ex){
 					act.report_ex(ex);
 				}
+				callback.onStatusChanged(false);
 			}
 		}.execute();
 	}
@@ -305,6 +313,53 @@ public class Uploader {
 			write_tmp_p = 0;
 		}
 	}
+
+	public String uri_to_path(Uri uri){
+		if(uri==null) return null;
+		log.d("image uri=%s",uri.toString());
+		if(uri.getScheme().equals("content") ){
+			Cursor c = act.cr.query(uri, new String[]{MediaStore.Images.Media.DATA }, null, null, null);
+			if( c !=null ){
+				try{
+					if(c.moveToNext() ) return c.getString(0);
+				}finally{
+					c.close();
+				}
+			}
+		}else if(uri.getScheme().equals("file") ){
+			return uri.getPath();
+		}
+		act.show_toast(Toast.LENGTH_LONG,R.string.uri_parse_error,uri.toString());
+		return null;
+	}
+	
+	public String trim_output_url(String text){
+		SharedPreferences pref = act.pref();
+		PrefKey.upgrade_config(pref);
+		return pref.getString(PrefKey.KEY_URL_PREFIX,"")+text+pref.getString(PrefKey.KEY_URL_SUFFIX,"");
+	}
+	
+	public void finish_mush(String text){
+		log.d("finish_mush text=%s",text);
+		
+		if( text != null && text.length() > 0 ){
+			text = trim_output_url(text);
+		}
+		if( is_mushroom() ){
+			Intent intent = new Intent();
+			intent.putExtra("replace_key", text);
+			act.setResult(BaseActivity.RESULT_OK, intent);
+		}else if(text !=null && text.length() > 0 ){
+			ClipboardHelper.clipboard_copy(act,text,act.getString(R.string.output_to_clipboard));
+		}
+		act.finish();
+	}
+
+	boolean is_mushroom(){
+		Intent intent = act.getIntent();
+		return ( intent != null && "com.adamrocker.android.simeji.ACTION_INTERCEPT".equals(intent.getAction()) );
+	}
+
 
 
 }
