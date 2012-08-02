@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import jp.juggler.ImgurMush.Config;
 import jp.juggler.ImgurMush.PrefKey;
 import jp.juggler.ImgurMush.R;
+import jp.juggler.ImgurMush.data.APIResult;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.data.SignedClient;
@@ -172,25 +173,28 @@ public class AlbumLoader {
 			});
 		}
 
-		AlbumList load(ImgurAccount account) throws RuntimeException{
+		AlbumList load(ImgurAccount account){
 			AlbumList data = new AlbumList();
+			String cancel_message = act.getString(R.string.cancelled);
 			data.from = AlbumList.FROM_ERROR;
 			try{
 				SignedClient client = new SignedClient(act);
 				client.prepareConsumer(account,Config.CONSUMER_KEY,Config.CONSUMER_SECRET);
 				//
-				SignedClient.JSONResult result = client.json_signed_get("http://api.imgur.com/2/account/albums.json?count=999");
-				if( result.err != null ){
-					data.err = result.err;
-					if( -1 != result.err.indexOf("No albums found") ){
-						log.d("No albums found.");
+				APIResult result = client.json_signed_get("http://api.imgur.com/2/account/albums.json?count=999",cancel_message,account.name);
+				if( !result.isError() && result.content_json.isNull("albums") ){
+					result.setErrorExtra("missing 'albums' in response");
+				}
+				if( result.isError() ){
+					data.err = result.getError();
+					if( -1 != data.err.indexOf("No albums found") ){
 						// アルバムがないのは正常ケース
 						data.from = AlbumList.FROM_RESPONSE;
+					}else{
+						result.save_error(act);
 					}
-				}else if( result.json.isNull("albums") ){
-					data.err = String.format("missing 'albums' in response: %s",result.str);
 				}else{
-					JSONArray src_list = result.json.getJSONArray("albums");
+					JSONArray src_list = result.content_json.getJSONArray("albums");
 					for(int j=0,je=src_list.length();j<je;++j){
 						JSONObject src = src_list.getJSONObject(j);
 						data.add(new ImgurAlbum(account.name,src));

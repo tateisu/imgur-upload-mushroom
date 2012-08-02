@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.TreeSet;
+import java.util.concurrent.CancellationException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -32,6 +33,7 @@ import oauth.signpost.OAuth;
 
 public class StreamSigner {
 	static final String TAG="StreamSigner";
+	static final boolean debug = false;
 
 	// パラメータの集合
 	TreeSet<Parameter> parameter_set = new TreeSet<Parameter>();
@@ -309,7 +311,7 @@ public class StreamSigner {
 				mac.update( eq_escaped );
 				scan_stream( mac,new EncodedInputStream( new EncodedInputStream( item,false)));
 			}
-			Log.d(TAG,"hmac_sha1 time="+(System.currentTimeMillis() - start));
+			if(debug) Log.d(TAG,"hmac_sha1 time="+(System.currentTimeMillis() - start));
 			return new String( Base64.encode(mac.doFinal(),Base64.NO_WRAP));
 		}catch(Throwable ex){
 			throw new RuntimeException(ex.getMessage(),ex);
@@ -356,14 +358,14 @@ public class StreamSigner {
 			long start = System.currentTimeMillis();
 			length = 0;
 			for( Parameter item: parameter_set ){
-				if( cancel_checker.isCancelled() ) throw new RuntimeException("Cancelled.");
+				if( cancel_checker.isCancelled() ) throw new CancellationException("Cancelled.");
 				if( item.isPost ){
 					if( length!= 0 ) length += 1;
 					length += item.getEncodeLength();
 				}
 			}
 			long t = System.currentTimeMillis() - start;
-			Log.d(TAG,"PostEntity length="+length+", time="+t);
+			if(debug) Log.d(TAG,"PostEntity length="+length+", time="+t);
 		}
 
 		@Override
@@ -435,7 +437,7 @@ public class StreamSigner {
 
 				@Override
 				public int read(byte[] buffer, int start, int length) throws IOException {
-					if( cancel_checker != null && cancel_checker.isCancelled() ) throw new RuntimeException("Cancelled.");
+					if( cancel_checker != null && cancel_checker.isCancelled() ) throw new CancellationException("Cancelled.");
 
 					int p = start;
 					int end = start+length;
@@ -572,7 +574,7 @@ public class StreamSigner {
 			if( tmp_next >= tmp_length ){
 				mac.update(tmp,0,tmp_next);
 				tmp_next = 0;
-				if( cancel_checker !=null && cancel_checker.isCancelled() ) throw new RuntimeException("Cancelled.");
+				if( cancel_checker !=null && cancel_checker.isCancelled() ) throw new CancellationException("Cancelled.");
 			}
 			int c = in.read();
 			if(c<0) break;

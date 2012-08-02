@@ -4,13 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.regex.Pattern;
+import java.util.concurrent.CancellationException;
 
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.util.CancelChecker;
 import jp.juggler.util.LogCategory;
-import jp.juggler.util.TextUtil;
 
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 
@@ -19,151 +18,47 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.text.Html;
 
 public class SignedClient {
 	static final LogCategory log = new LogCategory("SignedClient");
-	static final boolean debug = false;
+	static final boolean dump_request_header = false;
 
-	public String last_error =null;
-	public String last_status =null;
-	public int last_rcode;
+	final BaseActivity act;
 	public CommonsHttpOAuthConsumer consumer;
 	public CancelChecker cancel_checker = null;
-	final BaseActivity act;
 	
 	public SignedClient(BaseActivity act){
 		this.act = act;
 	}
-	
-	
-	public void error_report(final BaseActivity activity,JSONObject result){
-		if(result == null){
-			activity.show_toast(true,String.format("%s %s",last_status,last_error));
-		}else if( result.has("error") ){
-			try {
-				activity.show_toast(true,result.getJSONObject("error").getString("message"));
-			} catch (JSONException e) {
-			}
-		}
-	}
-
 	public void prepareConsumer(ImgurAccount account,String ck,String cs){
 		consumer = new CommonsHttpOAuthConsumer(ck,cs);
 		consumer.setTokenWithSecret(account.token,account.secret);
 	}
+	
 
-	private byte[] signed_get(String url){
-		try{
-			HttpGet request = new HttpGet( url );
-			consumer.sign(request);
-			return send_request(request);
-		}catch(Throwable ex){
-			ex.printStackTrace();
-			last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();
-		}
-		return null;
-	}
 
-	public static class JSONResult{
-		public byte[] data;
-		public String str;
-		public JSONObject json;
-		public String err;
-	}
-
-	public JSONResult json_signed_get(String url){
-		JSONResult result = new JSONResult();
-		for( int nTry =0; nTry < 10; ++nTry ){
-			try{
-				result.data = signed_get(url);
-				if( result.data == null ){
-					if( last_status != null ){
-						result.err = String.format("%s %s",last_status,last_error);
-					}else{
-						result.err = last_error;
-					}
-					if( last_rcode < 400 || last_rcode >= 500 ) continue;
-					break;
-				}
-				// parse UTF-8
-				result.str = TextUtil.decodeUTF8(result.data);
-
-				// parse json
-				try{
-					result.json = new JSONObject(result.str);
-				}catch(JSONException ex){
-					try{
-						Pattern reHTMLHead = Pattern.compile("<head>,+</head>",Pattern.CASE_INSENSITIVE|Pattern.DOTALL);
-						Pattern reWhiteSpace = Pattern.compile("[\\x00-\\x20\\x7f]+");
-						String text = result.str;
-						text = reHTMLHead.matcher(text).replaceAll(" ");
-						text = Html.fromHtml(text).toString();
-						text =  reWhiteSpace.matcher(text).replaceAll(" ");
-						if( -1 != text.toLowerCase().indexOf("gateway") ){
-							continue;
-						}
-						result.err = text;
-						break;
-					}catch(Throwable ex2){
-						result.err = String.format("decode failed.\n%s",result.str);
-						break;
-					}
-				}
-				// レスポンスにエラーメッセージが含まれる
-				try{
-					result.err = "Imgur server returns error: "+result.json.getJSONObject("error").getString("message");
-				}catch(Throwable ex){
-				}
-				// エラーの種類によってはリトライをかける
-				if( result.err != null ){
-					if( -1 != result.err.indexOf("MySQL server has gone away")) continue;
-				}
-				// OK?
-			}catch(Throwable ex){
-				result.err = String.format("%s:%s",ex.getClass().getSimpleName(),ex.getMessage());
-			}
-			break;
-		}
-		if( result.err != null ) log.e(result.err);
-		return result;
-	}
-
-	public JSONObject json_request(HttpRequestBase request){
-		try{
-			byte[] data = send_request(request);
-			if(data!=null){
-				String str = new String(data,"UTF-8");
-				if(debug) log.d(str);
-				return new JSONObject(str);
-			}
-		}catch(Throwable ex){
-			ex.printStackTrace();
-			last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();
-		}
-		return null;
-	}
-
-	private byte[] send_request(HttpRequestBase request){
+	private boolean send_request(APIResult result,HttpRequestBase request,String cancel_message){
 		byte[] tmp = new byte[1024];
 		DefaultHttpClient client=new DefaultHttpClient();
 
-		if(debug){
+		if(dump_request_header){
 			for( Header header : request.getAllHeaders() ){
 				log.d(String.format("%s %s",header.getName(), header.getValue() ));
 			}
 		}
 
+		result.content_bytes = null;
+		result.content_utf8 = null;
+		result.content_json = null;
+
 		for(int nTry=0;nTry<10;++nTry){
-			if( cancel_checker != null && cancel_checker.isCancelled() ) break;
 			try{
+				if( cancel_checker != null && cancel_checker.isCancelled() ) throw new CancellationException("cancelled.");
 				HttpResponse response = client.execute(request);
-				last_rcode = response.getStatusLine().getStatusCode();
-				last_status = response.getStatusLine().toString();
-				if( last_rcode <0 ) continue;
+				result.http_rcode = response.getStatusLine().getStatusCode();
+				result.http_status = response.getStatusLine().toString();
+				result.http_headers = response.getAllHeaders();
+				if( result.http_rcode <0 ) continue;
 				InputStream in=response.getEntity().getContent();
 				try{
 					ByteArrayOutputStream bao = new ByteArrayOutputStream();
@@ -172,24 +67,100 @@ public class SignedClient {
 						if( delta < 0 ) break;
 						bao.write(tmp,0,delta);
 					}
-					if( bao.size() > 0 ) return bao.toByteArray();
-					log.e("read failed. status="+response.getStatusLine()+", url="+request.getURI());
+					if( bao.size() > 0 ){
+						result.setErrorHTTP(null);
+						result.content_bytes = bao.toByteArray();
+						return true;
+					}
+					log.e("read failed. status="+result.http_status+", url="+request.getURI());
 				}finally{
 					in.close();
 				}
+			}catch(CancellationException ex){
+				result.setErrorHTTP(cancel_message);
+				break;
 			}catch(SocketTimeoutException ex){
-				last_error = act.getString(R.string.net_error_timeout,ex.getMessage());
-				break;
+				result.setErrorHTTP(act.getString(R.string.net_error_timeout,ex.getMessage()));
+				continue;
 			}catch(UnknownHostException ex){
-				last_error = act.getString(R.string.net_error_resolver,ex.getMessage());
-				break;
+				result.setErrorHTTP(act.getString(R.string.net_error_resolver,ex.getMessage()));
+				continue;
 			}catch(Throwable ex){
-				last_error = ex.getClass().getSimpleName() +":"+ex.getMessage();
 				ex.printStackTrace();
+				result.setErrorHTTP(APIResult.format_ex(ex));
+				continue;
 			}
 		}
-		return null;
+		return false;
 	}
+	
+	public APIResult json_get(String url,String cancel_message,String account_name){
+		APIResult result = new APIResult();
+		for( int nTry =0; nTry < 10; ++nTry ){
+			try{
+				HttpGet request = new HttpGet( url );
+				send_request(result,request,cancel_message);
+				if( result.parse_json(act,account_name) ){
+					break;
+				}else{
+					continue;
+				}
+			}catch(Throwable ex){
+				ex.printStackTrace();
+				result.setErrorExtra(APIResult.format_ex(ex));
+				break;
+			}
+		}
+		String v = result.getError();
+		if( v != null ) log.e("json_get failed: %s",v);
+		return result;
+	}
+	
+	public APIResult json_signed_get(String url,String cancel_message,String account_name){
+		APIResult result = new APIResult();
+		for( int nTry =0; nTry < 10; ++nTry ){
+			try{
+				HttpGet request = new HttpGet( url );
+				consumer.sign(request);
+				send_request(result,request,cancel_message);
+				if( result.parse_json(act,account_name) ){
+					break;
+				}else{
+					continue;
+				}
+			}catch(Throwable ex){
+				ex.printStackTrace();
+				result.setErrorExtra(APIResult.format_ex(ex));
+				break;
+			}
+		}
+		String v = result.getError();
+		if( v != null ) log.e("json_signed_get failed: %s",v);
+		return result;
+	}
+
+	public APIResult json_signed_request(HttpRequestBase request,String cancel_message,String account_name){
+		APIResult result = new APIResult();
+		for( int nTry =0; nTry < 10; ++nTry ){
+			try{
+				send_request(result,request,cancel_message);
+				if( result.parse_json(act,account_name) ){
+					break;
+				}else{
+					continue;
+				}
+			}catch(Throwable ex){
+				ex.printStackTrace();
+				result.setErrorExtra(APIResult.format_ex(ex));
+				break;
+			}
+		}
+		String v = result.getError();
+		if( v != null ) log.e("json_signed_request failed: %s",v);
+		return result;
+	}
+
+
 
 
 

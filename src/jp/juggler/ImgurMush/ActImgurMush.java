@@ -446,6 +446,7 @@ public class ActImgurMush extends BaseActivity {
 			account
 			,(album==null?null : album.album_id)
 			,file_path
+			,act.getString(R.string.upload)
 		);
 	}
 }

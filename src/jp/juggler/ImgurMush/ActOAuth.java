@@ -2,6 +2,7 @@ package jp.juggler.ImgurMush;
 
 import java.util.regex.Pattern;
 
+import jp.juggler.ImgurMush.data.APIResult;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.SignedClient;
 import jp.juggler.ImgurMush.helper.BaseActivity;
@@ -198,6 +199,7 @@ public class ActOAuth extends BaseActivity {
 	private Runnable proc_after = new Runnable() {
 		@Override
 		public void run() {
+			String cancel_message = act.getString(R.string.cancelled);
 			
 			try {
 				mOAuthProvider.retrieveAccessToken(mOAuthConsumer, mOAuthVerifier);
@@ -212,17 +214,18 @@ public class ActOAuth extends BaseActivity {
 					//
 					SignedClient client = new SignedClient(act);
 					client.prepareConsumer(account,Config.CONSUMER_KEY, Config.CONSUMER_SECRET);
-					SignedClient.JSONResult result = client.json_signed_get("http://api.imgur.com/2/account.json");
-					if( result.err != null ){
-						act.show_toast(true,result.err);
-						return;
+					APIResult result = client.json_signed_get("http://api.imgur.com/2/account.json",cancel_message,"unknown");
+					//
+					if( !result.isError()
+					&&   result.content_json.isNull("account")
+					){
+						result.setErrorExtra("missing 'account' in response");
 					}
-					if( result.json.isNull("account") ){
-						act.show_toast(true,String.format("missing 'account' in response: %s",result.str));
-						return;
-					}
+					result.save_error(act);
+					result.show_error(act);
+					if( result.isError() ) return;
 					// 認証されたアカウントを保存する
-					account.name = result.json.getJSONObject("account").getString("url");
+					account.name = result.content_json.getJSONObject("account").getString("url");
 					account.save(act.cr);
 					show_toast(false,R.string.account_added);
 				}

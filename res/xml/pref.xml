@@ -56,6 +56,11 @@
 			android:defaultValue="85"
 			android:inputType="number"
 		/>
+		<CheckBoxPreference
+			android:key="auto_rotate"
+			android:title="@string/auto_rotate_title"
+			android:summary="@string/auto_rotate_summary"
+		/>
 	</PreferenceCategory>
 
 	<!-- 出力するURL -->
@@ -102,5 +107,23 @@
 			android:defaultValue=" "
 		/>
 	</PreferenceCategory>
-
+	
+	<!-- 出力するURL -->
+	<PreferenceCategory android:title="@string/trouble_shooting_settings">
+		<Preference
+			android:key="rate_limit_check"
+			android:title="@string/rate_limit_check_title"
+		/>
+		<CheckBoxPreference
+			android:key="save_error_detail"
+			android:title="@string/save_error_detail_title"
+			android:summary="@string/save_error_detail_summary"
+			android:defaultValue="false"
+		/>
+		<Preference
+			android:key="test_error_format"
+			android:title="@string/test_error_format_title"
+		/>
+	</PreferenceCategory>
+	
 </PreferenceScreen>

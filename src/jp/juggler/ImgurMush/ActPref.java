@@ -29,8 +29,29 @@ public class ActPref  extends PreferenceActivity{
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				startActivity(new Intent(ActPref.this, ActOAuth.class));
+				return true;
+			}
+		});
+		
+		findPreference("rate_limit_check").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(ActPref.this, ActTest.class);
+				intent.putExtra(PrefKey.EXTRA_TEST_MODE,PrefKey.TEST_RATE_LIMIT);
+				startActivity(intent);
+				return true;
+			}
+		});
+		
+		findPreference("test_error_format").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(ActPref.this, ActTest.class);
+				intent.putExtra(PrefKey.EXTRA_TEST_MODE,PrefKey.TEST_ERROR_FORMAT);
+				startActivity(intent);
 				return false;
 			}
 		});
+		
 	}
 }

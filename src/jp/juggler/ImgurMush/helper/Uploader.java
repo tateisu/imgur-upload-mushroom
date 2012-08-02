@@ -14,6 +14,7 @@ import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurHistory;
 import jp.juggler.ImgurMush.data.ProgressHTTPEntity;
 import jp.juggler.ImgurMush.data.SignedClient;
+import jp.juggler.ImgurMush.data.APIResult;
 import jp.juggler.ImgurMush.data.StreamSigner;
 import jp.juggler.util.CancelChecker;
 import jp.juggler.util.LogCategory;
@@ -26,12 +27,15 @@ import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnCancelListener;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.provider.MediaStore;
 
 public class Uploader {
@@ -48,16 +52,28 @@ public class Uploader {
 	public Uploader(BaseActivity act,Callback callback){
 		this.act =act;
 		this.callback = callback;
-
+		
+		PowerManager pm = (PowerManager)act.getSystemService(BaseActivity.POWER_SERVICE);
+		wake_lock = pm.newWakeLock(
+			PowerManager.SCREEN_DIM_WAKE_LOCK
+			|PowerManager.ON_AFTER_RELEASE
+			,"ImgurMushroom"
+		);
+		wake_lock.setReferenceCounted(true);
 	}
 
 	ProgressDialog progress_dialog;
-
-	public void image_upload(final ImgurAccount account,final String album_id,final String file_path){
+	WakeLock wake_lock;
+	
+	public void image_upload(final ImgurAccount account,final String album_id,final String file_path,String title){
 
 		callback.onStatusChanged(true);
-
+		progress_busy = true;
+		
+	
+		//
 		final ProgressDialog dialog = progress_dialog = new ProgressDialog(act);
+		dialog.setTitle(title);
 		dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		dialog.setIndeterminate(true);
 		dialog.setMessage(act.getString(R.string.upload_progress));
@@ -70,6 +86,22 @@ public class Uploader {
 				callback.onCancelled();
 			}
 		});
+		dialog.setOnDismissListener(new OnDismissListener() {
+			
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				try{
+					wake_lock.release();
+					log.d("wake lock released. isHeld=%s",wake_lock.isHeld());
+				}catch(Throwable ex){
+					ex.printStackTrace();
+				}
+			}
+		});
+		//
+		wake_lock.acquire();
+		log.d("wake lock acquired. isHeld=%s",wake_lock.isHeld());
+
 		act.dialog_manager.show_dialog(dialog);
 
 		final CancelChecker cancel_checker = new CancelChecker() {
@@ -79,9 +111,9 @@ public class Uploader {
 			}
 		};
 
-		new AsyncTask<Void,Void,JSONObject>(){
+		new AsyncTask<Void,Void,APIResult>(){
 			@Override
-			protected JSONObject doInBackground(Void... params) {
+			protected APIResult doInBackground(Void... params) {
 				File infile = new File(file_path);
 				long infile_size = infile.length();
 				if( infile_size >= 10* 1024 * 1024 ){
@@ -97,35 +129,22 @@ public class Uploader {
 					signer.addParam(true,"type",(is_base64 ?"base64" : "file") );
 					signer.addParam(true,"image",infile,is_base64);
 
+					APIResult result;
+					String cancel_message = act.getString(R.string.upload_cancelled);
+					
 					if( account==null ){
 						signer.addParam(true,"key",Config.IMGUR_API_KEY);
 						HttpPost request = new HttpPost("http://api.imgur.com/2/upload.json");
 
-						act.ui_handler.post(new Runnable() {
-							@Override
-							public void run() {
-								if(act.isFinishing() ) return;
-								dialog.setMessage(act.getString(R.string.upload_progress_sizecheck));
-								dialog.setIndeterminate(true);
-							}
-						});
-						request.setEntity(new ProgressHTTPEntity(signer.createPostEntity(),progress_listener));
-						if( cancel_checker.isCancelled() ) return null;
+						progress_set_pre(R.string.upload_progress_sizecheck);
+						ProgressHTTPEntity entity = new ProgressHTTPEntity(signer.createPostEntity(),progress_listener);
+						request.setEntity(entity);
 
-						progress_busy = false;
-						act.ui_handler.post(new Runnable() {
-							@Override
-							public void run() {
-								if(act.isFinishing() ) return;
-								dialog.setMessage(act.getString(R.string.upload_progress));
-								dialog.setIndeterminate(false);
-							}
-						});
-						JSONObject result = client.json_request(request);
 						if( cancel_checker.isCancelled() ) return null;
-
-						client.error_report(act,result);
-						return result;
+						progress_reset_retry( entity.getContentLength() );
+						result = client.json_signed_request(request,cancel_message,PrefKey.RATELIMIT_ANONYMOUS );
+						result.save_error(act);
+						result.show_error(act);
 					}else{
 						HttpPost request = new HttpPost("http://api.imgur.com/2/account/images.json");
 						signer.addParam(false,"oauth_token", account.token);
@@ -135,43 +154,25 @@ public class Uploader {
 						signer.addParam(false,"oauth_timestamp",Long.toString(System.currentTimeMillis() / 1000L));
 						signer.addParam(false,"oauth_nonce",Long.toString(new Random().nextLong()));
 
-						act.ui_handler.post(new Runnable() {
-							@Override
-							public void run() {
-								dialog.setMessage(act.getString(R.string.upload_progress_digest));
-								dialog.setIndeterminate(true);
-							}
-						});
+						progress_set_pre(R.string.upload_progress_digest);
 						signer.sign_header(  request,signer.hmac_sha1(Config.CONSUMER_SECRET,account.secret,"POST",request.getURI().toString()));
-						if( cancel_checker.isCancelled() ) return null;
 
-						act.ui_handler.post(new Runnable() {
-							@Override
-							public void run() {
-								dialog.setMessage(act.getString(R.string.upload_progress_sizecheck));
-								dialog.setIndeterminate(true);
-							}
-						});
-						request.setEntity(new ProgressHTTPEntity(signer.createPostEntity(),progress_listener));
 						if( cancel_checker.isCancelled() ) return null;
+						progress_set_pre(R.string.upload_progress_sizecheck);
+						ProgressHTTPEntity entity = new ProgressHTTPEntity(signer.createPostEntity(),progress_listener);
+						request.setEntity(entity);
 
-						progress_busy = false;
-						act.ui_handler.post(new Runnable() {
-							@Override
-							public void run() {
-								dialog.setMessage(act.getString(R.string.upload_progress));
-								dialog.setIndeterminate(false);
-							}
-						});
-						JSONObject result = client.json_request(request);
 						if( cancel_checker.isCancelled() ) return null;
-
-						client.error_report(act,result);
+						progress_reset_retry( entity.getContentLength() );
+						result = client.json_signed_request(request,cancel_message,account.name);
+						result.save_error(act);
+						result.show_error(act);
 
 						// 画像をアルバムに追加する
-						if( result != null && album_id != null ){
+						if( cancel_checker.isCancelled() ) return null;
+						if( ! result.isError() && album_id != null ){
 							try{
-								JSONObject image = result.getJSONObject("images").getJSONObject("image");
+								JSONObject image = result.content_json.getJSONObject("images").getJSONObject("image");
 								request = new HttpPost("http://api.imgur.com/2/account/albums/"+ album_id +".json");
 								request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 								ArrayList<NameValuePair> nameValuePair = new ArrayList<NameValuePair>();
@@ -179,15 +180,16 @@ public class Uploader {
 								request.setEntity(new UrlEncodedFormEntity(nameValuePair));
 								client.prepareConsumer(account,Config.CONSUMER_KEY,Config.CONSUMER_SECRET);
 								client.consumer.sign(request);
-								JSONObject r2 = client.json_request(request);
-								client.error_report(act,r2);
+								APIResult r2 = client.json_signed_request(request,cancel_message,account.name);
+								r2.save_error(act);
+								r2.show_error(act);
 							}catch(Throwable ex){
 								act.report_ex(ex);
 							}
 						}
-
-						return result;
 					}
+					if( cancel_checker.isCancelled() ) return null;
+					return result;
 				}catch(Throwable ex){
 					act.report_ex(ex);
 				}
@@ -195,18 +197,18 @@ public class Uploader {
 			}
 
 			@Override
-			protected void onPostExecute(JSONObject result) {
+			protected void onPostExecute(APIResult result) {
 				if(act.isFinishing()) return;
 				dialog.dismiss();
 				try{
-					if(result != null ){
-						if( result.has("upload") ){
-							JSONObject links=result.getJSONObject("upload").getJSONObject("links");
+					if( result != null && !result.isError() ){
+						if( result.content_json.has("upload") ){
+							JSONObject links=result.content_json.getJSONObject("upload").getJSONObject("links");
 							save_history(links,account,album_id );
 							callback.onComplete(links.getString("original"),links.getString("imgur_page"));
 						}
-						if( result.has("images") ){
-							JSONObject links=result.getJSONObject("images").getJSONObject("links");
+						if( result.content_json.has("images") ){
+							JSONObject links=result.content_json.getJSONObject("images").getJSONObject("links");
 							save_history(links,account,album_id );
 							callback.onComplete(links.getString("original"),links.getString("imgur_page"));
 						}
@@ -218,6 +220,8 @@ public class Uploader {
 			}
 		}.execute();
 	}
+
+
 
 	void save_history(JSONObject links,ImgurAccount account,String album_id){
 		try{
@@ -238,30 +242,83 @@ public class Uploader {
 	boolean progress_busy = false;
 	AtomicInteger progress_value = new AtomicInteger(0);
 	AtomicInteger progress_max= new AtomicInteger(0);
+	AtomicInteger progress_last_message_id = new AtomicInteger(0);
+	int progress_try_count;
+	String progress_last_msg;
+
+
+	
+	void progress_set_pre(final int text_id) {
+		act.ui_handler.post(new Runnable() {
+			@Override
+			public void run() {
+				if(act.isFinishing() ) return;
+				progress_dialog.setMessage(act.getString(text_id));
+				progress_dialog.setIndeterminate(true);
+			}
+		});
+	}
+	
+	private void progress_reset_retry(long size) {
+		progress_busy = false;
+		act.ui_handler.post(new Runnable() {
+			@Override
+			public void run() {
+				if(act.isFinishing() ) return;
+				progress_last_message_id.set(0);
+				progress_try_count = 1;
+				progress_dialog.setProgress(0);
+				progress_dialog.setIndeterminate(false);
+			}
+		});
+	}
+	
+	ProgressHTTPEntity.ProgressListener progress_listener = new ProgressHTTPEntity.ProgressListener() {
+		@Override
+		public void onProgress(long v, long size) {
+			if(progress_busy) return;
+			progress_set( v, size );
+		}
+	};
+
+	void progress_set(long v,long max){
+		progress_value.set( (int)v );
+		progress_max.set( (int)max );
+		act.ui_handler.postDelayed(progress_runnable,100);
+	}
+	
 	Runnable progress_runnable = new Runnable() {
 		@Override
 		public void run() {
 			act.ui_handler.removeCallbacks(progress_runnable);
 			if(act.isFinishing()) return;
+			
+			int old_v = progress_dialog.getProgress();
 			int v = progress_value.get();
 			int max = progress_max.get();
 			progress_dialog.setMax(max);
 			progress_dialog.setProgress(v);
+			//
+			if( v < old_v ){
+				log.d("retry detected? %d < %d",v,old_v);
+				++progress_try_count;
+			}
+			//
+			String msg = null;
 			if(max > 0 && v==max){
-				progress_dialog.setMessage(act.getString(R.string.upload_wait_response));
+				msg = act.getString(R.string.upload_wait_response);
+			}else if( progress_try_count > 1 ){
+				msg = act.getString(R.string.upload_progress2,progress_try_count);
+			}else{
+				msg = act.getString(R.string.upload_progress);
+			}
+			if( ! msg.equals(progress_last_msg) ){
+				progress_last_msg = msg;
+				progress_dialog.setMessage(msg);
 			}
 		}
 	};
 
-	ProgressHTTPEntity.ProgressListener progress_listener = new ProgressHTTPEntity.ProgressListener() {
-		@Override
-		public void onProgress(long v, long size) {
-			if(progress_busy) return;
-			progress_max.set( (int)size );
-			progress_value.set( (int)v );
-			act.ui_handler.postDelayed(progress_runnable,100);
-		}
-	};
 
 
 
@@ -316,7 +373,6 @@ public class Uploader {
 
 	public String uri_to_path(Uri uri){
 		if(uri==null) return null;
-		log.d("image uri=%s",uri.toString());
 		if(uri.getScheme().equals("content") ){
 			Cursor c = act.cr.query(uri, new String[]{MediaStore.Images.Media.DATA }, null, null, null);
 			if( c !=null ){
@@ -329,6 +385,7 @@ public class Uploader {
 		}else if(uri.getScheme().equals("file") ){
 			return uri.getPath();
 		}
+		log.d("cannot convert uri to path. %s",uri.toString());
 		act.show_toast(true,R.string.uri_parse_error,uri.toString());
 		return null;
 	}

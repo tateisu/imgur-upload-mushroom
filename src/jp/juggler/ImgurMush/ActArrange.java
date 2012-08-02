@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import jp.juggler.ImgurMush.data.ResizePreset;
 import jp.juggler.ImgurMush.helper.BaseActivity;
+import jp.juggler.ImgurMush.helper.ExifRotationReader;
 import jp.juggler.ImgurMush.helper.ImageTempDir;
 import jp.juggler.ImgurMush.helper.PreviewLoader;
 
@@ -18,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -216,12 +218,21 @@ public class ActArrange extends BaseActivity{
 		delay_init.run();
 	}
 
-
 	Runnable delay_init = new Runnable() {
 		@Override
 		public void run() {
+			Intent intent = getIntent();
+			src_path = intent.getStringExtra(PrefKey.EXTRA_SRC_PATH);
+
 			avPreview.setImageBitmap(null);
-			avPreview.setRotate(0);
+			
+			if( Build.VERSION.SDK_INT >= 7 && act.pref().getBoolean(PrefKey.KEY_AUTO_ROTATE,false) ){
+				int v = ExifRotationReader.read_rotation(src_path);
+				if(v<0) v=0;
+				avPreview.setRotate(v);
+			}else{
+				avPreview.setRotate(0);
+			}
 			// 切り抜きシークバーをリセット
 			seekbar_busy = true;
 			sbCropLeft.setProgress(0);
@@ -249,8 +260,6 @@ public class ActArrange extends BaseActivity{
 				return;
 			}
 
-			Intent intent = getIntent();
-			src_path = intent.getStringExtra(PrefKey.EXTRA_SRC_PATH);
 			if( intent.getBooleanExtra(PrefKey.EXTRA_IS_STATUS_SAVE,false) ){
 				avPreview.setRotate( intent.getIntExtra(PrefKey.EXTRA_EDIT_ROTATE,0));
 				seekbar_busy = true;

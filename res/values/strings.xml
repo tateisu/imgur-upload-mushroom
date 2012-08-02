@@ -2,6 +2,7 @@
 <resources>
 
 <string name="about">about this app</string>
+<string name="account">account</string>
 <string name="account_added">account has been configured.</string>
 <string name="account_add_title">add account</string>
 <string name="account_all">all account</string>
@@ -22,7 +23,10 @@
 <string name="album_not_select">(no album)</string>
 <string name="app_name"			 >Imgur Mushroom</string>
 <string name="autostart_settings">laziness settings</string>
+<string name="auto_rotate_summary">If checked,automatically rotate using image\'s metadata when start editing. (Android 2.1 or later)</string>
+<string name="auto_rotate_title">auto rotate</string>
 <string name="cancel">cancel</string>
+<string name="cancelled">operation was cancelled</string>
 <string name="cancel_notice">cancelled..</string>
 <string name="capture">capture</string>
 <string name="capture_missing">missing app to capture image</string>
@@ -35,6 +39,8 @@
 <string name="dash3">&#8230;</string>
 <string name="db_seek_error">database access error</string>
 <string name="delete_hash_missing">missing delete hash</string>
+<string name="delete_hash_invalid">maybe already deleted.</string>
+<string name="delete_complete">image was deleted.</string>
 <string name="edit">edit</string>
 <string name="edit_autostart_summary">if checked, automatically start editor when image is picked.</string>
 <string name="edit_autostart_title">auto start editor</string>
@@ -59,7 +65,6 @@
 <string name="jpeg_quality_title">JPEG quality</string>
 <string name="net_error_resolver">connection error(%1$s)</string>
 <string name="net_error_timeout">network timeout(%1$s)</string>
-<string name="oauth_desc">authentication</string>
 <string name="oauth_start">restart oAuth</string>
 <string name="ok">OK</string>
 <string name="output_style_settings">URL settings</string>
@@ -73,6 +78,10 @@
 <string name="please_wait">Please wait..</string>
 <string name="preview_disabled_summary">if checked, disable image preview to save native heap memory.</string>
 <string name="preview_disabled_title">disable preview</string>
+<string name="ratelimit_checkdate">last check</string>
+<string name="ratelimit_remain_limit">API request remain/limit</string>
+<string name="ratelimit_reset">next reset</string>
+<string name="rate_limit_check_title">show rate limit of Imgur API</string>
 <string name="resize_checkbox_longside">limit long side to specified pixel</string>
 <string name="resize_checkbox_percent">scale to specified percent(1..99)</string>
 <string name="resize_checkbox_shortside">limit short side to specified pixel</string>
@@ -88,22 +97,28 @@
 <string name="resize_preset_delete">delete this preset?</string>
 <string name="resize_value_title">value:</string>
 <string name="save">save</string>
+<string name="save_error_detail_summary">if checked, save error detail from Imgur to SD card. destination is the output folder that configured above, file name will be match to log*.txt</string>
+<string name="save_error_detail_title">save error detail to SD card</string>
 <string name="selection_added">picked/captured image was added to selection list</string>
 <string name="selection_remove">remove from selection</string>
 <string name="setting">settings</string>
 <string name="site_top">Imgur website toppage</string>
 <string name="storage_not_directory">external storage is not presented</string>
 <string name="storage_not_writable">external storage is not writable</string>
+<string name="test_error_format_title">show saved errors</string>
 <string name="text_output_prefix_summary">this text is inserted to before the URL</string>
 <string name="text_output_prefix_title">prefix text</string>
 <string name="text_output_suffix_summary">this text is appended to after the URL</string>
 <string name="text_output_suffix_title">suffix text</string>
 <string name="too_large_data">too large data</string>
+<string name="trouble_shooting_settings">trouble shooting settings</string>
 <string name="upload">upload</string>
 <string name="upload_autostart_summary">if checked, automatically start upload after image is selected.</string>
 <string name="upload_autostart_title">auto start upload</string>
-<string name="upload_desc">image upload</string>
+<string name="upload_cancelled">upload was cancelled.</string>
+<string name="upload_multi_title">bulk upload\n(file %1$s/%2$s)</string>
 <string name="upload_progress">uploading&#8230;</string>
+<string name="upload_progress2">uploading&#8230;(try %1$s)</string>
 <string name="upload_progress_digest">calculate digest&#8230;</string>
 <string name="upload_progress_sizecheck">calculate upload size&#8230;</string>
 <string name="upload_wait_response">waiting response&#8230;</string>

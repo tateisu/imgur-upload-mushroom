@@ -1,15 +1,15 @@
 package jp.juggler.ImgurMush;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONObject;
+
+import jp.juggler.ImgurMush.data.APIResult;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.data.ImgurHistory;
+import jp.juggler.ImgurMush.data.SignedClient;
 import jp.juggler.ImgurMush.helper.AccountAdapter;
 import jp.juggler.ImgurMush.helper.AlbumAdapter;
 import jp.juggler.ImgurMush.helper.AlbumList;
@@ -17,8 +17,7 @@ import jp.juggler.ImgurMush.helper.AlbumLoader;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ClipboardHelper;
 import jp.juggler.ImgurMush.helper.HistoryAdapter;
-import jp.juggler.util.TextUtil;
-
+import jp.juggler.util.CancelChecker;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -314,9 +313,6 @@ public class ActHistory extends BaseActivity {
 					act.dialog_manager.show_dialog(progress);
 					// 別スレッドで実行
 					final Thread t = new Thread(){
-						boolean isCancelled(){
-							return !progress.isShowing();
-						}
 						@Override public void run() {
 							try{
 								Pattern reDeleteHash = Pattern.compile("([^/]+)$");
@@ -327,49 +323,37 @@ public class ActHistory extends BaseActivity {
 								}
 								String hash = m.group(1);
 								String url = "http://api.imgur.com/2/delete/"+hash+"?_format=json";
-								for(int nTry=0;nTry<10;++nTry){
-									if(isCancelled()) break;
-									try{
-										HttpURLConnection conn = (HttpURLConnection)new URL(url).openConnection();
-										conn.connect();
-										int rcode = conn.getResponseCode();
-										if( rcode == 200 || rcode==302){
-											InputStream in = conn.getInputStream();
-											try{
-												int capa = conn.getContentLength();
-												if( capa < 4096) capa = 4096;
-												ByteArrayOutputStream bao = new ByteArrayOutputStream( capa );
-												byte[] tmp = new byte[4096];
-												for(;;){
-													int delta = in.read(tmp,0,tmp.length);
-													if( delta <= 0 ) break;
-													bao.write(tmp,0,delta);
-												}
-												byte[] data = bao.toByteArray();
-												String res = TextUtil.decodeUTF8(data);
-												if( -1 != res.indexOf("\"Success\"") ){
-													item.delete(act.cr);
-												}else{
-													act.show_toast(true,res);
-												}
-											}finally{
-												in.close();
-											}
-											return;
-										}
-										log.d("http error %d",rcode);
-										if( rcode >= 400 ){
-											act.show_toast(true,String.format("HTTP error %d",rcode));
-											// 400 が来たら履歴から削除する
-											if( rcode == 400 ){
+								SignedClient client = new SignedClient(act);
+								client.cancel_checker = new CancelChecker() {
+									@Override public boolean isCancelled() {
+										return !progress.isShowing();
+									}
+								};
+								APIResult result = client.json_get( url, act.getString(R.string.cancelled),PrefKey.RATELIMIT_ANONYMOUS);
+								try{
+									String v = result.getError();
+									if( "Invalid delete hash".equals(v) ){
+										result.setErrorExtra( act.getString(R.string.delete_hash_invalid));
+										item.delete(act.cr);
+									}else if(v==null){
+										JSONObject node = result.content_json.optJSONObject("delete");
+										if( node == null ){
+											result.setErrorExtra( "missing 'delete' in response");
+										}else{
+											String msg = node.optString("message");
+											if( msg != null && msg.length() > 0 ){
+												act.show_toast(false,R.string.delete_complete);
 												item.delete(act.cr);
 											}
-											break;
 										}
-									}catch(Throwable ex){
-										act.report_ex(ex);
 									}
+								}catch(Throwable ex){
+									act.report_ex(ex);
 								}
+								result.save_error(act);
+								result.show_error(act);
+							}catch(Throwable ex){
+								act.report_ex(ex);
 							}finally{
 								progress.dismiss();
 							}

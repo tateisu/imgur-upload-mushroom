@@ -133,7 +133,7 @@ public class BaseActivity extends Activity {
 		}
 		ui_handler.post(new Runnable() {
 			@Override public void run() {
-				if(!isFinishing()) show_toast(bLong,text); 
+				if(!isFinishing()) show_toast(bLong,text);
 			}
 		});
 	}

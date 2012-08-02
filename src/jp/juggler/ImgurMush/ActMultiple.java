@@ -405,6 +405,7 @@ public class ActMultiple extends BaseActivity{
 			account
 			,(album==null?null : album.album_id)
 			,item.file.getAbsolutePath()
+			,act.getString(R.string.upload_multi_title,upload_next,upload_list_adapter.getCount() )
 		);
 	}
 }

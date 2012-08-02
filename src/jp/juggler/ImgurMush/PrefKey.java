@@ -3,6 +3,8 @@ package jp.juggler.ImgurMush;
 import android.content.SharedPreferences;
 
 public class PrefKey {
+
+
 	private PrefKey(){} // disable create instance
 
 	// v1.xまで
@@ -51,6 +53,16 @@ public class PrefKey {
 	public static final String KEY_URL_PREFIX = "text_output_prefix";
 	public static final String KEY_URL_SUFFIX = "text_output_suffix";
 	public static final String EXTRA_LAST_EDIT_INDEX = "last_edit_index";
+	
+	public static final String KEY_SAVE_ERROR_DETAIL = "save_error_detail";
+	
+	public static final String EXTRA_TEST_MODE = "test_mode";
+	public static final int TEST_RATE_LIMIT = 1;
+	public static final int TEST_ERROR_FORMAT = 2;
+	public static final String KEY_RATE_LIMIT_MAP = "rate_limit_map";
+	public static final String KEY_AUTO_ROTATE = "auto_rotate";
+	public static final String RATELIMIT_ANONYMOUS = "anonymous";
+	
 	
 	public static void upgrade_config(SharedPreferences pref) {
 		SharedPreferences.Editor e = pref.edit();

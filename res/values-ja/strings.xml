@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
 <string name="about">このアプリについて</string>
+<string name="account">アカウント</string>
 <string name="account_added">アカウントが設定されました</string>
 <string name="account_add_title">アカウントの追加</string>
 <string name="account_all">全アカウント</string>
@@ -19,11 +21,13 @@
 <string name="album_all">全アルバム</string>
 <string name="album_loading">(読み込み中…)</string>
 <string name="album_load_error">アルバム一覧の読み込みに失敗しました</string>
-
 <string name="album_not_select">(アルバムなし)</string>
 <string name="app_name"			 >Imgur マッシュ</string>
 <string name="autostart_settings">操作の省略</string>
+<string name="auto_rotate_summary">有効にすると、加工開始時に画像から回転情報を読んで自動で回転します。(Android 2.1以降)</string>
+<string name="auto_rotate_title">回転の自動化</string>
 <string name="cancel">キャンセル</string>
+<string name="cancelled">操作をキャンセルしました</string>
 <string name="cancel_notice">キャンセルします…</string>
 <string name="capture">撮影</string>
 <string name="capture_missing">画像キャプチャに使えるアプリがありません</string>
@@ -36,6 +40,8 @@
 <string name="dash3">&#8230;</string>
 <string name="db_seek_error">内部データベースのアクセスに失敗しました</string>
 <string name="delete_hash_missing">削除ハッシュが見つかりません</string>
+<string name="delete_hash_invalid">サーバからは既に削除されていたようです</string>
+<string name="delete_complete">画像を削除しました</string>
 <string name="edit">加工</string>
 <string name="edit_autostart_summary">有効にすると、画像が選択されたらすぐに画像加工を開始します</string>
 <string name="edit_autostart_title">画像加工を自動開始</string>
@@ -60,7 +66,6 @@
 <string name="jpeg_quality_title">JPEG品質</string>
 <string name="net_error_resolver">ネットワーク エラー</string>
 <string name="net_error_timeout">ネットワーク タイムアウト(%1$s)</string>
-<string name="oauth_desc">認証処理</string>
 <string name="oauth_start">OAuth認証をやり直す</string>
 <string name="ok">OK</string>
 <string name="output_style_settings">テキスト出力の設定</string>
@@ -74,6 +79,10 @@
 <string name="please_wait">お待ちください…</string>
 <string name="preview_disabled_summary">有効にすると、メモリを節約するためにプレビューを省略します</string>
 <string name="preview_disabled_title">プレビューしない</string>
+<string name="ratelimit_checkdate">最終確認時刻</string>
+<string name="ratelimit_remain_limit">API呼出可能回数  残り/最大</string>
+<string name="ratelimit_reset">制限解除時刻</string>
+<string name="rate_limit_check_title">Imgur API のrate-limitを表示</string>
 <string name="resize_checkbox_longside">長辺を指定ピクセル以内に縮小</string>
 <string name="resize_checkbox_percent">指定パーセント(1..99)以内に縮小</string>
 <string name="resize_checkbox_shortside">短辺を指定ピクセル以内に縮小</string>
@@ -89,22 +98,28 @@
 <string name="resize_preset_delete">この指定を削除しますか?</string>
 <string name="resize_value_title">設定値：</string>
 <string name="save">作成</string>
+<string name="save_error_detail_summary">有効にすると、Imgur APIのエラーを検出したらその詳細を保存します。出力フォルダにlog*.txt というファイル名で保存されます。</string>
+<string name="save_error_detail_title">エラーをSDカードに保存</string>
 <string name="selection_added">選択/撮影 された画像は選択リストに追加されました</string>
 <string name="selection_remove">選択リストから除去</string>
 <string name="setting">設定</string>
 <string name="site_top">Imgurトップページ</string>
 <string name="storage_not_directory">外部フラッシュメモリが提供されていません?</string>
 <string name="storage_not_writable">外部フラッシュメモリへの書き込み許可がありません?</string>
+<string name="test_error_format_title">保存したエラーを表示</string>
 <string name="text_output_prefix_summary">出力するURLの直前に追加するテキスト</string>
 <string name="text_output_prefix_title">直前に追加するテキスト</string>
 <string name="text_output_suffix_summary">出力するURLの直後に追加テキスト</string>
 <string name="text_output_suffix_title">直後に追加するテキスト</string>
 <string name="too_large_data">データサイズが大きすぎます</string>
+<string name="trouble_shooting_settings">問題追跡の設定</string>
 <string name="upload">アップロード</string>
 <string name="upload_autostart_summary">有効にすると、画像選択や加工が終わったらすぐにImgurへの送信を行います</string>
 <string name="upload_autostart_title">アップロードを自動開始</string>
-<string name="upload_desc">画像アップロード</string>
+<string name="upload_cancelled">アップロードを中止しました</string>
+<string name="upload_multi_title">一括アップロード\n(ファイル  %1$s/%2$s)</string>
 <string name="upload_progress">アップロード中です…</string>
+<string name="upload_progress2">アップロード中です…(try %1$s)</string>
 <string name="upload_progress_digest">署名ダイジェストを計算中です…</string>
 <string name="upload_progress_sizecheck">アップロードサイズを測定中です…</string>
 <string name="upload_wait_response">レスポンス待機中…</string>
