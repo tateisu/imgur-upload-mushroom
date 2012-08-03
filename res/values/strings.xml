@@ -8,6 +8,8 @@
 <string name="account_all">all account</string>
 <string name="account_anonymous">(anonymous)</string>
 <string name="account_delete_title">remove account</string>
+<string name="account_info_querying">retrieving account information&#8230;</string>
+
 <string name="account_settings">account settings</string>
 <string name="act_appinfo"		 >Imgur Mushroom/ about this app</string>
 <string name="act_arrange"		 >Imgur Mushroom/ image arrange</string>
@@ -65,6 +67,8 @@
 <string name="jpeg_quality_title">JPEG quality</string>
 <string name="net_error_resolver">connection error(%1$s)</string>
 <string name="net_error_timeout">network timeout(%1$s)</string>
+<string name="oauth_error_server_unavailable">Imgur API server is unavailable</string>
+<string name="oauth_error_missing_token">missing access token in server response</string>
 <string name="oauth_start">restart oAuth</string>
 <string name="ok">OK</string>
 <string name="output_style_settings">URL settings</string>

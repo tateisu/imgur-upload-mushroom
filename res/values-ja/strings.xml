@@ -9,6 +9,8 @@
 <string name="account_all">全アカウント</string>
 <string name="account_anonymous">(名無し)</string>
 <string name="account_delete_title">アカウントの削除</string>
+<string name="account_info_querying">アカウント情報の取得中です&#8230;</string>
+
 <string name="account_settings">アカウントの設定(必須ではありません)</string>
 <string name="act_appinfo"		 >Imgur マッシュ/ このアプリについて</string>
 <string name="act_arrange"		 >Imgur マッシュ/ 画像の加工</string>
@@ -66,6 +68,8 @@
 <string name="jpeg_quality_title">JPEG品質</string>
 <string name="net_error_resolver">ネットワーク エラー</string>
 <string name="net_error_timeout">ネットワーク タイムアウト(%1$s)</string>
+<string name="oauth_error_server_unavailable">Imgurのサーバが不調なようです</string>
+<string name="oauth_error_missing_token">サーバからアクセストークンを取得できませんでした</string>
 <string name="oauth_start">OAuth認証をやり直す</string>
 <string name="ok">OK</string>
 <string name="output_style_settings">テキスト出力の設定</string>

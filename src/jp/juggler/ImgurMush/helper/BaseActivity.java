@@ -1,11 +1,16 @@
 package jp.juggler.ImgurMush.helper;
 
+import jp.juggler.ImgurMush.R;
 import jp.juggler.util.DialogManager;
 import jp.juggler.util.LifeCycleManager;
 import jp.juggler.util.LogCategory;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -116,26 +121,63 @@ public class BaseActivity extends Activity {
 	}
 	
 	public void show_toast(final boolean bLong,final int resid,final Object... args){
-		if( isUIThread() ){
-			Toast.makeText(BaseActivity.this,getString(resid,args),(bLong?Toast.LENGTH_LONG:Toast.LENGTH_SHORT)).show();
+		if( !isUIThread() ){
+			ui_handler.post(new Runnable() {
+				@Override public void run() {
+					show_toast(bLong,resid,args);
+				}
+			});
 			return;
 		}
-		ui_handler.post(new Runnable() {
-			@Override public void run() {
-				if(!isFinishing()) show_toast(bLong,resid,args);
-			}
-		});
+		try{
+			Toast.makeText(BaseActivity.this,getString(resid,args),(bLong?Toast.LENGTH_LONG:Toast.LENGTH_SHORT)).show();
+		}catch(Throwable ex){
+			ex.printStackTrace();
+		}
 	}
 	public void show_toast(final boolean bLong,final String text){
-		if( isUIThread() ){
-			Toast.makeText(BaseActivity.this,text,(bLong?Toast.LENGTH_LONG:Toast.LENGTH_SHORT)).show();
+		if( !isUIThread() ){
+			ui_handler.post(new Runnable() {
+				@Override public void run() {
+					show_toast(bLong,text);
+				}
+			});
 			return;
 		}
-		ui_handler.post(new Runnable() {
-			@Override public void run() {
-				if(!isFinishing()) show_toast(bLong,text);
-			}
-		});
+		try{
+			Toast.makeText(BaseActivity.this,text,(bLong?Toast.LENGTH_LONG:Toast.LENGTH_SHORT)).show();
+		}catch(Throwable ex){
+			ex.printStackTrace();
+		}
+	}
+	public void finish_with_message(final String msg){
+		if( !isUIThread() ){
+			ui_handler.post(new Runnable() {
+				@Override public void run() {
+					finish_with_message(msg);
+				}
+			});
+			return;
+		}
+		try{
+			if(isFinishing()) return;
+			//
+			Dialog dialog =  new AlertDialog.Builder(this)
+			.setCancelable(true)
+			.setNegativeButton(R.string.close,null)
+			.setMessage(msg)
+			.create();
+			//
+			dialog.setOnDismissListener(new OnDismissListener() {
+				@Override public void onDismiss(DialogInterface dialog) {
+					finish();
+				}
+			});
+			//
+			dialog_manager.show_dialog(dialog);
+		}catch(Throwable ex){
+			ex.printStackTrace();
+		}
 	}
 
 	public void report_ex(Throwable ex){

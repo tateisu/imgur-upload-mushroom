@@ -173,7 +173,7 @@ public class APIResult {
 			try{
 				content_json = new JSONObject(content_utf8);
 			}catch(Throwable ex){
-				ex.printStackTrace();
+				// まあたいていHTMLをぱーすできないとか。頻出するのでログには出さない// ex.printStackTrace();
 				//
 				try{
 					// jsonではないレスポンスはHTMLであることが多い。適当に整形する
