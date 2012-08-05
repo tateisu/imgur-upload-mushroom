@@ -109,6 +109,11 @@ public class UploadService extends Service{
 		
 		cm = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
 
+		// ワーカースレッドから設定されたコールバックをキューから除去
+		env.handler.removeCallbacks(lock_enable);
+		env.handler.removeCallbacks(lock_disable);
+		env.handler.removeCallbacks(joblist_save);
+		
 		joblist_load();
 
 		upload_thread = new UploadThread();
@@ -124,9 +129,13 @@ public class UploadService extends Service{
 		// アップロード用スレッドを停止
 		upload_thread.joinLoop(log,"upload_thread");
 
-		lock_disable.run();
+		// ワーカースレッドから設定されたコールバックをキューから除去
+		env.handler.removeCallbacks(lock_enable);
+		env.handler.removeCallbacks(lock_disable);
+		env.handler.removeCallbacks(joblist_save);
 		
-		joblist_save();
+		// lockを除去して、データのセーブも行う
+		lock_disable.run();
 	}
 
 
@@ -255,12 +264,13 @@ public class UploadService extends Service{
 				notification.when = System.currentTimeMillis();
 				startForegroundCompat(notification_id,notification);
 			}
+			//
+			joblist_save.run();
 		}
 	};
 	Runnable lock_disable = new Runnable() {
-		
-		@Override
-		public void run() {
+		@Override public void run() {
+			joblist_save.run();
 			//
 			try{
 				while( wake_lock.isHeld() ){
@@ -375,6 +385,7 @@ public class UploadService extends Service{
 		@Override
 		public void run() {
 			while(!bCancelled.get()){
+
 				UploadJob job = null;
 				
 				synchronized (job_list) {
@@ -622,38 +633,44 @@ public class UploadService extends Service{
 	////////////////////////////////////////////////////////////////////////
 	// ジョブデータの永続化
 
-	private void joblist_save() {
-		try{
-			JSONArray array = new JSONArray();
-			for(int i=0,ie=job_list.size();i<ie;++i){
-				array.put(job_list.valueAt(i).encodeJSON());
+	private Runnable joblist_save = new Runnable(){
+		@Override public void run() {
+			try{
+				synchronized(job_list){
+					JSONArray array = new JSONArray();
+					for(int i=0,ie=job_list.size();i<ie;++i){
+						array.put(job_list.valueAt(i).encodeJSON());
+					}
+					String data = array.toString();
+					
+					SharedPreferences.Editor e = env.pref().edit();
+					e.putString(PrefKey.KEY_UPLOAD_JOB_LIST,data);
+					e.commit();
+				}
+			}catch(Throwable ex){
+				ex.printStackTrace();
 			}
-			String data = array.toString();
-			
-			SharedPreferences.Editor e = env.pref().edit();
-			e.putString(PrefKey.KEY_UPLOAD_JOB_LIST,data);
-			e.commit();
-		}catch(Throwable ex){
-			ex.printStackTrace();
 		}
-	}
+	};
 
 	static final long job_expire = 1000L * 86400 * 5;
 	private void joblist_load() {
 		try{
-			long now = System.currentTimeMillis();
-			JSONArray array = new JSONArray(env.pref().getString(PrefKey.KEY_UPLOAD_JOB_LIST,"[]"));
-			for(int i=0,ie=array.length();i<ie;++i){
-				UploadJob job = new UploadJob(array.getJSONObject(i));
-
-				// 中止or完了したジョブは一定期間でexpireする
-				if( now - job.create_time > job_expire
-				&& (job.aborted.get() || job.completed.get() ) 
-				){
-					continue;
+			synchronized(job_list){
+				long now = System.currentTimeMillis();
+				JSONArray array = new JSONArray(env.pref().getString(PrefKey.KEY_UPLOAD_JOB_LIST,"[]"));
+				for(int i=0,ie=array.length();i<ie;++i){
+					UploadJob job = new UploadJob(array.getJSONObject(i));
+	
+					// 中止or完了したジョブは一定期間でexpireする
+					if( now - job.create_time > job_expire
+					&& (job.aborted.get() || job.completed.get() ) 
+					){
+						continue;
+					}
+	
+					job_list.put(job.job_id,job);
 				}
-
-				job_list.put(job.job_id,job);
 			}
 		}catch(Throwable ex){
 			ex.printStackTrace();

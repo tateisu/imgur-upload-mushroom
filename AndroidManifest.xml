@@ -120,5 +120,8 @@
         	android:authorities="jp.juggler.ImgurMush"
         	android:exported="false"
         />
+		<Service
+        	android:name="jp.juggler.ImgurMush.UploadService"
+		/>
     </application>
 </manifest>
