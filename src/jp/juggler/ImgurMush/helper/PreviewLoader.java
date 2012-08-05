@@ -1,5 +1,6 @@
 package jp.juggler.ImgurMush.helper;
 
+import jp.juggler.util.HelperEnv;
 import jp.juggler.util.LogCategory;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,7 +12,7 @@ public class PreviewLoader{
 		void onLoad(Bitmap bitmap);
 	}
 
-	public static void load(final BaseActivity act, final String path,final boolean measure_only,final int max_w,final int max_h,final Callback callback){
+	public static void load(final HelperEnv eh, final String path,final boolean measure_only,final int max_w,final int max_h,final Callback callback){
 		new Thread(){
 
 			@Override
@@ -31,10 +32,8 @@ public class PreviewLoader{
 
 					final int orig_w = w;
 					final int orig_h = h;
-					act.ui_handler.post(new Runnable() {
-						@Override
-						public void run() {
-							if(act.isFinishing()) return;
+					eh.handler.post(new Runnable() {
+						@Override public void run() {
 							callback.onMeasure(orig_w,orig_h);
 						}
 					});
@@ -66,17 +65,14 @@ public class PreviewLoader{
 								,image.getHeight()/(float)orig_h
 						);
 
-						act.ui_handler.post(new Runnable() {
-
-							@Override
-							public void run() {
-								if(act.isFinishing()) return;
+						eh.handler.post(new Runnable() {
+							@Override public void run() {
 								callback.onLoad(image);
 							}
 						});
 					}
 				}catch(Throwable ex){
-					act.report_ex(ex);
+					eh.report_ex(ex);
 				}
 			}
 		}.start();

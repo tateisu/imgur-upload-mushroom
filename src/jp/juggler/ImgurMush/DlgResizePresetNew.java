@@ -1,7 +1,7 @@
 package jp.juggler.ImgurMush;
 
 import jp.juggler.ImgurMush.data.ResizePreset;
-import jp.juggler.ImgurMush.helper.BaseActivity;
+import jp.juggler.util.HelperEnvUI;
 import android.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,7 +11,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 public class DlgResizePresetNew {
-	final BaseActivity act;
+	final HelperEnvUI env;
 	View root;
 	RadioGroup radio_group;
 	AlertDialog dialog;
@@ -22,9 +22,9 @@ public class DlgResizePresetNew {
 	int value;
 
 
-	public DlgResizePresetNew(BaseActivity _act){
-		this.act = _act;
-		this.root = act.inflater.inflate(R.layout.dlg_resize_preset_new,null);
+	public DlgResizePresetNew(HelperEnvUI _env){
+		this.env = _env;
+		this.root = env.inflater.inflate(R.layout.dlg_resize_preset_new,null);
 		this.btnOk = root.findViewById(R.id.btnOk);
 		this.tvDesc = (TextView)root.findViewById(R.id.tvDesc);
 		this.radio_group = (RadioGroup)root.findViewById(R.id.radiogroup);
@@ -43,7 +43,7 @@ public class DlgResizePresetNew {
 				ResizePreset preset = new ResizePreset();
 				preset.mode = mode;
 				preset.value = value;
-				preset.save(act.cr);
+				preset.save(env.cr);
 			}
 		});
 		etValue.addTextChangedListener(new TextWatcher() {
@@ -63,7 +63,7 @@ public class DlgResizePresetNew {
 	}
 
 	public AlertDialog make_dialog(){
-		this.dialog = new AlertDialog.Builder(act)
+		this.dialog = new AlertDialog.Builder(env.context)
 		.setCancelable(true)
 		.setNegativeButton(R.string.cancel,null)
 		.setTitle(R.string.resize_new_preset)
@@ -82,7 +82,7 @@ public class DlgResizePresetNew {
 		default:
 			btnOk.setEnabled(false);
 			tvDesc.setVisibility(View.VISIBLE);
-			tvDesc.setText(act.getString(R.string.resize_error_mode_not_selected));
+			tvDesc.setText(env.getString(R.string.resize_error_mode_not_selected));
 			return false;
 		}
 		int v = -1;
@@ -91,20 +91,20 @@ public class DlgResizePresetNew {
 		}catch(Throwable ex){
 			btnOk.setEnabled(false);
 			tvDesc.setVisibility(View.VISIBLE);
-			tvDesc.setText(act.getString(R.string.resize_error_value_not_number));
+			tvDesc.setText(env.getString(R.string.resize_error_value_not_number));
 			return false;
 		}
 		if( v < 1 ){
 			btnOk.setEnabled(false);
 			tvDesc.setVisibility(View.VISIBLE);
-			tvDesc.setText(act.getString(R.string.resize_error_value_too_small));
+			tvDesc.setText(env.getString(R.string.resize_error_value_too_small));
 			return false;
 		}
 		int limit = (mode == 0 ? 99 : 2000);
 		if( mode == 0 && v > limit ){
 			btnOk.setEnabled(false);
 			tvDesc.setVisibility(View.VISIBLE);
-			tvDesc.setText(act.getString(R.string.resize_error_value_too_large,limit));
+			tvDesc.setText(env.getString(R.string.resize_error_value_too_large,limit));
 			return false;
 		}
 		this.value = v;

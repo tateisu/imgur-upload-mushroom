@@ -26,7 +26,7 @@ public class ActTest extends BaseActivity{
 			setContentView(R.layout.act_test_error_detail);
 			new AsyncTask<Void,Void,ArrayList<String> >(){
 				@Override protected ArrayList<String> doInBackground(Void... params) {
-					return APIResult.scanErrorLog(act);
+					return APIResult.scanErrorLog(env);
 				}
 				@Override protected void onPostExecute(ArrayList<String> data) {
 					if( data != null ){
@@ -43,7 +43,7 @@ public class ActTest extends BaseActivity{
 
 				@Override
 				protected StringBuilder doInBackground(Void... params) {
-					return APIResult.dumpRateLimit(act);
+					return APIResult.dumpRateLimit(env);
 				}
 
 				@Override

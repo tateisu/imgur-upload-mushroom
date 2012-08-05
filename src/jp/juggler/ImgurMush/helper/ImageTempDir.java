@@ -6,18 +6,16 @@ import java.util.Random;
 
 import jp.juggler.ImgurMush.PrefKey;
 import jp.juggler.ImgurMush.R;
+import jp.juggler.util.HelperEnv;
 import jp.juggler.util.LogCategory;
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Environment;
-import android.os.Handler;
-import android.widget.Toast;
 
 public class ImageTempDir {
 	static final LogCategory log = new LogCategory("ImageTempDir");
 
-	public static File getTempDir(final Activity act,SharedPreferences pref,Handler ui_handler) {
-		String path = pref.getString(PrefKey.KEY_TEMP_DIR,null);
+	public static File getTempDir(final HelperEnv eh ){
+		String path = eh.pref().getString(PrefKey.KEY_TEMP_DIR,null);
 		if(path !=null && path.length() > 0){
 			File dir = new File( path );
 			if( dir.mkdirs() || dir.isDirectory() ){
@@ -33,27 +31,11 @@ public class ImageTempDir {
 		try{
 			File ext = Environment.getExternalStorageDirectory();
 			if( !ext.isDirectory() ){
-				if(ui_handler!=null){
-					ui_handler.post(new Runnable() {
-						@Override
-						public void run() {
-							if( act.isFinishing() ) return;
-							Toast.makeText(act,R.string.storage_not_directory,Toast.LENGTH_LONG).show();
-						}
-					});
-				}
+				eh.show_toast(true,R.string.storage_not_directory);
 				return null;
 			}
 			if( !ext.canWrite() ){
-				if(ui_handler!=null){
-					ui_handler.post(new Runnable() {
-						@Override
-						public void run() {
-							if( act.isFinishing() ) return;
-							Toast.makeText(act,R.string.storage_not_writable,Toast.LENGTH_LONG).show();
-						}
-					});
-				}
+				eh.show_toast(true,R.string.storage_not_writable);
 				return null;
 			}
 			for(int i=1;i<100;++i){
@@ -66,7 +48,7 @@ public class ImageTempDir {
 					}
 					new File(dir,".nomedia").setLastModified(System.currentTimeMillis());
 					path = dir.getAbsolutePath();
-					SharedPreferences.Editor e = pref.edit();
+					SharedPreferences.Editor e = eh.pref().edit();
 					e.putString(PrefKey.KEY_TEMP_DIR,path);
 					e.commit();
 					log.d("initialize image dir: %s",path);
@@ -83,8 +65,8 @@ public class ImageTempDir {
 
 	static Random r = new Random();
 
-	public static File makeTempFile(BaseActivity act){
-		File dir = getTempDir(act,act.pref(),act.ui_handler);
+	public static File makeTempFile(HelperEnv eh){
+		File dir = getTempDir(eh);
 		if(dir==null) return null;
 
 		for(;;){
@@ -96,7 +78,7 @@ public class ImageTempDir {
 				return file;
 			}catch(Throwable ex){
 				log.e("cannot create temp file %s",file.getPath());
-				act.show_toast(true,act.getString(R.string.file_temp_error));
+				eh.show_toast(true,R.string.file_temp_error);
 				return null;
 			}
 		}

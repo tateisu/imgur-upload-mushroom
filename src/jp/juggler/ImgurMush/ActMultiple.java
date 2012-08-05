@@ -111,16 +111,15 @@ public class ActMultiple extends BaseActivity{
 	void initUI(){
 		setContentView(R.layout.act_multiple);
 		
-		upload_list_adapter = new UploadItemAdapter(this);
+		upload_list_adapter = new UploadItemAdapter(env);
 		listview = (ListView)findViewById(R.id.list);
 		listview.setAdapter(upload_list_adapter);
 
 		listview.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, final int idx,long arg3) {
+			@Override public void onItemClick(AdapterView<?> arg0, View arg1, final int idx,long arg3) {
 				final UploadItem item = (UploadItem)upload_list_adapter.getItem(idx);
-				act.dialog_manager.show_dialog(new AlertDialog.Builder(act)
+				env.dialog_manager.show_dialog(
+					new AlertDialog.Builder(act)
 					.setCancelable(true)
 					.setItems(
 						new String[]{
@@ -142,20 +141,14 @@ public class ActMultiple extends BaseActivity{
 						}
 					)
 				);
-				// TODO 自動生成されたメソッド・スタブ
-				
 			}
 		});
 		
-//		preview = (ImageView)findViewById(R.id.preview);
-//		tvFileDesc = (TextView)findViewById(R.id.tvFileDesc);
-
-//		btnEdit= (Button)findViewById(R.id.btnEdit);
 		btnUpload = (Button)findViewById(R.id.btnUpload);
 
-		uploader = new Uploader(this,uploader_callback);
+		uploader = new Uploader(env,uploader_callback);
 
-		upload_target_manager = new UploadTargetManager(this);
+		upload_target_manager = new UploadTargetManager(env);
 
 
 
@@ -186,15 +179,6 @@ public class ActMultiple extends BaseActivity{
 				open_capture();
 			}
 		});
-
-//		btnEdit.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				if( btnUpload.isEnabled() ){
-//					open_editor();
-//				}
-//			}
-//		});
 
 		btnUpload.setOnClickListener(new OnClickListener() {
 			@Override
@@ -246,22 +230,22 @@ public class ActMultiple extends BaseActivity{
 					ArrayList<UploadItem> tmp = new ArrayList<UploadItem>();
 					for( Parcelable p : intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM) ){
 						String path = uploader.uri_to_path((Uri) p);
-						if( path != null ) tmp.add(new UploadItem(act,path));
+						if( path != null ) tmp.add(new UploadItem(env,path));
 					}
 					upload_list_adapter.replace(tmp);
 				}catch(Throwable ex){
-					report_ex(ex);
+					env.report_ex(ex);
 				}
 			}
 		}
 	}
 	
 	private void add_item(String path) {
-		if( path != null ) upload_list_adapter.add(new UploadItem(act,path));
+		if( path != null ) upload_list_adapter.add(new UploadItem(env,path));
 	}
 
 	private void replace_path(int idx, String path) {
-		upload_list_adapter.replace_item(idx,new UploadItem(act,path));
+		upload_list_adapter.replace_item(idx,new UploadItem(env,path));
 	}
 	
 	// 画像選択画面を開く
@@ -275,7 +259,7 @@ public class ActMultiple extends BaseActivity{
 			startActivityForResult(intent,REQ_FILEPICKER);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			show_toast(true,R.string.picker_missing);
+			env.show_toast(true,R.string.picker_missing);
 		}
 		log.d("open_file_picker :finish");
 		uploader.finish_mush("");
@@ -285,8 +269,8 @@ public class ActMultiple extends BaseActivity{
 	void open_capture(){
 		try{
 			capture_uri = Uri.fromFile(new File(
-					ImageTempDir.getTempDir(act,act.pref(),act.ui_handler)
-					,String.format("capture-%s",System.currentTimeMillis())
+				ImageTempDir.getTempDir(act.env)
+				,String.format("capture-%s",System.currentTimeMillis())
 			));
 		}catch(Throwable ex){
 			ex.printStackTrace();
@@ -298,7 +282,7 @@ public class ActMultiple extends BaseActivity{
 			startActivityForResult(intent,REQ_CAPTURE);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			show_toast(true,R.string.capture_missing);
+			env.show_toast(true,R.string.capture_missing);
 		}
 	}
 	
@@ -311,7 +295,7 @@ public class ActMultiple extends BaseActivity{
 	}
 
 	public void menu_dialog() {
-		dialog_manager.show_dialog(
+		env.dialog_manager.show_dialog(
 			new AlertDialog.Builder(this)
 			.setCancelable(true)
 			.setNegativeButton(R.string.cancel,null)
@@ -349,7 +333,7 @@ public class ActMultiple extends BaseActivity{
 		
 		@Override public void onCancelled() {
 			upload_cancelled = true;
-			show_toast(false,getString(R.string.cancel_notice));
+			env.show_toast(false,R.string.cancel_notice);
 		}
 
 		@Override public void onStatusChanged(boolean bBusy) {
@@ -357,7 +341,7 @@ public class ActMultiple extends BaseActivity{
 		}
 
 		@Override public void onComplete(String image_url, String page_url) {
-			int t = Integer.parseInt(act.pref().getString(PrefKey.KEY_URL_MODE,"0"));
+			int t = Integer.parseInt(env.pref().getString(PrefKey.KEY_URL_MODE,"0"));
 			if( sb_image_url.length() > 0 ) sb_image_url.append("\n");
 			switch(t){
 			default:
@@ -366,7 +350,6 @@ public class ActMultiple extends BaseActivity{
 			}
 			++upload_complete;
 		}
-		// XXX: アップロード中に画面を回転させると、アップロードがキャンセルされる…
 	};
 	
 	// アップロードを開始する
@@ -391,7 +374,7 @@ public class ActMultiple extends BaseActivity{
 		UploadItem item = (UploadItem)upload_list_adapter.getItem(upload_next);
 		if( item == null || upload_cancelled ){
 			if( sb_image_url.length() > 0 ){
-				ClipboardHelper.clipboard_copy(act,sb_image_url.toString(),act.getString(R.string.output_to_clipboard));
+				ClipboardHelper.clipboard_copy(env,sb_image_url.toString(),act.getString(R.string.output_to_clipboard));
 			}
 			btnUpload.setEnabled(true);
 			if(!upload_cancelled) finish();

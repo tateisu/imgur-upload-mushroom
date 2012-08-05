@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import jp.juggler.util.HelperEnvUI;
 import jp.juggler.util.LifeCycleListener;
 import jp.juggler.util.LogCategory;
 import jp.juggler.util.TextUtil;
@@ -25,7 +26,6 @@ import jp.juggler.util.WorkerBase;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
 
 /*
 	画像サムネイルのロードなどに使うローダー
@@ -42,17 +42,16 @@ public class DataLoader {
 
 	// コンストラクタ
 	public DataLoader(
-		BaseActivity act
+		 HelperEnvUI env
 		,boolean bClearAtResume	// trueを指定するとActivity.onStart() のタイミングでキューをクリアする
 		,boolean bUseCacheDir 	// trueを指定すると Context.getCacheDir() に指定したフォルダにキャッシュディレクトリを作成する
 		,String prefix			// 作成するキャッシュディレクトリのファイル名
 	){
-		this.act= act;
-		this.ui_handler = act.ui_handler;
+		this.env= env;
 		this.bClearAtResume = bClearAtResume;
-		this.cache_dir = cachedir_init(act,bUseCacheDir,prefix);
+		this.cache_dir = cachedir_init(env.context,bUseCacheDir,prefix);
 
-		act.lifecycle_manager.add(activity_listener);
+		env.lifecycle_manager.add(activity_listener);
 	}
 
 	public static final int DATATYPE_BYTES =0;
@@ -84,8 +83,7 @@ public class DataLoader {
 		if(worker!=null) worker.notifyEx();
 	}
 
-	final Context act;
-	final Handler ui_handler;
+	final HelperEnvUI env;
 	final boolean bClearAtResume;
 	final File cache_dir;
 	final LinkedBlockingQueue<Item> queue = new LinkedBlockingQueue<Item>();
@@ -199,7 +197,7 @@ public class DataLoader {
 				final Object cached_data = cache.get(item);
 				if( cached_data != null ){
 					if(debug) log.d("using cache (BG)");
-					ui_handler.post(new Runnable() {
+					env.handler.post(new Runnable() {
 						@Override
 						public void run() {
 							if( bCancelled.get() ) return;
@@ -355,7 +353,7 @@ public class DataLoader {
 				}
 				if( !bOK ){
 					final String e = last_error;
-					ui_handler.post(new Runnable() {
+					env.handler.post(new Runnable() {
 						@Override
 						public void run() {
 							if( bCancelled.get() ) return;
@@ -368,7 +366,7 @@ public class DataLoader {
 					});
 				}else{
 					final Object _result = result;
-					ui_handler.post(new Runnable() {
+					env.handler.post(new Runnable() {
 						@Override
 						public void run() {
 							if( bCancelled.get() ) return;
@@ -386,8 +384,8 @@ public class DataLoader {
 	// キャッシュファイルの管理
 
 	// キャッシュフォルダを作成
-	private static File cachedir_init(BaseActivity act,boolean bUseCacheDir,String prefix){
-		File dir = new File( ( bUseCacheDir ? act.getCacheDir() : act.getFilesDir() )  ,prefix);
+	private static File cachedir_init(Context context,boolean bUseCacheDir,String prefix){
+		File dir = new File( ( bUseCacheDir ? context.getCacheDir() : context.getFilesDir() )  ,prefix);
 			// getCacheDir が指すフォルダはシステムが勝手に削除することがある。
 			// getFilesDir が指すフォルダはシステムが勝手に削除することは…ないと思う
 

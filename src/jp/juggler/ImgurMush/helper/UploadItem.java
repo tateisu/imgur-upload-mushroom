@@ -2,6 +2,8 @@ package jp.juggler.ImgurMush.helper;
 
 import java.io.File;
 
+import jp.juggler.util.HelperEnv;
+
 import android.graphics.Bitmap;
 
 public class UploadItem {
@@ -11,14 +13,14 @@ public class UploadItem {
 	int w = -1;
 	int h = -1;
 	
-	public UploadItem(BaseActivity act ,String path) {
+	public UploadItem(HelperEnv env ,String path) {
 		file = new File(path);
-		updateDesc(act);
+		updateDesc(env);
 	}
 
-	public void updateDesc(BaseActivity act ){
+	public void updateDesc(HelperEnv env){
 		final String size = TextFormat.formatByteSize(file.length());
-		final String mtime = TextFormat.formatTime(act,file.lastModified());
+		final String mtime = TextFormat.formatTime(env.context,file.lastModified());
 		if( w <= 0 ){
 			desc = String.format(
 				"%s %s\n%s"

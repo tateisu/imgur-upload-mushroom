@@ -1,6 +1,7 @@
 package jp.juggler.ImgurMush.helper;
 
 import jp.juggler.ImgurMush.data.ImgurAccount;
+import jp.juggler.util.HelperEnvUI;
 import jp.juggler.util.LifeCycleListener;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -12,7 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 public class AccountAdapter extends BaseAdapter{
-	final BaseActivity act;
+	final HelperEnvUI eh;
 	final Cursor cursor;
 	final ImgurAccount.ColumnIndex colidx = new ImgurAccount.ColumnIndex();
 	final String strNonSelect;
@@ -22,11 +23,11 @@ public class AccountAdapter extends BaseAdapter{
 
 	boolean mDataValid = true;
 
-	public AccountAdapter(BaseActivity act,String strNonSelect){
-		this.act = act;
+	public AccountAdapter(HelperEnvUI eh,String strNonSelect){
+		this.eh = eh;
 		this.strNonSelect = strNonSelect;
 
-		this.content_observer = new ContentObserver(act.ui_handler) {
+		this.content_observer = new ContentObserver(eh.handler) {
 			@Override
 			public boolean deliverSelfNotifications() {
 				return false;
@@ -53,13 +54,13 @@ public class AccountAdapter extends BaseAdapter{
 
 		};
 
-		this.cursor = act.cr.query(ImgurAccount.meta.uri,null,null,null,ImgurAccount.COL_NAME+" asc");
+		this.cursor = eh.cr.query(ImgurAccount.meta.uri,null,null,null,ImgurAccount.COL_NAME+" asc");
 		cursor.registerContentObserver(content_observer);
 		cursor.registerDataSetObserver(dataset_observer);
 
-		act.lifecycle_manager.add(activity_listener);
+		eh.lifecycle_manager.add(activity_listener);
 
-		float density = act.getResources().getDisplayMetrics().density;
+		float density = eh.context.getResources().getDisplayMetrics().density;
 		this.min_height = (int)(0.5f + density * 48 );
 	}
 
@@ -122,7 +123,7 @@ public class AccountAdapter extends BaseAdapter{
 		if(view!=null){
 			holder = (ViewHolder)view.getTag();
 		}else{
-			view = act.inflater.inflate(layout ,null );
+			view = eh.inflater.inflate(layout ,null );
 			view.setTag( holder = new ViewHolder() );
 			holder.tvName = (TextView)view.findViewById(android.R.id.text1);
 			if(is_dropdown) view.setMinimumHeight(min_height);

@@ -8,12 +8,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import jp.juggler.util.HelperEnvUI;
 import jp.juggler.util.LifeCycleListener;
 import jp.juggler.util.LogCategory;
 import jp.juggler.util.WorkerBase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
 
 /*
 	画像サムネイルのロードなどに使うローダー
@@ -80,14 +80,13 @@ public class MultiplePreviewLoader {
 	
 	// コンストラクタ
 	public MultiplePreviewLoader(
-		BaseActivity act
+		HelperEnvUI eh
 		,boolean bClearAtStart // trueを指定するとActivity.onStart() のタイミングでキューをクリアする
 	){
-		this.act= act;
-		this.ui_handler = act.ui_handler;
+		this.eh = eh;
 		this.bClearAtStart = bClearAtStart;
 
-		act.lifecycle_manager.add(activity_listener);
+		eh.lifecycle_manager.add(activity_listener);
 	}
 
 	// URLのダウンロードを行い、終了したらリスナを呼ぶ。
@@ -117,8 +116,7 @@ public class MultiplePreviewLoader {
 
 	static final int request_skip_limit_default = 1000 * 60 * 10;
 
-	final BaseActivity act;
-	final Handler ui_handler;
+	final HelperEnvUI eh;
 	final boolean bClearAtStart;
 	final LinkedBlockingQueue<Request> queue = new LinkedBlockingQueue<Request>();
 	final SoftCache<Request,Result> cache = new SoftCache<Request, Result>();
@@ -182,7 +180,7 @@ public class MultiplePreviewLoader {
 					final Result data = cache.get(item);
 					if( data != null ){
 						if(debug) log.d("using cache (BG)");
-						ui_handler.post(new Runnable() {
+						eh.handler.post(new Runnable() {
 							@Override
 							public void run() {
 								if( bCancelled.get() ) return;
@@ -213,7 +211,7 @@ public class MultiplePreviewLoader {
 
 					data.orig_w = w;
 					data.orig_h = h;
-					act.ui_handler.post(new Runnable() {
+					eh.handler.post(new Runnable() {
 						@Override
 						public void run() {
 							if( bCancelled.get() ) return;
@@ -250,10 +248,10 @@ public class MultiplePreviewLoader {
 						data.bitmap = image;
 					}
 				}catch(Throwable ex){
-					act.report_ex(ex);
+					eh.report_ex(ex);
 				}
 
-				act.ui_handler.post(new Runnable() {
+				eh.handler.post(new Runnable() {
 					@Override
 					public void run() {
 						if( bCancelled.get() ) return;

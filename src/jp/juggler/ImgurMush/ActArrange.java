@@ -62,7 +62,7 @@ public class ActArrange extends BaseActivity{
 		// 現在の画面の状態をintentに保存する
 		save_status();
 		// リサイズ指定を保存する
-		SharedPreferences.Editor e = pref().edit();
+		SharedPreferences.Editor e = env.pref().edit();
 		if( resize_preset == null ){
 			e.putInt(PrefKey.KEY_LAST_RESIZE_MODE,-1);
 		}else{
@@ -209,7 +209,7 @@ public class ActArrange extends BaseActivity{
 		setResult(RESULT_CANCELED);
 
 		// プリセット指定をロードする
-		SharedPreferences pref = pref();
+		SharedPreferences pref = env.pref();
 		int mode = pref.getInt(PrefKey.KEY_LAST_RESIZE_MODE,-1);
 		int value = pref.getInt(PrefKey.KEY_LAST_RESIZE_VALUE,-1);
 		set_resize(mode,value);
@@ -226,7 +226,7 @@ public class ActArrange extends BaseActivity{
 
 			avPreview.setImageBitmap(null);
 			
-			if( Build.VERSION.SDK_INT >= 7 && act.pref().getBoolean(PrefKey.KEY_AUTO_ROTATE,false) ){
+			if( Build.VERSION.SDK_INT >= 7 && act.env.pref().getBoolean(PrefKey.KEY_AUTO_ROTATE,false) ){
 				int v = ExifRotationReader.read_rotation(src_path);
 				if(v<0) v=0;
 				avPreview.setRotate(v);
@@ -252,11 +252,11 @@ public class ActArrange extends BaseActivity{
 			sbCropBottom.setEnabled(false);
 
 			// レイアウトが終わるまで待つ
-			act.ui_handler.removeCallbacks(delay_init);
+			env.handler.removeCallbacks(delay_init);
 			int w = avPreview.getWidth();
 			int h = avPreview.getHeight();
 			if( w <1 || h<1 ){
-				act.ui_handler.postDelayed(delay_init,66);
+				env.handler.postDelayed(delay_init,66);
 				return;
 			}
 
@@ -272,13 +272,14 @@ public class ActArrange extends BaseActivity{
 
 
 			int preview_image_max_wh =(w>h?w:h);
-			PreviewLoader.load(act,src_path,false,preview_image_max_wh,preview_image_max_wh,new PreviewLoader.Callback() {
+			PreviewLoader.load(env,src_path,false,preview_image_max_wh,preview_image_max_wh,new PreviewLoader.Callback() {
 				@Override
 				public void onMeasure(int w, int h) {
 				}
 
 				@Override
 				public void onLoad(Bitmap bitmap) {
+					if( act.isFinishing() ) return;
 					btnSave.setEnabled(true);
 					btnRotateLeft.setEnabled(true);
 					btnRotateRight.setEnabled(true);
@@ -346,7 +347,7 @@ public class ActArrange extends BaseActivity{
 			resize_preset = new ResizePreset();
 			resize_preset.mode = mode;
 			resize_preset.value = value;
-			btnResize.setText(resize_preset.makeTitle(act));
+			btnResize.setText(resize_preset.makeTitle(env));
 		}
 	}
 
@@ -355,7 +356,7 @@ public class ActArrange extends BaseActivity{
 	int getJPEGQuality(){
 		int v = 85;
 		try{
-			v = Integer.parseInt( act.pref().getString(PrefKey.KEY_JPEG_QUALITY,null) ,10 );
+			v = Integer.parseInt( act.env.pref().getString(PrefKey.KEY_JPEG_QUALITY,null) ,10 );
 		}catch(Throwable ex){
 		}
 		return v<10?10:v>100?100:v;
@@ -374,7 +375,7 @@ public class ActArrange extends BaseActivity{
 		progress_dialog.setIndeterminate(true);
 		progress_dialog.setTitle(R.string.edit_progress_title);
 		progress_dialog.setCancelable(true);
-		act.dialog_manager.show_dialog(progress_dialog);
+		env.dialog_manager.show_dialog(progress_dialog);
 
 		new Thread(){
 			// 進捗表示がキャンセルされたなら真
@@ -518,7 +519,7 @@ public class ActArrange extends BaseActivity{
 							&&  resized_w >= source_w
 							&&  resized_h >= source_h
 							){
-								act.ui_handler.post(new Runnable() {
+								env.handler.post(new Runnable() {
 									@Override
 									public void run() {
 										if(isFinishing()) return;
@@ -584,7 +585,7 @@ public class ActArrange extends BaseActivity{
 
 							try{
 								// 出力ファイルパスの確定
-								final File dst_path = ImageTempDir.makeTempFile(act);
+								final File dst_path = ImageTempDir.makeTempFile(env);
 								if(dst_path==null){
 									// 出力ファイルを作成できなかった
 									// エラー表示は既に行われている
@@ -594,7 +595,7 @@ public class ActArrange extends BaseActivity{
 								saveJPEG(dst_path,bitmap_dst,quality);
 
 								// 完了したので画面を閉じる
-								act.ui_handler.post(new Runnable() {
+								env.handler.post(new Runnable() {
 									@Override
 									public void run() {
 										if(isFinishing()) return;
@@ -609,7 +610,7 @@ public class ActArrange extends BaseActivity{
 
 							}catch(IOException ex){
 								// ファイル出力に関するエラーはリトライ対象にならない
-								act.report_ex(ex);
+								act.env.report_ex(ex);
 								break;
 							}
 
@@ -624,7 +625,7 @@ public class ActArrange extends BaseActivity{
 					}
 				}finally{
 					// 進捗表示を消す
-					act.ui_handler.post(new Runnable() {
+					env.handler.post(new Runnable() {
 						@Override
 						public void run() {
 							if(isFinishing()) return;

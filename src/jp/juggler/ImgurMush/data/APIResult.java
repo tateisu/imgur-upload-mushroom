@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,8 +19,8 @@ import java.util.regex.Pattern;
 
 import jp.juggler.ImgurMush.PrefKey;
 import jp.juggler.ImgurMush.R;
-import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ImageTempDir;
+import jp.juggler.util.HelperEnv;
 import jp.juggler.util.LogCategory;
 import jp.juggler.util.TextUtil;
 
@@ -72,7 +74,25 @@ public class APIResult {
 	
 	public APIResult() {
 	}
-	
+	public APIResult(String err) {
+		setErrorExtra(err);
+	}
+	public APIResult(Throwable ex) {
+		setErrorExtra(APIResult.format_ex(ex));
+		try{
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			pw.flush();
+			sw.flush();
+			content_utf8  = sw.toString();
+			content_bytes = TextUtil.encodeUTF8(content_utf8);
+		}catch(Throwable eee){
+		}
+	}
+
+
+
 
 	public void setErrorExtra(String str) {
 		error_extra = str;
@@ -93,7 +113,7 @@ public class APIResult {
 
 	// レスポンスの内容を確認して、可能ならjsonデコードする。Imgur独特のエラーに多少は対応する。
 	// リトライ不要ならtrue、リトライ必要ならfalseを返す
-	boolean parse_json(BaseActivity act,String account_name){
+	boolean parse_json(HelperEnv eh,String account_name){
 		// ヘッダ中の Rate-Limit をアカウント別に保存する
 		if( account_name != null && http_headers != null ){
 			String limit = null;
@@ -126,7 +146,7 @@ public class APIResult {
 					entry.put("reset",reset);
 					entry.put("when",System.currentTimeMillis());
 					//
-					SharedPreferences pref =act.pref();
+					SharedPreferences pref = eh.pref();
 					String old_v = pref.getString(PrefKey.KEY_RATE_LIMIT_MAP,null);
 					JSONObject map = (old_v != null ? new JSONObject(old_v) : new JSONObject() );
 					map.put(account_name,entry);
@@ -224,18 +244,19 @@ public class APIResult {
 	
 	// エラーがあればユーザに表示する。
 	// content_error はerr がnullの際に補完される
-	public boolean show_error(BaseActivity act){
+	public boolean show_error(HelperEnv eh){
 		String v = getError();
 		if( v==null ) return false;
-		act.show_toast(true,v);
+		eh.show_toast(true,v);
 		return true;
 	}
 	
 	// エラーレスポンスの詳細をSDカードに保存する
 	// content_error はerr がnullの際に補完される
-	public boolean save_error(BaseActivity act){
+	public boolean save_error(HelperEnv eh){
 		if( !isError() ) return false;
-		if( act.pref().getBoolean(PrefKey.KEY_SAVE_ERROR_DETAIL,false) ){
+
+		if( eh.pref().getBoolean(PrefKey.KEY_SAVE_ERROR_DETAIL,false) ){
 			try {
 				JSONObject o = new JSONObject();
 				//
@@ -257,7 +278,7 @@ public class APIResult {
 				if( content_json != null ) o.put(SAVEKEY_CONTENT_JSON,content_json);
 	
 				// 保存する
-				File dir = ImageTempDir.getTempDir(act,act.pref(),act.ui_handler);
+				File dir = ImageTempDir.getTempDir(eh);
 				if( dir != null ){
 					File file = new File(dir,formatLogFile(System.currentTimeMillis()));
 					try{
@@ -338,6 +359,8 @@ public class APIResult {
 		if( src.has(SAVEKEY_CONTENT_JSON) ) this.content_json  = src.getJSONObject(SAVEKEY_CONTENT_JSON);
 	}
 
+
+
 	public void attatchContent(byte[] src, int start, int end) {
 		int length = end-start;
 		if( length >= 0){
@@ -361,9 +384,9 @@ public class APIResult {
 		ignore_http_header.add("connection");
 	}
 	  
-	public void test_log(BaseActivity act,StringBuilder sb) {
+	public void test_log(HelperEnv eh,StringBuilder sb) {
 		
-		parse_json(act,null);
+		parse_json(eh,null);
 
 		if( error_http  !=null) sb.append("\n# Error (HTTP):" + error_http);
 		if( error_parse !=null) sb.append("\n# Error (parse):" + error_parse);
@@ -413,9 +436,9 @@ public class APIResult {
 		return -1;
 	}
 
-	public static ArrayList<String> scanErrorLog(BaseActivity act) {
+	public static ArrayList<String> scanErrorLog(HelperEnv eh){
 		ArrayList<String> error_list = new ArrayList<String>();
-		File dir = ImageTempDir.getTempDir(act,act.pref(),act.ui_handler);
+		File dir = ImageTempDir.getTempDir(eh);
 		if( dir != null ){
 			String[] list = dir.list(new FilenameFilter() {
 				Pattern reErrorFile = Pattern.compile("^log.+\\.txt$",Pattern.CASE_INSENSITIVE);
@@ -459,7 +482,7 @@ public class APIResult {
 							if( result != null ){
 								StringBuilder sb = new StringBuilder();
 								sb.append("## "+entry);
-								result.test_log(act,sb);
+								result.test_log(eh,sb);
 								error_list.add(sb.toString());
 								//
 								result = null;
@@ -484,7 +507,7 @@ public class APIResult {
 					if( result != null ){
 						StringBuilder sb = new StringBuilder();
 						sb.append("## "+entry);
-						result.test_log(act,sb);
+						result.test_log(eh,sb);
 						error_list.add(sb.toString());
 					}
 				}catch(Throwable ex){
@@ -496,16 +519,16 @@ public class APIResult {
 	}
 
 
-	public static StringBuilder dumpRateLimit(BaseActivity act) {
+	public static StringBuilder dumpRateLimit(HelperEnv env) {
 		StringBuilder sb = new StringBuilder();
 		
-		String caption_account = act.getString(R.string.account);
-		String caption_ratelimit_checkdate = act.getString(R.string.ratelimit_checkdate);
-		String caption_ratelimit_reset = act.getString(R.string.ratelimit_reset);
-		String caption_ratelimit_remain_limit = act.getString(R.string.ratelimit_remain_limit);
+		String caption_account = env.getString(R.string.account);
+		String caption_ratelimit_checkdate = env.getString(R.string.ratelimit_checkdate);
+		String caption_ratelimit_reset = env.getString(R.string.ratelimit_reset);
+		String caption_ratelimit_remain_limit = env.getString(R.string.ratelimit_remain_limit);
 		
 		try{
-			SharedPreferences pref =act.pref();
+			SharedPreferences pref =env.pref();
 			String old_v = pref.getString(PrefKey.KEY_RATE_LIMIT_MAP,null);
 			JSONObject map = (old_v != null ? new JSONObject(old_v) : new JSONObject() );
 			//
@@ -520,7 +543,7 @@ public class APIResult {
 					long reset = 1000 * Long.parseLong(entry.getString("reset"),10);
 					long when = entry.getLong("when");
 					
-					if( PrefKey.RATELIMIT_ANONYMOUS.equals(account_name) ) account_name = act.getString(R.string.account_anonymous);
+					if( PrefKey.RATELIMIT_ANONYMOUS.equals(account_name) ) account_name = env.getString(R.string.account_anonymous);
 					
 					if( sb.length() > 0 ) sb.append("\n");
 					sb.append(String.format("\n%s: %s",caption_account,account_name ));

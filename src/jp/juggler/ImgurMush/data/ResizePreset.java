@@ -2,7 +2,7 @@ package jp.juggler.ImgurMush.data;
 
 import jp.juggler.ImgurMush.DataProvider;
 import jp.juggler.ImgurMush.R;
-import jp.juggler.ImgurMush.helper.BaseActivity;
+import jp.juggler.util.HelperEnv;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -96,11 +96,11 @@ public class ResizePreset {
 		return item;
 	}
 
-	public String makeTitle(BaseActivity act) {
+	public String makeTitle(HelperEnv env) {
 		switch(mode){
-		case 0: return act.getString(R.string.resize_percent,value);
-		case 1: return act.getString(R.string.resize_limit_long,value);
-		case 2: return act.getString(R.string.resize_limit_short,value);
+		case 0: return env.getString(R.string.resize_percent,value);
+		case 1: return env.getString(R.string.resize_limit_long,value);
+		case 2: return env.getString(R.string.resize_limit_short,value);
 		default: return "?";
 		}
 	}

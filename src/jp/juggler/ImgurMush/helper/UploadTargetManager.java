@@ -10,13 +10,14 @@ import jp.juggler.ImgurMush.PrefKey;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
+import jp.juggler.util.HelperEnvUI;
 import jp.juggler.util.LifeCycleListener;
 import jp.juggler.util.LogCategory;
 
 public class UploadTargetManager {
 	static final LogCategory log = new LogCategory("UploadTargetManager");
 
-	final BaseActivity act;
+	final HelperEnvUI env;
 	final AccountAdapter account_adapter;
 	final AlbumAdapter album_adapter;
 	final AlbumLoader album_loader;
@@ -24,13 +25,13 @@ public class UploadTargetManager {
 	final Spinner spAccount;
 	final Spinner spAlbum;
 
-	public UploadTargetManager(BaseActivity act){
-		this.act = act;
-		spAccount = (Spinner)act.findViewById(R.id.account);
-		spAlbum = (Spinner)act.findViewById(R.id.album);
+	public UploadTargetManager(HelperEnvUI env){
+		this.env = env;
+		spAccount = (Spinner)env.findViewById(R.id.account);
+		spAlbum = (Spinner)env.findViewById(R.id.album);
 
-		account_adapter = new AccountAdapter(act,act.getString(R.string.account_anonymous) );
-		album_adapter = new AlbumAdapter(act,act.getString(R.string.album_not_select));
+		account_adapter = new AccountAdapter(env,env.getString(R.string.account_anonymous) );
+		album_adapter = new AlbumAdapter(env,env.getString(R.string.album_not_select));
 		spAccount.setAdapter(account_adapter);
 		spAlbum.setAdapter(album_adapter);
 
@@ -41,7 +42,7 @@ public class UploadTargetManager {
 			@Override public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
-		album_loader = new AlbumLoader(act,new AlbumLoader.Callback() {
+		album_loader = new AlbumLoader(env,new AlbumLoader.Callback() {
 			@Override
 			public void onLoad() {
 				account_selection_changed(true,spAccount.getSelectedItemPosition(),"album loaded");
@@ -63,7 +64,7 @@ public class UploadTargetManager {
 			}
 		});
 
-		act.lifecycle_manager.add(activity_listener);
+		env.lifecycle_manager.add(activity_listener);
 
 		selection_init();
 	}
@@ -86,7 +87,7 @@ public class UploadTargetManager {
 	String  lastused_album_name = null;
 
 	void selection_init(){
-		SharedPreferences pref = act.pref();
+		SharedPreferences pref = env.pref();
 		//
 		lastused_account_name = pref.getString(PrefKey.KEY_ACCOUNT_LAST_USED,null);
 		if( PrefKey.VALUE_ACCOUNT_ANONYMOUS.equals(lastused_account_name) ) lastused_account_name = null;
@@ -102,7 +103,7 @@ public class UploadTargetManager {
 	}
 
 	void selection_save(){
-		SharedPreferences.Editor e = act.pref().edit();
+		SharedPreferences.Editor e = env.pref().edit();
 		ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
 		if( album != null ){
 			e.putString(PrefKey.KEY_ACCOUNT_LAST_USED,album.account_name);
@@ -129,7 +130,7 @@ public class UploadTargetManager {
 		if( account == null ){
 			log.d("missing account: %s",desc);
 			// アカウントが選択されていない
-			album_adapter.clear(act.getString(R.string.album_not_select));
+			album_adapter.clear(env.getString(R.string.album_not_select));
 			spAlbum.setEnabled(false);
 			album_list = null;
 		}else{
@@ -140,7 +141,7 @@ public class UploadTargetManager {
 			if( album_list == null ){
 				log.d("missing album: %s",desc);
 				// アルバム一覧を読めない。ロード中かエラーだろう
-				album_adapter.clear(act.getString(R.string.album_loading));
+				album_adapter.clear(env.getString(R.string.album_loading));
 				spAlbum.setEnabled(false);
 			}else{
 				// 直前までの選択。異なるアカウントのものはnullとする
@@ -150,7 +151,7 @@ public class UploadTargetManager {
 				if( bAlbumLoaded || old_selection ==null  ){
 
 					// アルバム選択肢を設定する
-					album_adapter.replace(album_list.iter(),act.getString(R.string.album_not_select));
+					album_adapter.replace(album_list.iter(),env.getString(R.string.album_not_select));
 					spAlbum.setEnabled( album_list.size() > 0);
 
 					if( account.name.equals( lastused_account_name ) ){

@@ -81,7 +81,7 @@ public class ActHistory extends BaseActivity {
 
 		setResult(RESULT_CANCELED);
 
-		history_adapter = new HistoryAdapter(this);
+		history_adapter = new HistoryAdapter(env);
 
 		listview = (ListView)findViewById(R.id.list);
 		//
@@ -90,7 +90,7 @@ public class ActHistory extends BaseActivity {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int idx, long id) {
 				final ImgurHistory item = (ImgurHistory)history_adapter.getItem(idx);
 				if(item != null){
-					act.dialog_manager.show_dialog(
+					env.dialog_manager.show_dialog(
 						new AlertDialog.Builder(act)
 						.setCancelable(true)
 						.setItems(
@@ -102,7 +102,7 @@ public class ActHistory extends BaseActivity {
 									case 1: open_browser( item.image ); break;
 									case 2: open_browser( item.page ); break;
 									case 3: delete_dialog( item ); break;
-									case 4: item.delete(act.cr); break;
+									case 4: item.delete(env.cr); break;
 									case 5: menu_dialog(); break;
 									}
 								}
@@ -113,11 +113,11 @@ public class ActHistory extends BaseActivity {
 			}
 		});
 
-		strAlbumAll = getString(R.string.album_all);
-		strAlbumLoading = act.getString(R.string.album_loading);
+		strAlbumAll = env.getString(R.string.album_all);
+		strAlbumLoading = env.getString(R.string.album_loading);
 
-		account_adapter = new AccountAdapter(act,getString(R.string.account_all));
-		album_adapter = new AlbumAdapter(this,strAlbumAll);
+		account_adapter = new AccountAdapter(env,env.getString(R.string.account_all));
+		album_adapter = new AlbumAdapter(env,strAlbumAll);
 
 		spAccount = (Spinner)findViewById(R.id.account);
 		spAccount.setAdapter(account_adapter);
@@ -128,7 +128,7 @@ public class ActHistory extends BaseActivity {
 			@Override public void onNothingSelected(AdapterView<?> arg0) {
 			}
 		});
-		album_loader = new AlbumLoader(act,new AlbumLoader.Callback() {
+		album_loader = new AlbumLoader(env,new AlbumLoader.Callback() {
 			@Override public void onLoad() {
 				onAccountChange(true,ACCOUNT_NOCHANGE,ALBUM_DONTCARE,"album load");
 			}
@@ -161,7 +161,7 @@ public class ActHistory extends BaseActivity {
 
 	void initPage(){
 		// 最後に選択したアカウントとアルバム
-		SharedPreferences pref = act.pref();
+		SharedPreferences pref = env.pref();
 		lastused_account_name = pref.getString(PrefKey.KEY_HISTORY_ACCOUNT,null);
 		lastused_album_name   = pref.getString(PrefKey.KEY_HISTORY_ALBUM,null);
 
@@ -174,7 +174,7 @@ public class ActHistory extends BaseActivity {
 
 	void save_last_selection(){
 		//
-		SharedPreferences.Editor e = act.pref().edit();
+		SharedPreferences.Editor e = env.pref().edit();
 		ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
 		if( album != null ){
 			e.putString(PrefKey.KEY_HISTORY_ACCOUNT,album.account_name);
@@ -271,7 +271,7 @@ public class ActHistory extends BaseActivity {
 	///////////////////////////////////////////
 
 	void return_url(ImgurHistory item){
-		int type = Integer.parseInt(pref().getString("URL_mode","0"));
+		int type = Integer.parseInt(env.pref().getString("URL_mode","0"));
 		Intent intent = new Intent();
 		switch(type){
 		default:
@@ -287,7 +287,7 @@ public class ActHistory extends BaseActivity {
 	}
 
 	void open_browser(final String url){
-		ui_handler.post(new Runnable() {
+		env.handler.post(new Runnable() {
 			@Override
 			public void run() {
 				if(isFinishing()) return;
@@ -297,7 +297,7 @@ public class ActHistory extends BaseActivity {
 	}
 
 	void delete_dialog(final ImgurHistory item){
-		dialog_manager.show_dialog(
+		env.dialog_manager.show_dialog(
 			new AlertDialog.Builder(this)
 			.setCancelable(true)
 			.setTitle(item.page)
@@ -310,7 +310,7 @@ public class ActHistory extends BaseActivity {
 					progress.setIndeterminate(true);
 					progress.setMessage(getString(R.string.please_wait));
 					progress.setCancelable(true);
-					act.dialog_manager.show_dialog(progress);
+					env.dialog_manager.show_dialog(progress);
 					// 別スレッドで実行
 					final Thread t = new Thread(){
 						@Override public void run() {
@@ -318,23 +318,23 @@ public class ActHistory extends BaseActivity {
 								Pattern reDeleteHash = Pattern.compile("([^/]+)$");
 								Matcher m = reDeleteHash.matcher(item.delete);
 								if( !m.find() ){
-									act.show_toast(true,act.getString(R.string.delete_hash_missing));
+									env.show_toast(true,env.getString(R.string.delete_hash_missing));
 									return;
 								}
 								String hash = m.group(1);
 								String url = "http://api.imgur.com/2/delete/"+hash+"?_format=json";
-								SignedClient client = new SignedClient(act);
+								SignedClient client = new SignedClient(env);
 								client.cancel_checker = new CancelChecker() {
 									@Override public boolean isCancelled() {
 										return !progress.isShowing();
 									}
 								};
-								APIResult result = client.json_get( url, act.getString(R.string.cancelled),PrefKey.RATELIMIT_ANONYMOUS);
+								APIResult result = client.json_get( url, env.getString(R.string.cancelled),PrefKey.RATELIMIT_ANONYMOUS);
 								try{
 									String v = result.getError();
 									if( "Invalid delete hash".equals(v) ){
-										result.setErrorExtra( act.getString(R.string.delete_hash_invalid));
-										item.delete(act.cr);
+										result.setErrorExtra( env.getString(R.string.delete_hash_invalid));
+										item.delete(env.cr);
 									}else if(v==null){
 										JSONObject node = result.content_json.optJSONObject("delete");
 										if( node == null ){
@@ -342,18 +342,18 @@ public class ActHistory extends BaseActivity {
 										}else{
 											String msg = node.optString("message");
 											if( msg != null && msg.length() > 0 ){
-												act.show_toast(false,R.string.delete_complete);
-												item.delete(act.cr);
+												env.show_toast(false,R.string.delete_complete);
+												item.delete(env.cr);
 											}
 										}
 									}
 								}catch(Throwable ex){
-									act.report_ex(ex);
+									env.report_ex(ex);
 								}
-								result.save_error(act);
-								result.show_error(act);
+								result.save_error(env);
+								result.show_error(env);
 							}catch(Throwable ex){
-								act.report_ex(ex);
+								env.report_ex(ex);
 							}finally{
 								progress.dismiss();
 							}
@@ -380,7 +380,7 @@ public class ActHistory extends BaseActivity {
 	}
 
 	void menu_dialog() {
-		dialog_manager.show_dialog(
+		env.dialog_manager.show_dialog(
 			new AlertDialog.Builder(this)
 			.setCancelable(true)
 			.setNegativeButton(R.string.cancel,null)
@@ -406,7 +406,7 @@ public class ActHistory extends BaseActivity {
 	}
 	
 	void history_clear_dialog() {
-		act.dialog_manager.show_dialog(
+		env.dialog_manager.show_dialog(
 			new AlertDialog.Builder(act)
 			.setCancelable(true)
 			.setNegativeButton(R.string.cancel,null)
@@ -418,11 +418,11 @@ public class ActHistory extends BaseActivity {
 					progress.setIndeterminate(true);
 					progress.setMessage(getString(R.string.please_wait));
 					progress.setCancelable(true);
-					act.dialog_manager.show_dialog(progress);
+					env.dialog_manager.show_dialog(progress);
 					new AsyncTask<Void,Void,String>(){
 						@Override
 						protected String doInBackground(Void... params) {
-							act.cr.delete(ImgurHistory.meta.uri,null,null);
+							env.cr.delete(ImgurHistory.meta.uri,null,null);
 							return null;
 						}
 
@@ -430,7 +430,7 @@ public class ActHistory extends BaseActivity {
 						protected void onPostExecute(String result) {
 							if(isFinishing()) return;
 							progress.dismiss();
-							act.show_toast(false,R.string.history_cleared);
+							env.show_toast(false,R.string.history_cleared);
 						}
 					}.execute();
 				}
@@ -444,7 +444,7 @@ public class ActHistory extends BaseActivity {
 	}
 	
 	void history_export(){
-		act.dialog_manager.show_dialog(
+		env.dialog_manager.show_dialog(
 				new AlertDialog.Builder(act)
 				.setCancelable(true)
 				.setNegativeButton(R.string.cancel,null)
@@ -460,19 +460,19 @@ public class ActHistory extends BaseActivity {
 						progress.setIndeterminate(true);
 						progress.setMessage(getString(R.string.please_wait));
 						progress.setCancelable(true);
-						act.dialog_manager.show_dialog(progress);
+						env.dialog_manager.show_dialog(progress);
 						new AsyncTask<Void,Void,ExportData>(){
 							@Override
 							protected ExportData doInBackground(Void... params) {
 								ExportData result = new ExportData();
 								try{
-									Cursor cursor = ImgurHistory.query(act.cr,account,album);
+									Cursor cursor = ImgurHistory.query(env.cr,account,album);
 									try{
 										ImgurHistory.ColumnIndex colidx = new ImgurHistory.ColumnIndex();
 										if( cursor.getCount() <= 0 ){
-											act.show_toast(true,R.string.history_empty);
+											env.show_toast(true,R.string.history_empty);
 										}else if(! cursor.moveToFirst() ){
-											act.show_toast(true,R.string.db_seek_error);
+											env.show_toast(true,R.string.db_seek_error);
 										}else{
 											int n=0;
 											StringBuffer sb = new StringBuffer();
@@ -491,7 +491,7 @@ public class ActHistory extends BaseActivity {
 										cursor.close();
 									}
 								}catch (Throwable ex) {
-									report_ex(ex);
+									env.report_ex(ex);
 								}
 								return result;
 							}
@@ -502,7 +502,7 @@ public class ActHistory extends BaseActivity {
 								progress.dismiss();
 								if( result != null && result.count > 0 ){
 									String ok_msg = getString(R.string.history_export_complete,result.count);
-									ClipboardHelper.clipboard_copy(act,result.text,ok_msg);
+									ClipboardHelper.clipboard_copy(env,result.text,ok_msg);
 								}
 							}
 						}.execute();

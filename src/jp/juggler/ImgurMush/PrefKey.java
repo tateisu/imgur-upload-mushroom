@@ -62,6 +62,7 @@ public class PrefKey {
 	public static final String KEY_RATE_LIMIT_MAP = "rate_limit_map";
 	public static final String KEY_AUTO_ROTATE = "auto_rotate";
 	public static final String RATELIMIT_ANONYMOUS = "anonymous";
+	public static final String KEY_UPLOAD_JOB_LIST = "upload_job_list";
 	
 	
 	public static void upgrade_config(SharedPreferences pref) {

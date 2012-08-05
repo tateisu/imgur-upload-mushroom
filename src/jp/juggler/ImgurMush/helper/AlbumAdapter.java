@@ -3,6 +3,7 @@ package jp.juggler.ImgurMush.helper;
 import java.util.ArrayList;
 
 import jp.juggler.ImgurMush.data.ImgurAlbum;
+import jp.juggler.util.HelperEnvUI;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +14,15 @@ public class AlbumAdapter extends BaseAdapter{
 
 	ArrayList<ImgurAlbum> album_list = new ArrayList<ImgurAlbum>();
 
-	final BaseActivity act;
+	final HelperEnvUI env;
 	String strNonSelection;
 	final int min_height;
 
-	public AlbumAdapter(BaseActivity act,String no_album) {
-		this.act = act;
+	public AlbumAdapter(HelperEnvUI env,String no_album) {
+		this.env = env;
 		this.strNonSelection = no_album;
 
-		float density = act.getResources().getDisplayMetrics().density;
-		this.min_height = (int)(0.5f + density * 48 );
+		this.min_height = (int)(0.5f + env.density * 48 );
 	}
 
 
@@ -89,7 +89,7 @@ public class AlbumAdapter extends BaseAdapter{
 	private View make_view(int position, View view, ViewGroup parent,int layout, boolean is_dropdown){
 		ViewHolder holder;
 		if(view==null){
-			view = act.inflater.inflate(layout ,null );
+			view = env.inflater.inflate(layout ,null );
 			view.setTag( holder = new ViewHolder() );
 			holder.tvName = (TextView)view.findViewById(android.R.id.text1);
 			if(is_dropdown) view.setMinimumHeight(min_height);

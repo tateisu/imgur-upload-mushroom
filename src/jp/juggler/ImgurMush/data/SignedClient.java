@@ -7,8 +7,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.CancellationException;
 
 import jp.juggler.ImgurMush.R;
-import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.util.CancelChecker;
+import jp.juggler.util.HelperEnv;
 import jp.juggler.util.LogCategory;
 
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -23,16 +23,20 @@ public class SignedClient {
 	static final LogCategory log = new LogCategory("SignedClient");
 	static final boolean dump_request_header = false;
 
-	final BaseActivity act;
+	final HelperEnv eh;
 	public CommonsHttpOAuthConsumer consumer;
 	public CancelChecker cancel_checker = null;
 	
-	public SignedClient(BaseActivity act){
-		this.act = act;
+	public SignedClient(HelperEnv eh){
+		this.eh = eh;
 	}
 	public void prepareConsumer(ImgurAccount account,String ck,String cs){
 		consumer = new CommonsHttpOAuthConsumer(ck,cs);
 		consumer.setTokenWithSecret(account.token,account.secret);
+	}
+	public void prepareConsumer(String token,String secret,String ck,String cs){
+		consumer = new CommonsHttpOAuthConsumer(ck,cs);
+		consumer.setTokenWithSecret(token,secret);
 	}
 	
 
@@ -80,10 +84,10 @@ public class SignedClient {
 				result.setErrorHTTP(cancel_message);
 				break;
 			}catch(SocketTimeoutException ex){
-				result.setErrorHTTP(act.getString(R.string.net_error_timeout,ex.getMessage()));
+				result.setErrorHTTP(eh.getString(R.string.net_error_timeout,ex.getMessage()));
 				continue;
 			}catch(UnknownHostException ex){
-				result.setErrorHTTP(act.getString(R.string.net_error_resolver,ex.getMessage()));
+				result.setErrorHTTP(eh.getString(R.string.net_error_resolver,ex.getMessage()));
 				continue;
 			}catch(Throwable ex){
 				ex.printStackTrace();
@@ -100,7 +104,7 @@ public class SignedClient {
 			try{
 				HttpGet request = new HttpGet( url );
 				send_request(result,request,cancel_message);
-				if( result.parse_json(act,account_name) ){
+				if( result.parse_json(eh,account_name) ){
 					break;
 				}else{
 					continue;
@@ -123,7 +127,7 @@ public class SignedClient {
 				HttpGet request = new HttpGet( url );
 				consumer.sign(request);
 				send_request(result,request,cancel_message);
-				if( result.parse_json(act,account_name) ){
+				if( result.parse_json(eh,account_name) ){
 					break;
 				}else{
 					continue;
@@ -139,12 +143,12 @@ public class SignedClient {
 		return result;
 	}
 
-	public APIResult json_signed_request(HttpRequestBase request,String cancel_message,String account_name){
+	public APIResult json_send_request(HttpRequestBase request,String cancel_message,String account_name){
 		APIResult result = new APIResult();
 		for( int nTry =0; nTry < 10; ++nTry ){
 			try{
 				send_request(result,request,cancel_message);
-				if( result.parse_json(act,account_name) ){
+				if( result.parse_json(eh,account_name) ){
 					break;
 				}else{
 					continue;

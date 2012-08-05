@@ -149,7 +149,7 @@ public class ActOAuth extends BaseActivity {
 					return true;
 				}
 			}
-			finish_with_message("cannot get oAuth verifier");
+			env.finish_with_message("cannot get oAuth verifier");
 			return true;
 		}
 		return false;
@@ -209,11 +209,11 @@ public class ActOAuth extends BaseActivity {
 					if( cancel_checker.isCancelled() ) return;
 					//
 					if( !validstr(url)  ) {
-						finish_with_message(last_error);
+						env.finish_with_message(last_error);
 						return;
 					}else{
 						final String url_ = url;
-						act.ui_handler.post(new Runnable() {
+						env.handler.post(new Runnable() {
 							@Override
 							public void run() {
 								if(act.isFinishing()) return;
@@ -222,9 +222,9 @@ public class ActOAuth extends BaseActivity {
 						});
 					}
 				}catch(Throwable ex) {
-					report_ex(ex);
+					env.report_ex(ex);
 				}finally{
-					act.ui_handler.post(new Runnable() {
+					env.handler.post(new Runnable() {
 						@Override public void run() {
 							dialog.dismiss();
 						}
@@ -267,12 +267,12 @@ public class ActOAuth extends BaseActivity {
 					String token = mOAuthConsumer.getToken();
 					String tokenSecret = mOAuthConsumer.getTokenSecret();
 					if( ! validstr(token) || ! validstr(tokenSecret) ){
-						act.finish_with_message(act.getString(R.string.oauth_error_missing_token));
+						env.finish_with_message(act.getString(R.string.oauth_error_missing_token));
 						return;
 					}
 
 					// 次はアカウント情報の取得
-					act.ui_handler.post(new Runnable() {
+					env.handler.post(new Runnable() {
 						@Override public void run() {
 							dialog.setMessage(act.getString(R.string.account_info_querying));
 						}
@@ -282,7 +282,7 @@ public class ActOAuth extends BaseActivity {
 					account.token = token;
 					account.secret = tokenSecret;
 					//
-					SignedClient client = new SignedClient(act);
+					SignedClient client = new SignedClient(act.env);
 					client.cancel_checker = cancel_checker;
 					client.prepareConsumer(account,Config.CONSUMER_KEY, Config.CONSUMER_SECRET);
 					APIResult result = client.json_signed_get("http://api.imgur.com/2/account.json",cancel_message,null);
@@ -291,18 +291,18 @@ public class ActOAuth extends BaseActivity {
 					if( !result.isError() && result.content_json.isNull("account") ){
 						result.setErrorExtra("missing 'account' in response");
 					}
-					result.save_error(act);
-					result.show_error(act);
+					result.save_error(act.env);
+					result.show_error(act.env);
 					if( result.isError() ) return;
 					// 認証されたアカウントを保存する
 					account.name = result.content_json.getJSONObject("account").getString("url");
-					account.save(act.cr);
+					account.save(env.cr);
 					log.d("account configured.");
-					finish_with_message(act.getString(R.string.account_added));
+					env.finish_with_message(act.getString(R.string.account_added));
 				}catch(Throwable ex) {
-					report_ex(ex);
+					env.report_ex(ex);
 				}finally{
-					act.ui_handler.post(new Runnable() {
+					env.handler.post(new Runnable() {
 						@Override public void run() {
 							dialog.dismiss();
 						}

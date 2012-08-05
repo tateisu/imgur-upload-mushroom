@@ -78,8 +78,8 @@ public class ActImgurMush extends BaseActivity {
 			break;
 		case REQ_PREF:
 			upload_target_manager.reload();
-			upload_autostart = act.pref().getBoolean(PrefKey.KEY_AUTO_UPLOAD,false);
-			editor_autostart = act.pref().getBoolean(PrefKey.KEY_AUTO_EDIT,false);
+			upload_autostart = env.pref().getBoolean(PrefKey.KEY_AUTO_UPLOAD,false);
+			editor_autostart = env.pref().getBoolean(PrefKey.KEY_AUTO_EDIT,false);
 			break;
 		case REQ_ARRANGE:
 			if( resultCode ==  RESULT_OK && detail != null){
@@ -131,7 +131,7 @@ public class ActImgurMush extends BaseActivity {
 		btnEdit= (Button)findViewById(R.id.btnEdit);
 		btnUpload = (Button)findViewById(R.id.btnUpload);
 
-		uploader = new Uploader(this,new Uploader.Callback() {
+		uploader = new Uploader(env,new Uploader.Callback() {
 			@Override public void onStatusChanged(boolean bBusy) {
 				if(bBusy){
 					btnUpload.setEnabled(false);
@@ -141,26 +141,24 @@ public class ActImgurMush extends BaseActivity {
 			}
 
 			@Override public void onCancelled() {
-				show_toast(false,getString(R.string.cancel_notice));
+				env.show_toast(false,R.string.cancel_notice);
 			}
 
 			@Override public void onComplete(String image_url, String page_url) {
-				int t = Integer.parseInt(act.pref().getString(PrefKey.KEY_URL_MODE,"0"));
+				int t = Integer.parseInt(env.pref().getString(PrefKey.KEY_URL_MODE,"0"));
 				switch(t){
 				default:
 				case 0: uploader.finish_mush(image_url); return;
 				case 1: uploader.finish_mush(page_url); return;
 				}
 			}
-
-			// XXX: アップロード中に画面を回転させると、アップロードがキャンセルされる…
 		});
 
-		upload_target_manager = new UploadTargetManager(this);
+		upload_target_manager = new UploadTargetManager(env);
 
 		// 旧版からの以降に関するデータ型の変更
 		try{
-			SharedPreferences pref = pref();
+			SharedPreferences pref = env.pref();
 			int i = pref.getInt(PrefKey.KEY_URL_MODE ,-1);
 			if( i != -1 ){
 				SharedPreferences.Editor e = pref.edit();
@@ -220,8 +218,8 @@ public class ActImgurMush extends BaseActivity {
 	boolean editor_autostart = false;
 
 	void init_page(){
-		upload_autostart = act.pref().getBoolean(PrefKey.KEY_AUTO_UPLOAD,false);
-		editor_autostart = act.pref().getBoolean(PrefKey.KEY_AUTO_EDIT,false);
+		upload_autostart = env.pref().getBoolean(PrefKey.KEY_AUTO_UPLOAD,false);
+		editor_autostart = env.pref().getBoolean(PrefKey.KEY_AUTO_EDIT,false);
 		//
 		setCurrentFile(0,null);
 		
@@ -255,7 +253,7 @@ public class ActImgurMush extends BaseActivity {
 		}
 
 		// それ以外の場合、設定されていれば自動的にピッカーを開く
-		if( !bRestore && pref().getBoolean(PrefKey.KEY_AUTO_PICK,false) ) open_file_picker();
+		if( !bRestore && env.pref().getBoolean(PrefKey.KEY_AUTO_PICK,false) ) open_file_picker();
 	}
 
 	String file_path;
@@ -263,7 +261,6 @@ public class ActImgurMush extends BaseActivity {
 	Uri capture_uri;
 	
 	void save_status(){
-		log.d("save_status");
 		Intent intent = getIntent();
 		if( file_path != null ) intent.setData( Uri.fromFile(new File(file_path)));
 		intent.putExtra( PrefKey.EXTRA_IS_STATUS_SAVE , true );
@@ -280,7 +277,7 @@ public class ActImgurMush extends BaseActivity {
 	Runnable delay_open = new Runnable() {
 		@Override
 		public void run() {
-			ui_handler.removeCallbacks(delay_open);
+			env.handler.removeCallbacks(delay_open);
 
 			if(isFinishing()) return;
 
@@ -299,7 +296,7 @@ public class ActImgurMush extends BaseActivity {
 			int w = preview.getWidth();
 			int h = preview.getHeight();
 			if( w < 1 || h < 1 ){
-				ui_handler.postDelayed(delay_open,111);
+				env.handler.postDelayed(delay_open,111);
 				return;
 			}
 
@@ -326,16 +323,17 @@ public class ActImgurMush extends BaseActivity {
 			));
 
 			// プレビュー無効の設定があるかもしれない
-			boolean measure_only = pref().getBoolean(PrefKey.KEY_DISABLE_PREVIEW,false);
+			boolean measure_only = env.pref().getBoolean(PrefKey.KEY_DISABLE_PREVIEW,false);
 			if( measure_only ){
 				preview.setVisibility(View.VISIBLE);
 				preview.setImageResource(R.drawable.preview_disabled);
 			}
 
 			// 測定とプレビューを開始する
-			PreviewLoader.load(act,file_path, measure_only,preview.getWidth(),preview.getHeight(),new PreviewLoader.Callback() {
+			PreviewLoader.load(env,file_path, measure_only,preview.getWidth(),preview.getHeight(),new PreviewLoader.Callback() {
 				@Override
 				public void onMeasure(int w, int h) {
+					if( act.isFinishing() ) return;
 					tvFileDesc.setText(String.format(
 							"%s %sx%spx %s\n%s"
 							,size
@@ -347,6 +345,7 @@ public class ActImgurMush extends BaseActivity {
 
 				@Override
 				public void onLoad(Bitmap bitmap) {
+					if( act.isFinishing() ) return;
 					if(bitmap != null ){
 						preview.setVisibility(View.VISIBLE);
 						preview.setImageBitmap(bitmap);
@@ -368,7 +367,7 @@ public class ActImgurMush extends BaseActivity {
 			startActivityForResult(intent,REQ_FILEPICKER);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			show_toast(true,R.string.picker_missing);
+			env.show_toast(true,R.string.picker_missing);
 		}
 		log.d("open_file_picker :finish");
 		uploader.finish_mush("");
@@ -377,8 +376,8 @@ public class ActImgurMush extends BaseActivity {
 	void open_capture(){
 		try{
 			capture_uri = Uri.fromFile(new File(
-					ImageTempDir.getTempDir(act,act.pref(),act.ui_handler)
-					,String.format("capture-%s",System.currentTimeMillis())
+				ImageTempDir.getTempDir(act.env)
+				,String.format("capture-%s",System.currentTimeMillis())
 			));
 		}catch(Throwable ex){
 			ex.printStackTrace();
@@ -390,7 +389,7 @@ public class ActImgurMush extends BaseActivity {
 			startActivityForResult(intent,REQ_CAPTURE);
 			return;
 		}catch(ActivityNotFoundException ex ){
-			show_toast(true,R.string.capture_missing);
+			env.show_toast(true,R.string.capture_missing);
 		}
 	}
 	
@@ -402,7 +401,7 @@ public class ActImgurMush extends BaseActivity {
 	}
 
 	public void menu_dialog() {
-		dialog_manager.show_dialog(
+		env.dialog_manager.show_dialog(
 			new AlertDialog.Builder(this)
 			.setCancelable(true)
 			.setNegativeButton(R.string.cancel,null)

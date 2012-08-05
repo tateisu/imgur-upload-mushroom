@@ -9,24 +9,25 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ResizePreset;
+import jp.juggler.util.HelperEnvUI;
 import jp.juggler.util.LifeCycleListener;
 
 public class ResizePresetAdapter extends BaseAdapter{
-	final BaseActivity act;
+	final HelperEnvUI env;
 	final String strNoResize;
 	final String strNewPreset;
 	final Cursor preset_cursor;
 	final ResizePreset.ColumnIndex colidx = new ResizePreset.ColumnIndex();
 	boolean mDataValid = true;
 
-	public ResizePresetAdapter(BaseActivity act,String strNoResize,String strNewPreset){
-		this.act = act;
+	public ResizePresetAdapter(HelperEnvUI env,String strNoResize,String strNewPreset){
+		this.env = env;
 		this.strNoResize = strNoResize;
 		this.strNewPreset = strNewPreset;
-		this.preset_cursor = act.cr.query(ResizePreset.meta.uri,null,null,null,ResizePreset.COL_MODE+" asc,"+ResizePreset.COL_VALUE+" asc");
+		this.preset_cursor = env.cr.query(ResizePreset.meta.uri,null,null,null,ResizePreset.COL_MODE+" asc,"+ResizePreset.COL_VALUE+" asc");
 
 
-		preset_cursor.registerContentObserver(new ContentObserver(act.ui_handler) {
+		preset_cursor.registerContentObserver(new ContentObserver(env.handler) {
 			@Override
 			public boolean deliverSelfNotifications() {
 				return false;
@@ -53,7 +54,7 @@ public class ResizePresetAdapter extends BaseAdapter{
 			}
 
 		});
-		act.lifecycle_manager.add(activity_listener);
+		env.lifecycle_manager.add(activity_listener);
 	}
 
 	LifeCycleListener activity_listener = new LifeCycleListener(){
@@ -94,7 +95,7 @@ public class ResizePresetAdapter extends BaseAdapter{
 	private View make_view(int position, View view, ViewGroup parent,int layout){
 		ViewHolder holder;
 		if(view==null){
-			view = act.inflater.inflate(layout ,null );
+			view = env.inflater.inflate(layout ,null );
 			view.setTag( holder = new ViewHolder() );
 			holder.tvName = (TextView)view;
 		}else{
@@ -107,7 +108,7 @@ public class ResizePresetAdapter extends BaseAdapter{
 				holder.tvName.setText(strNewPreset);
 			}else{
 				ResizePreset item = (ResizePreset)getItem(position);
-				holder.tvName.setText( item == null ? strNoResize : item.makeTitle(act) );
+				holder.tvName.setText( item == null ? strNoResize : item.makeTitle(env) );
 			}
 		}catch(Throwable ex){
 			holder.tvName.setText("(error)");

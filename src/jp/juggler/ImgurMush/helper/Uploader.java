@@ -17,6 +17,7 @@ import jp.juggler.ImgurMush.data.SignedClient;
 import jp.juggler.ImgurMush.data.APIResult;
 import jp.juggler.ImgurMush.data.StreamSigner;
 import jp.juggler.util.CancelChecker;
+import jp.juggler.util.HelperEnvUI;
 import jp.juggler.util.LogCategory;
 
 import org.apache.http.NameValuePair;
@@ -25,7 +26,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -40,7 +43,7 @@ import android.provider.MediaStore;
 
 public class Uploader {
 	static final LogCategory log = new LogCategory("Uploader");
-	final BaseActivity act;
+	final HelperEnvUI env;
 	final Callback callback;
 
 	public interface Callback{
@@ -49,11 +52,11 @@ public class Uploader {
 		void onComplete(String image_url,String page_url);
 	}
 
-	public Uploader(BaseActivity act,Callback callback){
-		this.act =act;
+	public Uploader(HelperEnvUI env,Callback callback){
+		this.env =env;
 		this.callback = callback;
 		
-		PowerManager pm = (PowerManager)act.getSystemService(BaseActivity.POWER_SERVICE);
+		PowerManager pm = (PowerManager)env.context.getSystemService(Context.POWER_SERVICE);
 		wake_lock = pm.newWakeLock(
 			PowerManager.SCREEN_DIM_WAKE_LOCK
 			|PowerManager.ON_AFTER_RELEASE
@@ -72,11 +75,11 @@ public class Uploader {
 		
 	
 		//
-		final ProgressDialog dialog = progress_dialog = new ProgressDialog(act);
+		final ProgressDialog dialog = progress_dialog = new ProgressDialog(env.context);
 		dialog.setTitle(title);
 		dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		dialog.setIndeterminate(true);
-		dialog.setMessage(act.getString(R.string.upload_progress));
+		dialog.setMessage(env.getString(R.string.upload_progress));
 		dialog.setCancelable(true);
 		dialog.setMax(0);
 		dialog.setProgress(0);
@@ -102,7 +105,7 @@ public class Uploader {
 		wake_lock.acquire();
 		log.d("wake lock acquired. isHeld=%s",wake_lock.isHeld());
 
-		act.dialog_manager.show_dialog(dialog);
+		env.dialog_manager.show_dialog(dialog);
 
 		final CancelChecker cancel_checker = new CancelChecker() {
 			@Override
@@ -117,12 +120,12 @@ public class Uploader {
 				File infile = new File(file_path);
 				long infile_size = infile.length();
 				if( infile_size >= 10* 1024 * 1024 ){
-					act.show_toast(false,R.string.too_large_data);
+					env.show_toast(false,R.string.too_large_data);
 					return null;
 				}
 				final boolean is_base64 = true; // oAuthのPercentEscapeルールだと、Base64した方が小さい
 				try{
-					SignedClient client = new SignedClient(act);
+					SignedClient client = new SignedClient(env);
 					StreamSigner signer = new StreamSigner();
 					client.cancel_checker = cancel_checker;
 					signer.cancel_checker = cancel_checker;
@@ -130,7 +133,7 @@ public class Uploader {
 					signer.addParam(true,"image",infile,is_base64);
 
 					APIResult result;
-					String cancel_message = act.getString(R.string.upload_cancelled);
+					String cancel_message = env.getString(R.string.upload_cancelled);
 					
 					if( account==null ){
 						signer.addParam(true,"key",Config.IMGUR_API_KEY);
@@ -142,9 +145,9 @@ public class Uploader {
 
 						if( cancel_checker.isCancelled() ) return null;
 						progress_reset_retry( entity.getContentLength() );
-						result = client.json_signed_request(request,cancel_message,PrefKey.RATELIMIT_ANONYMOUS );
-						result.save_error(act);
-						result.show_error(act);
+						result = client.json_send_request(request,cancel_message,PrefKey.RATELIMIT_ANONYMOUS );
+						result.save_error(env);
+						result.show_error(env);
 					}else{
 						HttpPost request = new HttpPost("http://api.imgur.com/2/account/images.json");
 						signer.addParam(false,"oauth_token", account.token);
@@ -164,9 +167,9 @@ public class Uploader {
 
 						if( cancel_checker.isCancelled() ) return null;
 						progress_reset_retry( entity.getContentLength() );
-						result = client.json_signed_request(request,cancel_message,account.name);
-						result.save_error(act);
-						result.show_error(act);
+						result = client.json_send_request(request,cancel_message,account.name);
+						result.save_error(env);
+						result.show_error(env);
 
 						// 画像をアルバムに追加する
 						if( cancel_checker.isCancelled() ) return null;
@@ -180,25 +183,25 @@ public class Uploader {
 								request.setEntity(new UrlEncodedFormEntity(nameValuePair));
 								client.prepareConsumer(account,Config.CONSUMER_KEY,Config.CONSUMER_SECRET);
 								client.consumer.sign(request);
-								APIResult r2 = client.json_signed_request(request,cancel_message,account.name);
-								r2.save_error(act);
-								r2.show_error(act);
+								APIResult r2 = client.json_send_request(request,cancel_message,account.name);
+								r2.save_error(env);
+								r2.show_error(env);
 							}catch(Throwable ex){
-								act.report_ex(ex);
+								env.report_ex(ex);
 							}
 						}
 					}
 					if( cancel_checker.isCancelled() ) return null;
 					return result;
 				}catch(Throwable ex){
-					act.report_ex(ex);
+					env.report_ex(ex);
 				}
 				return null;
 			}
 
 			@Override
 			protected void onPostExecute(APIResult result) {
-				if(act.isFinishing()) return;
+				if(env.isFinishing()) return;
 				dialog.dismiss();
 				try{
 					if( result != null && !result.isError() ){
@@ -214,7 +217,7 @@ public class Uploader {
 						}
 					}
 				}catch(Throwable ex){
-					act.report_ex(ex);
+					env.report_ex(ex);
 				}
 				callback.onStatusChanged(false);
 			}
@@ -233,9 +236,9 @@ public class Uploader {
 			item.upload_time = System.currentTimeMillis();
 			item.account_name = (account==null ? null : account.name );
 			item.album_id = album_id;
-			item.save(act.cr);
+			item.save(env.cr);
 		}catch(Throwable ex){
-			act.report_ex(ex);
+			env.report_ex(ex);
 		}
 	}
 
@@ -249,11 +252,11 @@ public class Uploader {
 
 	
 	void progress_set_pre(final int text_id) {
-		act.ui_handler.post(new Runnable() {
+		env.handler.post(new Runnable() {
 			@Override
 			public void run() {
-				if(act.isFinishing() ) return;
-				progress_dialog.setMessage(act.getString(text_id));
+				if(env.isFinishing() ) return;
+				progress_dialog.setMessage(env.getString(text_id));
 				progress_dialog.setIndeterminate(true);
 			}
 		});
@@ -261,10 +264,10 @@ public class Uploader {
 	
 	private void progress_reset_retry(long size) {
 		progress_busy = false;
-		act.ui_handler.post(new Runnable() {
+		env.handler.post(new Runnable() {
 			@Override
 			public void run() {
-				if(act.isFinishing() ) return;
+				if(env.isFinishing() ) return;
 				progress_last_message_id.set(0);
 				progress_try_count = 1;
 				progress_dialog.setProgress(0);
@@ -284,14 +287,14 @@ public class Uploader {
 	void progress_set(long v,long max){
 		progress_value.set( (int)v );
 		progress_max.set( (int)max );
-		act.ui_handler.postDelayed(progress_runnable,100);
+		env.handler.postDelayed(progress_runnable,100);
 	}
 	
 	Runnable progress_runnable = new Runnable() {
 		@Override
 		public void run() {
-			act.ui_handler.removeCallbacks(progress_runnable);
-			if(act.isFinishing()) return;
+			env.handler.removeCallbacks(progress_runnable);
+			if(env.isFinishing()) return;
 			
 			int old_v = progress_dialog.getProgress();
 			int v = progress_value.get();
@@ -306,11 +309,11 @@ public class Uploader {
 			//
 			String msg = null;
 			if(max > 0 && v==max){
-				msg = act.getString(R.string.upload_wait_response);
+				msg = env.getString(R.string.upload_wait_response);
 			}else if( progress_try_count > 1 ){
-				msg = act.getString(R.string.upload_progress2,progress_try_count);
+				msg = env.getString(R.string.upload_progress2,progress_try_count);
 			}else{
-				msg = act.getString(R.string.upload_progress);
+				msg = env.getString(R.string.upload_progress);
 			}
 			if( ! msg.equals(progress_last_msg) ){
 				progress_last_msg = msg;
@@ -374,7 +377,7 @@ public class Uploader {
 	public String uri_to_path(Uri uri){
 		if(uri==null) return null;
 		if(uri.getScheme().equals("content") ){
-			Cursor c = act.cr.query(uri, new String[]{MediaStore.Images.Media.DATA }, null, null, null);
+			Cursor c = env.cr.query(uri, new String[]{MediaStore.Images.Media.DATA }, null, null, null);
 			if( c !=null ){
 				try{
 					if(c.moveToNext() ) return c.getString(0);
@@ -386,12 +389,12 @@ public class Uploader {
 			return uri.getPath();
 		}
 		log.d("cannot convert uri to path. %s",uri.toString());
-		act.show_toast(true,R.string.uri_parse_error,uri.toString());
+		env.show_toast(true,R.string.uri_parse_error,uri.toString());
 		return null;
 	}
 	
 	public String trim_output_url(String text){
-		SharedPreferences pref = act.pref();
+		SharedPreferences pref = env.pref();
 		PrefKey.upgrade_config(pref);
 		return pref.getString(PrefKey.KEY_URL_PREFIX,"")+text+pref.getString(PrefKey.KEY_URL_SUFFIX,"");
 	}
@@ -405,15 +408,15 @@ public class Uploader {
 		if( is_mushroom() ){
 			Intent intent = new Intent();
 			intent.putExtra("replace_key", text);
-			act.setResult(BaseActivity.RESULT_OK, intent);
+			env.act.setResult(Activity.RESULT_OK, intent);
 		}else if(text !=null && text.length() > 0 ){
-			ClipboardHelper.clipboard_copy(act,text,act.getString(R.string.output_to_clipboard));
+			ClipboardHelper.clipboard_copy(env,text,env.getString(R.string.output_to_clipboard));
 		}
-		act.finish();
+		env.act.finish();
 	}
 
 	boolean is_mushroom(){
-		Intent intent = act.getIntent();
+		Intent intent = env.act.getIntent();
 		return ( intent != null && "com.adamrocker.android.simeji.ACTION_INTERCEPT".equals(intent.getAction()) );
 	}
 

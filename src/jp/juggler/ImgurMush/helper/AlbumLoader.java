@@ -19,6 +19,7 @@ import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.data.SignedClient;
 
+import jp.juggler.util.HelperEnvUI;
 import jp.juggler.util.LifeCycleListener;
 import jp.juggler.util.LogCategory;
 import jp.juggler.util.WorkerBase;
@@ -30,13 +31,13 @@ public class AlbumLoader {
 		void onLoad();
 	}
 
-	final BaseActivity act;
+	final HelperEnvUI eh;
 	final Callback callback;
 
-	public AlbumLoader(BaseActivity act,Callback callback){
-		this.act = act;
+	public AlbumLoader(HelperEnvUI eh,Callback callback){
+		this.eh = eh;
 		this.callback = callback;
-		act.lifecycle_manager.add(activity_listener);
+		eh.lifecycle_manager.add(activity_listener);
 
 		cache_load();
 
@@ -75,7 +76,7 @@ public class AlbumLoader {
 		// 既にロード済みならロードしない
 		if( cache.size() > 0 ) return;
 		//
-		SharedPreferences pref = act.pref();
+		SharedPreferences pref = eh.pref();
 		int n = pref.getInt(PrefKey.KEY_ALBUM_CACHE_COUNT,0);
 		for(int i=0;i<n;++i){
 			try{
@@ -95,7 +96,7 @@ public class AlbumLoader {
 	}
 
 	void cache_save(){
-		SharedPreferences.Editor e = act.pref().edit();
+		SharedPreferences.Editor e = eh.pref().edit();
 		int i=0;
 		for( Map.Entry<String,AlbumList> entry : cache.entrySet() ){
 			String account_name = entry.getKey();
@@ -134,7 +135,7 @@ public class AlbumLoader {
 		public void run() {
 			final HashMap<String,AlbumList> tmp_map = new HashMap<String,AlbumList> ();
 			// アカウント一覧をロードする
-			final ArrayList<ImgurAccount> account_list = ImgurAccount.loadAll( act.cr ,bCancelled);
+			final ArrayList<ImgurAccount> account_list = ImgurAccount.loadAll( eh.cr ,bCancelled);
 			// 各アカウントのアルバム一覧をロードする
 			StringBuilder sb = new StringBuilder();
 			for( ImgurAccount account : account_list ){
@@ -149,9 +150,9 @@ public class AlbumLoader {
 				}
 			}
 			if( sb.length() > 0 ){
-				act.show_toast(true,act.getString(R.string.album_load_error)+"\n"+sb.toString());
+				eh.show_toast(true,eh.getString(R.string.album_load_error)+"\n"+sb.toString());
 			}
-			act.ui_handler.post(new Runnable() {
+			eh.handler.post(new Runnable() {
 				@Override
 				public void run() {
 					if(bCancelled.get()) return;
@@ -175,10 +176,10 @@ public class AlbumLoader {
 
 		AlbumList load(ImgurAccount account){
 			AlbumList data = new AlbumList();
-			String cancel_message = act.getString(R.string.cancelled);
+			String cancel_message = eh.getString(R.string.cancelled);
 			data.from = AlbumList.FROM_ERROR;
 			try{
-				SignedClient client = new SignedClient(act);
+				SignedClient client = new SignedClient(eh);
 				client.prepareConsumer(account,Config.CONSUMER_KEY,Config.CONSUMER_SECRET);
 				//
 				APIResult result = client.json_signed_get("http://api.imgur.com/2/account/albums.json?count=999",cancel_message,account.name);
@@ -191,7 +192,7 @@ public class AlbumLoader {
 						// アルバムがないのは正常ケース
 						data.from = AlbumList.FROM_RESPONSE;
 					}else{
-						result.save_error(act);
+						result.save_error(eh);
 					}
 				}else{
 					JSONArray src_list = result.content_json.getJSONArray("albums");

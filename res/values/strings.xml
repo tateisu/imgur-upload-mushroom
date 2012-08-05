@@ -9,7 +9,6 @@
 <string name="account_anonymous">(anonymous)</string>
 <string name="account_delete_title">remove account</string>
 <string name="account_info_querying">retrieving account information&#8230;</string>
-
 <string name="account_settings">account settings</string>
 <string name="act_appinfo"		 >Imgur Mushroom/ about this app</string>
 <string name="act_arrange"		 >Imgur Mushroom/ image arrange</string>
@@ -40,9 +39,9 @@
 <string name="crop_top">T</string>
 <string name="dash3">&#8230;</string>
 <string name="db_seek_error">database access error</string>
-<string name="delete_hash_missing">missing delete hash</string>
-<string name="delete_hash_invalid">maybe already deleted.</string>
 <string name="delete_complete">image was deleted.</string>
+<string name="delete_hash_invalid">maybe already deleted.</string>
+<string name="delete_hash_missing">missing delete hash</string>
 <string name="edit">edit</string>
 <string name="edit_autostart_summary">if checked, automatically start editor when image is picked.</string>
 <string name="edit_autostart_title">auto start editor</string>
@@ -67,8 +66,8 @@
 <string name="jpeg_quality_title">JPEG quality</string>
 <string name="net_error_resolver">connection error(%1$s)</string>
 <string name="net_error_timeout">network timeout(%1$s)</string>
-<string name="oauth_error_server_unavailable">Imgur API server is unavailable</string>
 <string name="oauth_error_missing_token">missing access token in server response</string>
+<string name="oauth_error_server_unavailable">Imgur API server is unavailable</string>
 <string name="oauth_start">restart oAuth</string>
 <string name="ok">OK</string>
 <string name="output_style_settings">URL settings</string>
@@ -121,6 +120,9 @@
 <string name="upload_autostart_title">auto start upload</string>
 <string name="upload_cancelled">upload was cancelled.</string>
 <string name="upload_multi_title">bulk upload\n(file %1$s/%2$s)</string>
+<string name="upload_network_waiting">ネットワーク接続の状態を確認しています…</string>
+<string name="upload_pending_message">other upload task is running. please wait.\nif this message is shown very long duration, please try &#8220;clear upload task&#8221; in setting. </string>
+<string name="upload_pending_title">prepare&#8230;</string>
 <string name="upload_progress">uploading&#8230;</string>
 <string name="upload_progress2">uploading&#8230;(try %1$s)</string>
 <string name="upload_progress_digest">calculate digest&#8230;</string>

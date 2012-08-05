@@ -6,6 +6,7 @@ import jp.juggler.ImgurMush.R;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.data.ImgurHistory;
+import jp.juggler.util.HelperEnvUI;
 import jp.juggler.util.LifeCycleListener;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -20,7 +21,7 @@ import android.widget.TextView;
 
 public class HistoryAdapter extends BaseAdapter {
 
-	final BaseActivity act;
+	final HelperEnvUI env;
 	final DataLoader thumbnail_loader;
 	final String strNoAccount;
 	final String strNoAlbum;
@@ -32,19 +33,19 @@ public class HistoryAdapter extends BaseAdapter {
 	Cursor cursor;
 	boolean mDataValid;
 
-	public HistoryAdapter(BaseActivity act) {
-		this.act =act;
-		this.album_loader = new AlbumLoader(act,new AlbumLoader.Callback() {
+	public HistoryAdapter(HelperEnvUI env) {
+		this.env =env;
+		this.album_loader = new AlbumLoader(env,new AlbumLoader.Callback() {
 			@Override
 			public void onLoad() {
 				notifyDataSetChanged();
 			}
 		});
 
-		strNoAccount = act.getString(R.string.account_anonymous);
-		strNoAlbum = act.getString(R.string.album_not_select);
+		strNoAccount = env.getString(R.string.account_anonymous);
+		strNoAlbum = env.getString(R.string.album_not_select);
 		//
-		thumbnail_loader = new DataLoader(act,true,true,"cache");
+		thumbnail_loader = new DataLoader(env,true,true,"cache");
 		thumbnail_loader.default_expire = 1000 * 86400 * 10;
 		//
 		data_observer= new DataSetObserver() {
@@ -62,7 +63,7 @@ public class HistoryAdapter extends BaseAdapter {
 			}
 		};
 
-		content_observer = new ContentObserver(act.ui_handler) {
+		content_observer = new ContentObserver(env.handler) {
 			@Override
 			public boolean deliverSelfNotifications() {
 				return false;
@@ -77,7 +78,7 @@ public class HistoryAdapter extends BaseAdapter {
 
 		setFilter(null,null);
 		
-		act.lifecycle_manager.add(activity_listener);
+		env.lifecycle_manager.add(activity_listener);
 	}
 
 	LifeCycleListener activity_listener = new LifeCycleListener(){
@@ -95,7 +96,7 @@ public class HistoryAdapter extends BaseAdapter {
 
 	public void setFilter(ImgurAccount account, ImgurAlbum album) {
 		if(cursor!=null) cursor.close();
-		cursor = ImgurHistory.query(act.cr,account,album);
+		cursor = ImgurHistory.query(env.cr,account,album);
 		cursor.registerContentObserver(content_observer);
 		cursor.registerDataSetObserver(data_observer);
 		mDataValid = true;
@@ -136,7 +137,7 @@ public class HistoryAdapter extends BaseAdapter {
 		if( view != null ){
 			holder = (ViewHolder)view.getTag();
 		}else{
-			view = act.inflater.inflate(R.layout.lv_history,null);
+			view = env.inflater.inflate(R.layout.lv_history,null);
 			holder = new ViewHolder();
 			view.setTag(holder);
 			holder.image = (ImageView)view.findViewById(R.id.image);
@@ -152,7 +153,7 @@ public class HistoryAdapter extends BaseAdapter {
 			holder.id = item.id;
 			ImgurAlbum album = album_loader.findAlbum( item.account_name, item.album_id );
 			holder.text.setText(String.format("%s\n%s / %s\n%s"
-					,TextFormat.formatTime(act,item.upload_time)
+					,TextFormat.formatTime(env.context,item.upload_time)
 					,(item.account_name==null ? strNoAccount : item.account_name )
 					,(album==null? strNoAlbum : album.album_name)
 					,item.page
@@ -162,7 +163,7 @@ public class HistoryAdapter extends BaseAdapter {
 				thumbnail_loader.request( item.square , DataLoader.DATATYPE_BITMAP, 1000*60*10, new DataLoader.Listener<Bitmap>() {
 					@Override public void onError(String msg) {
 						if( msg != null && msg.equals("HTTP error 404") ){
-							ImgurHistory.deleteById(act.cr,item.id);
+							ImgurHistory.deleteById(env.cr,item.id);
 						}
 					}
 					@Override public void onData(File file,Bitmap data) {

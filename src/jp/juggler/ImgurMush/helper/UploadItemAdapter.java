@@ -3,6 +3,7 @@ package jp.juggler.ImgurMush.helper;
 import java.util.ArrayList;
 
 import jp.juggler.ImgurMush.R;
+import jp.juggler.util.HelperEnvUI;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
@@ -16,17 +17,15 @@ public class UploadItemAdapter extends BaseAdapter{
 
 	ArrayList<UploadItem> item_list = new ArrayList<UploadItem>();
 
-	final BaseActivity act;
+	final HelperEnvUI env;
 	final int min_height;
 	final MultiplePreviewLoader preview_loader;
 
-	public UploadItemAdapter(BaseActivity act) {
-		this.act = act;
-
-		float density = act.getResources().getDisplayMetrics().density;
-		this.min_height = (int)(0.5f + density * 96 );
+	public UploadItemAdapter(HelperEnvUI env) {
+		this.env = env;
+		this.min_height = (int)(0.5f + env.density * 96 );
 		
-		preview_loader = new MultiplePreviewLoader(act,true);
+		preview_loader = new MultiplePreviewLoader(env,true);
 	}
 
 	@Override
@@ -57,7 +56,7 @@ public class UploadItemAdapter extends BaseAdapter{
 	public View getView(int position, View view, ViewGroup parent) {
 		ViewHolder holder;
 		if(view==null){
-			view = act.inflater.inflate(R.layout.lv_upload ,null );
+			view = env.inflater.inflate(R.layout.lv_upload ,null );
 			view.setTag( holder = new ViewHolder() );
 			holder.text = (TextView)view.findViewById(R.id.text);
 			holder.image = (ImageView)view.findViewById(R.id.image);
@@ -77,7 +76,7 @@ public class UploadItemAdapter extends BaseAdapter{
 					@Override public void onLoad(int w, int h, Bitmap bitmap) {
 						item.w = w;
 						item.h = h;
-						item.updateDesc(act);
+						item.updateDesc(env);
 						if(bitmap!=null) item.preview = bitmap;
 						//
 						if( holder_.item != item ) return;
@@ -117,7 +116,7 @@ public class UploadItemAdapter extends BaseAdapter{
 	public void add(UploadItem item) {
 		item_list.add(item);
 		notifyDataSetChanged();
-		act.show_toast(false,R.string.selection_added);
+		env.show_toast(false,R.string.selection_added);
 	}
 
 	public void replace_item(int idx, UploadItem item) {
