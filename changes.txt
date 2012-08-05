@@ -2,7 +2,14 @@
 * バージョン履歴
 
 ** 2.16
-- <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+ハードウェアキーのみの機種でも動くようなUIだったので、
+<uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+をマニフェストに追加して対応機種を増やしました。
+
+アップロード処理をバックグラウンドサービス化しました。
+アップロード中に画面が回転したり、ホームキーを押して他のアプリを起動したりしてもアップロードが裏で動き続けてます。
+タスク切り替えで単独起動の場合はImgurマッシュを、それ以外の場合はImgurマッシュを起動したアプリを選ぶと
+アップロードが継続していたり、アップロード結果が表示/処理されるのを確認できるはずです。
 
 ** 2.15 
 - アカウント追加画面で出ていたクラッシュの対策。
