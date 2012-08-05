@@ -6,10 +6,12 @@ import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ImageTempDir;
+import jp.juggler.ImgurMush.helper.MushroomHelper;
 import jp.juggler.ImgurMush.helper.PreviewLoader;
 import jp.juggler.ImgurMush.helper.TextFormat;
 import jp.juggler.ImgurMush.helper.UploadTargetManager;
-import jp.juggler.ImgurMush.helper.Uploader;
+import jp.juggler.ImgurMush.uploader.UploadJob;
+import jp.juggler.ImgurMush.uploader.UploaderUI;
 import jp.juggler.util.LogCategory;
 
 import android.app.AlertDialog;
@@ -67,13 +69,13 @@ public class ActImgurMush extends BaseActivity {
 		switch(requestCode){
 		case REQ_FILEPICKER:
 			if( resultCode == RESULT_OK && detail != null ){
-				String path = uploader.uri_to_path(detail.getData());
+				String path = MushroomHelper.uri_to_path(env,detail.getData());
 				if(path != null ) setCurrentFile(FILE_FROM_PICK,path);
 			}
 			break;
 		case REQ_HISTORY:
 			if( resultCode == RESULT_OK && detail != null ){
-				uploader.finish_mush(detail.getStringExtra("url"));
+				MushroomHelper.finish_mush(env,true,detail.getStringExtra("url"));
 			}
 			break;
 		case REQ_PREF:
@@ -97,7 +99,7 @@ public class ActImgurMush extends BaseActivity {
 					log.e("cannot get capture uri");
 				}else{
 					log.d("capture uri = %s", uri);
-					 setCurrentFile(FILE_FROM_PICK,uploader.uri_to_path(uri));
+					 setCurrentFile(FILE_FROM_PICK,MushroomHelper.uri_to_path(env,uri));
 				}
 			}
 			break;
@@ -120,7 +122,7 @@ public class ActImgurMush extends BaseActivity {
 
 
 	UploadTargetManager upload_target_manager;
-	Uploader uploader;
+	UploaderUI uploader;
 
 	void initUI(){
 		setContentView(R.layout.act_imgur_mush);
@@ -131,26 +133,25 @@ public class ActImgurMush extends BaseActivity {
 		btnEdit= (Button)findViewById(R.id.btnEdit);
 		btnUpload = (Button)findViewById(R.id.btnUpload);
 
-		uploader = new Uploader(env,new Uploader.Callback() {
+		uploader = new UploaderUI(env,new UploaderUI.Callback() {
 			@Override public void onStatusChanged(boolean bBusy) {
-				if(bBusy){
-					btnUpload.setEnabled(false);
-				}else{
-					btnUpload.setEnabled(true);
-				}
+				updateUploadButtonStatus();
 			}
-
-			@Override public void onCancelled() {
-				env.show_toast(false,R.string.cancel_notice);
+			@Override
+			public void onAbort(String error_message) {
+				env.show_toast(false,error_message);
 			}
-
-			@Override public void onComplete(String image_url, String page_url) {
-				int t = Integer.parseInt(env.pref().getString(PrefKey.KEY_URL_MODE,"0"));
-				switch(t){
-				default:
-				case 0: uploader.finish_mush(image_url); return;
-				case 1: uploader.finish_mush(page_url); return;
-				}
+			
+			@Override
+			public void onTextOutput(String text_output) {
+				MushroomHelper.finish_mush(env,false,text_output);
+//				int t = Integer.parseInt(env.pref().getString(PrefKey.KEY_URL_MODE,"0"));
+//				switch(t){
+//				default:
+//				case 0: MushroomHelper.finish_mush(env,true,image_url); return;
+//				case 1: MushroomHelper.finish_mush(env,true,page_url); return;
+//				}
+				
 			}
 		});
 
@@ -171,7 +172,7 @@ public class ActImgurMush extends BaseActivity {
 		findViewById(R.id.btnCancel).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				uploader.finish_mush("");
+				MushroomHelper.finish_mush(env,false,"");
 			}
 		});
 
@@ -246,7 +247,7 @@ public class ActImgurMush extends BaseActivity {
 				}
 			}
 			if( uri != null ){
-				String path = uploader.uri_to_path(uri);
+				String path = MushroomHelper.uri_to_path(env,uri);
 				if( path != null ) setCurrentFile( (bRestore?FILE_FROM_RESTORE:FILE_FROM_PICK),path);
 				return;
 			}
@@ -259,6 +260,15 @@ public class ActImgurMush extends BaseActivity {
 	String file_path;
 	int open_type;
 	Uri capture_uri;
+	
+	void updateUploadButtonStatus(){
+		log.d("uploadButtonStatus selected=%s busy=%s"
+			,(file_path != null)
+			,(uploader.isBusy())
+		);
+		btnUpload.setEnabled(file_path != null && !uploader.isBusy() );
+		
+	}
 	
 	void save_status(){
 		Intent intent = getIntent();
@@ -285,11 +295,11 @@ public class ActImgurMush extends BaseActivity {
 			if( file_path == null ){
 				tvFileDesc.setText(getString(R.string.image_not_selected));
 				btnEdit.setEnabled(false);
-				btnUpload.setEnabled(false);
+				updateUploadButtonStatus();
 				return;
 			}else{
 				btnEdit.setEnabled(true);
-				btnUpload.setEnabled(true);
+				updateUploadButtonStatus();
 			}
 
 			// レイアウトが完了してないならもう少し後で実行する
@@ -370,7 +380,7 @@ public class ActImgurMush extends BaseActivity {
 			env.show_toast(true,R.string.picker_missing);
 		}
 		log.d("open_file_picker :finish");
-		uploader.finish_mush("");
+		MushroomHelper.finish_mush(env,false,"");
 	}
 	
 	void open_capture(){
@@ -436,16 +446,12 @@ public class ActImgurMush extends BaseActivity {
 		// 画像が選択されていない
 		if( file_path == null ) return;
 
-		// アップロードを開始する
-		btnUpload.setEnabled(false);
+		// アップロードするアカウントとアルバム
 		ImgurAlbum album = upload_target_manager.getSelectedAlbum();
 		ImgurAccount account = upload_target_manager.getSelectedAccount();
-		log.d("upload to account=%s,album_id=%s",(account==null?"OFF":"ON"),(album==null?"OFF":"ON"));
-		uploader.image_upload(
-			account
-			,(album==null?null : album.album_id)
-			,file_path
-			,act.getString(R.string.upload)
-		);
+		// アップロードジョブを登録してアップロード開始
+		UploadJob job = new UploadJob(account, album);
+		job.addFile(file_path);
+		uploader.upload(job);
 	}
 }

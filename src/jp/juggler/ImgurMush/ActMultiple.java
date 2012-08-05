@@ -22,10 +22,12 @@ import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ClipboardHelper;
 import jp.juggler.ImgurMush.helper.ImageTempDir;
+import jp.juggler.ImgurMush.helper.MushroomHelper;
 import jp.juggler.ImgurMush.helper.UploadItem;
 import jp.juggler.ImgurMush.helper.UploadItemAdapter;
 import jp.juggler.ImgurMush.helper.UploadTargetManager;
-import jp.juggler.ImgurMush.helper.Uploader;
+import jp.juggler.ImgurMush.uploader.UploadJob;
+import jp.juggler.ImgurMush.uploader.UploaderUI;
 import jp.juggler.util.LogCategory;
 
 public class ActMultiple extends BaseActivity{
@@ -63,12 +65,12 @@ public class ActMultiple extends BaseActivity{
 		switch(requestCode){
 		case REQ_FILEPICKER:
 			if( resultCode == RESULT_OK && detail != null ){
-				add_item(uploader.uri_to_path(detail.getData()));
+				add_item(MushroomHelper.uri_to_path(env,detail.getData()));
 			}
 			break;
 		case REQ_HISTORY:
 			if( resultCode == RESULT_OK && detail != null ){
-				uploader.finish_mush(detail.getStringExtra("url"));
+				MushroomHelper.finish_mush(env,true,detail.getStringExtra("url"));
 			}
 			break;
 		case REQ_PREF:
@@ -90,7 +92,7 @@ public class ActMultiple extends BaseActivity{
 					log.e("cannot get capture uri");
 				}else{
 					log.d("capture uri = %s", uri);
-					add_item(uploader.uri_to_path(uri));
+					add_item(MushroomHelper.uri_to_path(env,uri));
 				}
 			}
 			break;
@@ -103,7 +105,7 @@ public class ActMultiple extends BaseActivity{
 	final ActMultiple act = this;
 	Button btnUpload;
 	UploadTargetManager upload_target_manager;
-	Uploader uploader;
+	UploaderUI uploader;
 	ListView listview;
 	UploadItemAdapter upload_list_adapter;
 	
@@ -135,6 +137,7 @@ public class ActMultiple extends BaseActivity{
 									break;
 								case 1:
 									upload_list_adapter.remove(idx);
+									updateUploadButtonStatus();
 									break;
 								}
 							}
@@ -146,7 +149,7 @@ public class ActMultiple extends BaseActivity{
 		
 		btnUpload = (Button)findViewById(R.id.btnUpload);
 
-		uploader = new Uploader(env,uploader_callback);
+		uploader = new UploaderUI(env,uploader_callback);
 
 		upload_target_manager = new UploadTargetManager(env);
 
@@ -155,7 +158,7 @@ public class ActMultiple extends BaseActivity{
 		findViewById(R.id.btnCancel).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				uploader.finish_mush("");
+				MushroomHelper.finish_mush(env,false,"");
 			}
 		});
 
@@ -229,7 +232,7 @@ public class ActMultiple extends BaseActivity{
 				try{
 					ArrayList<UploadItem> tmp = new ArrayList<UploadItem>();
 					for( Parcelable p : intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM) ){
-						String path = uploader.uri_to_path((Uri) p);
+						String path = MushroomHelper.uri_to_path(env,(Uri) p);
 						if( path != null ) tmp.add(new UploadItem(env,path));
 					}
 					upload_list_adapter.replace(tmp);
@@ -238,10 +241,12 @@ public class ActMultiple extends BaseActivity{
 				}
 			}
 		}
+		updateUploadButtonStatus();
 	}
 	
 	private void add_item(String path) {
 		if( path != null ) upload_list_adapter.add(new UploadItem(env,path));
+		updateUploadButtonStatus();
 	}
 
 	private void replace_path(int idx, String path) {
@@ -262,7 +267,7 @@ public class ActMultiple extends BaseActivity{
 			env.show_toast(true,R.string.picker_missing);
 		}
 		log.d("open_file_picker :finish");
-		uploader.finish_mush("");
+		MushroomHelper.finish_mush(env,false,"");
 	}
 	
 
@@ -323,72 +328,43 @@ public class ActMultiple extends BaseActivity{
 			)
 		);
 	}
-
-	boolean upload_cancelled = false;
-	StringBuilder sb_image_url;
-	int upload_next = 0;
-	int upload_complete = 0;
 	
-	Uploader.Callback uploader_callback = new Uploader.Callback() {
+	void updateUploadButtonStatus() {
+		boolean b = ( upload_list_adapter.getCount() > 0 && !uploader.isBusy());
+		btnUpload.setEnabled(b);
 		
-		@Override public void onCancelled() {
-			upload_cancelled = true;
-			env.show_toast(false,R.string.cancel_notice);
-		}
+	}
 
+	UploaderUI.Callback uploader_callback = new UploaderUI.Callback() {
 		@Override public void onStatusChanged(boolean bBusy) {
-			if(!bBusy) upload_next();
+			updateUploadButtonStatus();
 		}
 
-		@Override public void onComplete(String image_url, String page_url) {
-			int t = Integer.parseInt(env.pref().getString(PrefKey.KEY_URL_MODE,"0"));
-			if( sb_image_url.length() > 0 ) sb_image_url.append("\n");
-			switch(t){
-			default:
-			case 0: sb_image_url.append(uploader.trim_output_url(image_url)); break;
-			case 1: sb_image_url.append(uploader.trim_output_url(page_url));break;
+		@Override
+		public void onAbort(String error_message) {
+			env.show_toast(false,error_message);
+		}
+		@Override
+		public void onTextOutput(String text_output) {
+			if( text_output.length() > 0 ){
+				ClipboardHelper.clipboard_copy(env,text_output,env.getString(R.string.output_to_clipboard));
 			}
-			++upload_complete;
+			finish();
 		}
 	};
 	
 	// アップロードを開始する
 	void upload_start(){
-		if(isFinishing()) return;
-
-		// 画像が選択されていない
-		if( upload_list_adapter.getCount() <= 0 ) return;
-
-		btnUpload.setEnabled(false);
-		upload_cancelled = false;
-		sb_image_url = new StringBuilder();
-		upload_next = 0;
-		upload_complete = 0;
-		
-		upload_next();
-	}
-	void upload_next(){
-		if( upload_next != upload_complete ){
-			upload_cancelled = true;
-		}
-		UploadItem item = (UploadItem)upload_list_adapter.getItem(upload_next);
-		if( item == null || upload_cancelled ){
-			if( sb_image_url.length() > 0 ){
-				ClipboardHelper.clipboard_copy(env,sb_image_url.toString(),act.getString(R.string.output_to_clipboard));
-			}
-			btnUpload.setEnabled(true);
-			if(!upload_cancelled) finish();
-			return;
-		}
+		// アップロードするアカウントとアルバム
 		ImgurAlbum album = upload_target_manager.getSelectedAlbum();
 		ImgurAccount account = upload_target_manager.getSelectedAccount();
-		log.d("upload to account=%s,album_id=%s",(account==null?"OFF":"ON"),(album==null?"OFF":"ON"));
-		++upload_next;
-		uploader.image_upload(
-			account
-			,(album==null?null : album.album_id)
-			,item.file.getAbsolutePath()
-			,act.getString(R.string.upload_multi_title,upload_next,upload_list_adapter.getCount() )
-		);
+		// アップロードジョブを登録してアップロード開始
+		UploadJob job = new UploadJob(account, album);
+		for(int i=0,ie=upload_list_adapter.getCount();i<ie;++i){
+			UploadItem item = (UploadItem)upload_list_adapter.getItem(i);
+			if(item!=null) job.addFile(item.file.getAbsolutePath());
+		}
+		if( job.file_list.size() == 0 ) return;
+		uploader.upload(job);
 	}
 }

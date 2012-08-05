@@ -17,7 +17,7 @@ import android.content.SharedPreferences;
 
 public class UploadJob {
 	public final AtomicBoolean cancel_request =new AtomicBoolean(false); // キャンセル要求が出た
-	public final AtomicBoolean aborted =new AtomicBoolean(false); // 中止された
+	private final AtomicBoolean aborted =new AtomicBoolean(false); // 中止された
 	public final AtomicBoolean completed =new AtomicBoolean(false); // 処理完了
 	
 	// 進捗表示用
@@ -27,11 +27,11 @@ public class UploadJob {
 	public final AtomicInteger progress_max = new AtomicInteger(0);
 
 	// 処理結果
-	private StringBuffer text_output = new StringBuffer();
 	private StringBuffer error_message = new StringBuffer();
 
 	//
 	public int job_id = -1;
+	public int task_id = -1;
 	public long create_time = System.currentTimeMillis();
 	public String account_name;
 	public String account_token;
@@ -43,31 +43,50 @@ public class UploadJob {
 		public String src_path;
 		public final AtomicReference<String> error_message = new AtomicReference<String>();
 		public final AtomicReference<String> text_output = new AtomicReference<String>();
+		
+		public synchronized void setTextOutput(SharedPreferences pref, String image_url, String page_url) {
+			int t = Integer.parseInt(pref.getString(PrefKey.KEY_URL_MODE,"0"));
+			switch(t){
+			default:
+			case 0: text_output.set(trim_output_url(pref,image_url)); break;
+			case 1: text_output.set(trim_output_url(pref,page_url));break;
+			}
+		}
 	}
+	
+	public boolean isAborted(){ return aborted.get(); }
 
 	public synchronized String getErrorMessage() {
 		return error_message.toString();
 	}
 	
 	public synchronized void append_error_message(String msg) {
+		//
+		aborted.set(true);
+		//
 		if( error_message.length() > 0 ) error_message.append("\n");
 		error_message.append(msg);
 	}
 	
 
 	public synchronized String getTextOutput() {
-		return text_output.toString();
+		StringBuilder sb = new StringBuilder();
+		boolean bMultiple = (file_list.size() >=2 );
+		for( UploadUnit file : file_list ){
+			if( file.error_message.get() != null ) continue;
+			String s = file.text_output.get();
+			if( s==null ) continue;
+			if( bMultiple ){
+				sb.append( s.trim() );
+				sb.append("\n");
+			}else{
+				sb.append( s );
+			}
+		}
+		return sb.toString();
 	}
 
-	public synchronized void append_text_output(SharedPreferences pref, String image_url, String page_url) {
-		if( text_output.length() > 0 ) text_output.append("\n");
-		int t = Integer.parseInt(pref.getString(PrefKey.KEY_URL_MODE,"0"));
-		switch(t){
-		default:
-		case 0: text_output.append(trim_output_url(pref,image_url)); break;
-		case 1: text_output.append(trim_output_url(pref,page_url));break;
-		}
-	}
+
 
 	public static String trim_output_url(SharedPreferences pref,String text){
 		PrefKey.upgrade_config(pref);
@@ -84,6 +103,7 @@ public class UploadJob {
 	static final String KEY_TEXT_OUTPUT="text_output";
 	static final String KEY_ERROR_MESSAGE="error_message";
 	static final String KEY_JOB_ID="job_id";
+	static final String KEY_TASK_ID="task_id";
 	static final String KEY_ACCOUNT_NAME="account_name";
 	static final String KEY_ACCOUNT_TOKEN="account_token";
 	static final String KEY_ACOUNT_SECRET="account_secret";
@@ -103,10 +123,10 @@ public class UploadJob {
 		dst.put(KEY_PROGRESS_VAR,progress_var.get());
 		dst.put(KEY_PROGRESS_MAX,progress_max.get());
 
-		dst.put(KEY_TEXT_OUTPUT,text_output.toString());
 		dst.put(KEY_ERROR_MESSAGE,error_message.toString());
 
 		dst.put(KEY_JOB_ID,job_id);
+		dst.put(KEY_TASK_ID,task_id);
 		dst.put(KEY_CREATE_TIME,create_time);
 		dst.put(KEY_ACCOUNT_NAME,account_name);
 		dst.put(KEY_ACCOUNT_TOKEN,account_token);
@@ -136,10 +156,10 @@ public class UploadJob {
 		progress_max.set(src.optInt(KEY_PROGRESS_MAX,progress_max.get()));
 		
 		
-		text_output = new StringBuffer(src.optString(KEY_TEXT_OUTPUT,""));
 		error_message = new StringBuffer(src.optString(KEY_ERROR_MESSAGE,""));
 
-		job_id = src.optInt(KEY_JOB_ID,-job_id);
+		job_id = src.optInt(KEY_JOB_ID,job_id);
+		task_id = src.optInt(KEY_TASK_ID,task_id);
 		create_time = src.optLong(KEY_CREATE_TIME,create_time);
 		account_name =src.optString(KEY_ACCOUNT_NAME,account_name);
 		account_token =src.optString(KEY_ACCOUNT_TOKEN,account_token);
@@ -169,5 +189,11 @@ public class UploadJob {
 		if(album != null ){
 			this.album_id = album.album_id;
 		}
+	}
+
+	public void addFile(String file_path) {
+		UploadUnit item = new UploadUnit();
+		item.src_path = file_path;
+		this.file_list.add(item);
 	}
 }

@@ -28,7 +28,6 @@
 <string name="auto_rotate_title">auto rotate</string>
 <string name="cancel">cancel</string>
 <string name="cancelled">operation was cancelled</string>
-<string name="cancel_notice">cancelled..</string>
 <string name="capture">capture</string>
 <string name="capture_missing">missing app to capture image</string>
 <string name="close">close</string>
@@ -70,6 +69,7 @@
 <string name="oauth_error_server_unavailable">Imgur API server is unavailable</string>
 <string name="oauth_start">restart oAuth</string>
 <string name="ok">OK</string>
+<string name="other_task_detected">upload function is currently used by other task. Do you want to stop it and start new upload task?</string>
 <string name="output_style_settings">URL settings</string>
 <string name="output_style_summary">type of output URL</string>
 <string name="output_style_title">output type</string>
@@ -119,8 +119,11 @@
 <string name="upload_autostart_summary">if checked, automatically start upload after image is selected.</string>
 <string name="upload_autostart_title">auto start upload</string>
 <string name="upload_cancelled">upload was cancelled.</string>
+<string name="upload_cancel_by_other_task">upload was cancelled by other task.</string>
 <string name="upload_multi_title">bulk upload\n(file %1$s/%2$s)</string>
 <string name="upload_network_waiting">ネットワーク接続の状態を確認しています…</string>
+<string name="upload_notification_message">uploading&#8230;</string>
+<string name="upload_notification_ticker">upload start.</string>
 <string name="upload_pending_message">other upload task is running. please wait.\nif this message is shown very long duration, please try &#8220;clear upload task&#8221; in setting. </string>
 <string name="upload_pending_title">prepare&#8230;</string>
 <string name="upload_progress">uploading&#8230;</string>

@@ -22,6 +22,14 @@ public class HelperEnvUI extends HelperEnv{
 		dialog_manager = new DialogManager(act);
 	}
 
+	public final boolean isFinishing() {
+		return act.isFinishing();
+	}
+	
+	public final View findViewById(int id){
+		return act.findViewById(id);
+	}
+	
 	public final void finish_with_message(final String msg){
 		if( !isUIThread() ){
 			handler.post(new Runnable() {
@@ -52,11 +60,21 @@ public class HelperEnvUI extends HelperEnv{
 		}
 	}
 
-	public final boolean isFinishing() {
-		return act.isFinishing();
-	}
-	
-	public final View findViewById(int id){
-		return act.findViewById(id);
+	public void confirm(String title,String message,final Runnable proc_ok,final Runnable proc_cancel){
+		AlertDialog.Builder b = new AlertDialog.Builder(context)
+		.setCancelable(true)
+		.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
+			@Override public void onClick(DialogInterface dialog, int which) {
+				if(proc_cancel!=null) proc_cancel.run();
+			}
+		})
+		.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
+			@Override public void onClick(DialogInterface dialog, int which) {
+				if(proc_ok!=null) proc_ok.run();
+			}
+		});
+		if(title != null ) b.setTitle(title);
+		if(message != null)b.setMessage(message);
+		dialog_manager.show_dialog(b);
 	}
 }

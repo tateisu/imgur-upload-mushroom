@@ -77,8 +77,8 @@ public class APIResult {
 	public APIResult(String err) {
 		setErrorExtra(err);
 	}
-	public APIResult(Throwable ex) {
-		setErrorExtra(APIResult.format_ex(ex));
+	public APIResult(HelperEnv env,Throwable ex) {
+		setErrorExtra(env.format_ex(ex));
 		try{
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
@@ -113,7 +113,7 @@ public class APIResult {
 
 	// レスポンスの内容を確認して、可能ならjsonデコードする。Imgur独特のエラーに多少は対応する。
 	// リトライ不要ならtrue、リトライ必要ならfalseを返す
-	boolean parse_json(HelperEnv eh,String account_name){
+	boolean parse_json(HelperEnv env,String account_name){
 		// ヘッダ中の Rate-Limit をアカウント別に保存する
 		if( account_name != null && http_headers != null ){
 			String limit = null;
@@ -146,7 +146,7 @@ public class APIResult {
 					entry.put("reset",reset);
 					entry.put("when",System.currentTimeMillis());
 					//
-					SharedPreferences pref = eh.pref();
+					SharedPreferences pref = env.pref();
 					String old_v = pref.getString(PrefKey.KEY_RATE_LIMIT_MAP,null);
 					JSONObject map = (old_v != null ? new JSONObject(old_v) : new JSONObject() );
 					map.put(account_name,entry);
@@ -180,7 +180,7 @@ public class APIResult {
 			try{
 				content_utf8 = TextUtil.decodeUTF8(content_bytes);
 			}catch(Throwable ex){
-				error_parse = format_ex(ex);
+				error_parse = env.format_ex(ex);
 				ex.printStackTrace();
 				return true;
 			}
@@ -416,10 +416,6 @@ public class APIResult {
 		}
 	}
 
-	public static final String format_ex(Throwable ex){
-		return ex.getClass().getSimpleName() +": "+ex.getMessage();
-	}
-	
 	static final boolean byte_match(byte[] src,int src_length,int src_offset,byte[] key,int key_length){
 		if( src_length - src_offset < key_length ) return false;
 		for(int i=0;i<key_length;++i){

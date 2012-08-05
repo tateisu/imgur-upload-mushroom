@@ -28,7 +28,6 @@
 <string name="auto_rotate_title">回転の自動化</string>
 <string name="cancel">キャンセル</string>
 <string name="cancelled">操作をキャンセルしました</string>
-<string name="cancel_notice">キャンセルします…</string>
 <string name="capture">撮影</string>
 <string name="capture_missing">画像キャプチャに使えるアプリがありません</string>
 <string name="close">閉じる</string>
@@ -71,6 +70,7 @@
 <string name="oauth_error_server_unavailable">Imgurのサーバが不調なようです</string>
 <string name="oauth_start">OAuth認証をやり直す</string>
 <string name="ok">OK</string>
+<string name="other_task_detected">アップロード機能は他のタスクが使用中です。それを中止して新しくアップロードを行いますか?</string>
 <string name="output_style_settings">テキスト出力の設定</string>
 <string name="output_style_summary">出力するURLの種別を、画像直リンかImgurの画像詳細ページから選べます</string>
 <string name="output_style_title">出力するURLの種別</string>
@@ -120,8 +120,11 @@
 <string name="upload_autostart_summary">有効にすると、画像選択や加工が終わったらすぐにImgurへの送信を行います</string>
 <string name="upload_autostart_title">アップロードを自動開始</string>
 <string name="upload_cancelled">アップロードを中止しました</string>
+<string name="upload_cancel_by_other_task">他のタスクによりアップロードは中止されました</string>
 <string name="upload_multi_title">一括アップロード\n(ファイル  %1$s/%2$s)</string>
 <string name="upload_network_waiting">ネットワーク接続の状態を確認しています…</string>
+<string name="upload_notification_message">アップロード中</string>
+<string name="upload_notification_ticker">アップロード開始</string>
 <string name="upload_pending_message">他のアップロードタスクが動作中のためアップロードを開始できません。もしこの状態が異常に長く続く場合は、設定画面で「アップロードタスクのクリア」を実行してください。</string>
 <string name="upload_pending_title">準備中…</string>
 <string name="upload_progress">アップロード中です…</string>

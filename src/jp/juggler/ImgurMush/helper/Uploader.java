@@ -1,8 +1,6 @@
 package jp.juggler.ImgurMush.helper;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,20 +24,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.DialogInterface.OnCancelListener;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.provider.MediaStore;
 
 public class Uploader {
 	static final LogCategory log = new LogCategory("Uploader");
@@ -327,99 +319,52 @@ public class Uploader {
 
 	//////////////////////////////////////////////////////////////////
 
-	public static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
-	static final int tmp_size = 1024;
-	static final byte[] write_tmp = new byte[tmp_size];
-	static int write_tmp_p =0;
-	static final void write_tmp_byte(FileOutputStream out,byte b) throws IOException{
-		if( write_tmp_p >= write_tmp.length ){
-			out.write(write_tmp);
-			write_tmp_p =0;
-		}
-		write_tmp[write_tmp_p++] = b;
-	}
-	static void write_escape(FileOutputStream out,byte[] data) throws IOException{
-		if(data==null || data.length==0) return;
-		for(int i=0,ie=data.length;i<ie;++i){
-			byte c = data[i];
-			if( c == (byte)'&' ){
-				write_tmp_byte(out,(byte)'%');
-				write_tmp_byte(out,(byte)'2');
-				write_tmp_byte(out,(byte)'6');
-				continue;
-			}
-			if( c == (byte)'=' ){
-				write_tmp_byte(out,(byte)'%');
-				write_tmp_byte(out,(byte)'3');
-				write_tmp_byte(out,(byte)'d');
-				continue;
-			}
-			if( c == (byte)'+' ){
-				write_tmp_byte(out,(byte)'%');
-				write_tmp_byte(out,(byte)'2');
-				write_tmp_byte(out,(byte)'b');
-				continue;
-			}
-			if( c == (byte)'%' ){
-				write_tmp_byte(out,(byte)'%');
-				write_tmp_byte(out,(byte)'2');
-				write_tmp_byte(out,(byte)'5');
-				continue;
-			}
-			write_tmp_byte(out,c);
-		}
-		if( write_tmp_p > 0 ){
-			out.write(write_tmp,0,write_tmp_p);
-			write_tmp_p = 0;
-		}
-	}
-
-	public String uri_to_path(Uri uri){
-		if(uri==null) return null;
-		if(uri.getScheme().equals("content") ){
-			Cursor c = env.cr.query(uri, new String[]{MediaStore.Images.Media.DATA }, null, null, null);
-			if( c !=null ){
-				try{
-					if(c.moveToNext() ) return c.getString(0);
-				}finally{
-					c.close();
-				}
-			}
-		}else if(uri.getScheme().equals("file") ){
-			return uri.getPath();
-		}
-		log.d("cannot convert uri to path. %s",uri.toString());
-		env.show_toast(true,R.string.uri_parse_error,uri.toString());
-		return null;
-	}
-	
-	public String trim_output_url(String text){
-		SharedPreferences pref = env.pref();
-		PrefKey.upgrade_config(pref);
-		return pref.getString(PrefKey.KEY_URL_PREFIX,"")+text+pref.getString(PrefKey.KEY_URL_SUFFIX,"");
-	}
-	
-	public void finish_mush(String text){
-		log.d("finish_mush text=%s",text);
-		
-		if( text != null && text.length() > 0 ){
-			text = trim_output_url(text);
-		}
-		if( is_mushroom() ){
-			Intent intent = new Intent();
-			intent.putExtra("replace_key", text);
-			env.act.setResult(Activity.RESULT_OK, intent);
-		}else if(text !=null && text.length() > 0 ){
-			ClipboardHelper.clipboard_copy(env,text,env.getString(R.string.output_to_clipboard));
-		}
-		env.act.finish();
-	}
-
-	boolean is_mushroom(){
-		Intent intent = env.act.getIntent();
-		return ( intent != null && "com.adamrocker.android.simeji.ACTION_INTERCEPT".equals(intent.getAction()) );
-	}
-
+//	public static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
+//	static final int tmp_size = 1024;
+//	static final byte[] write_tmp = new byte[tmp_size];
+//	static int write_tmp_p =0;
+//	static final void write_tmp_byte(FileOutputStream out,byte b) throws IOException{
+//		if( write_tmp_p >= write_tmp.length ){
+//			out.write(write_tmp);
+//			write_tmp_p =0;
+//		}
+//		write_tmp[write_tmp_p++] = b;
+//	}
+//	static void write_escape(FileOutputStream out,byte[] data) throws IOException{
+//		if(data==null || data.length==0) return;
+//		for(int i=0,ie=data.length;i<ie;++i){
+//			byte c = data[i];
+//			if( c == (byte)'&' ){
+//				write_tmp_byte(out,(byte)'%');
+//				write_tmp_byte(out,(byte)'2');
+//				write_tmp_byte(out,(byte)'6');
+//				continue;
+//			}
+//			if( c == (byte)'=' ){
+//				write_tmp_byte(out,(byte)'%');
+//				write_tmp_byte(out,(byte)'3');
+//				write_tmp_byte(out,(byte)'d');
+//				continue;
+//			}
+//			if( c == (byte)'+' ){
+//				write_tmp_byte(out,(byte)'%');
+//				write_tmp_byte(out,(byte)'2');
+//				write_tmp_byte(out,(byte)'b');
+//				continue;
+//			}
+//			if( c == (byte)'%' ){
+//				write_tmp_byte(out,(byte)'%');
+//				write_tmp_byte(out,(byte)'2');
+//				write_tmp_byte(out,(byte)'5');
+//				continue;
+//			}
+//			write_tmp_byte(out,c);
+//		}
+//		if( write_tmp_p > 0 ){
+//			out.write(write_tmp,0,write_tmp_p);
+//			write_tmp_p = 0;
+//		}
+//	}
 
 
 }

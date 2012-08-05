@@ -2,6 +2,7 @@ package jp.juggler.ImgurMush.data;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.CancellationException;
@@ -23,12 +24,12 @@ public class SignedClient {
 	static final LogCategory log = new LogCategory("SignedClient");
 	static final boolean dump_request_header = false;
 
-	final HelperEnv eh;
+	final HelperEnv env;
 	public CommonsHttpOAuthConsumer consumer;
 	public CancelChecker cancel_checker = null;
 	
-	public SignedClient(HelperEnv eh){
-		this.eh = eh;
+	public SignedClient(HelperEnv env){
+		this.env = env;
 	}
 	public void prepareConsumer(ImgurAccount account,String ck,String cs){
 		consumer = new CommonsHttpOAuthConsumer(ck,cs);
@@ -80,19 +81,39 @@ public class SignedClient {
 				}finally{
 					in.close();
 				}
-			}catch(CancellationException ex){
-				result.setErrorHTTP(cancel_message);
-				break;
-			}catch(SocketTimeoutException ex){
-				result.setErrorHTTP(eh.getString(R.string.net_error_timeout,ex.getMessage()));
-				continue;
-			}catch(UnknownHostException ex){
-				result.setErrorHTTP(eh.getString(R.string.net_error_resolver,ex.getMessage()));
-				continue;
 			}catch(Throwable ex){
-				ex.printStackTrace();
-				result.setErrorHTTP(APIResult.format_ex(ex));
-				continue;
+				// １行エラーメッセージ
+				String msg;
+				if( ex instanceof SocketTimeoutException ){
+					msg = env.getString(R.string.net_error_timeout,ex.getMessage());
+				}else if( ex instanceof UnknownHostException ){
+					msg = env.getString(R.string.net_error_resolver,ex.getMessage());
+				}else if( ex instanceof CancellationException ){
+					msg = env.getString(R.string.cancelled,ex.getMessage());
+				}else{
+					msg = env.format_ex(ex);
+				}
+				log.d("HTTP request error: %s",msg);
+				result.setErrorHTTP(msg);
+
+				// スタックトレース
+				if( ex instanceof SocketException
+				||  ex instanceof SocketTimeoutException
+				||  ex instanceof UnknownHostException
+				||  ex instanceof CancellationException
+				){
+					// 頻出するエラーはスタックトレースなし
+				}else{
+					ex.printStackTrace();
+				}
+
+				// リトライの有無
+				if( ex instanceof CancellationException ){
+					// キャンセルされたらリトライなし
+					break;
+				}else{
+					continue;
+				}
 			}
 		}
 		return false;
@@ -104,14 +125,14 @@ public class SignedClient {
 			try{
 				HttpGet request = new HttpGet( url );
 				send_request(result,request,cancel_message);
-				if( result.parse_json(eh,account_name) ){
+				if( result.parse_json(env,account_name) ){
 					break;
 				}else{
 					continue;
 				}
 			}catch(Throwable ex){
 				ex.printStackTrace();
-				result.setErrorExtra(APIResult.format_ex(ex));
+				result.setErrorExtra(env.format_ex(ex));
 				break;
 			}
 		}
@@ -127,14 +148,14 @@ public class SignedClient {
 				HttpGet request = new HttpGet( url );
 				consumer.sign(request);
 				send_request(result,request,cancel_message);
-				if( result.parse_json(eh,account_name) ){
+				if( result.parse_json(env,account_name) ){
 					break;
 				}else{
 					continue;
 				}
 			}catch(Throwable ex){
 				ex.printStackTrace();
-				result.setErrorExtra(APIResult.format_ex(ex));
+				result.setErrorExtra(env.format_ex(ex));
 				break;
 			}
 		}
@@ -148,14 +169,14 @@ public class SignedClient {
 		for( int nTry =0; nTry < 10; ++nTry ){
 			try{
 				send_request(result,request,cancel_message);
-				if( result.parse_json(eh,account_name) ){
+				if( result.parse_json(env,account_name) ){
 					break;
 				}else{
 					continue;
 				}
 			}catch(Throwable ex){
 				ex.printStackTrace();
-				result.setErrorExtra(APIResult.format_ex(ex));
+				result.setErrorExtra(env.format_ex(ex));
 				break;
 			}
 		}

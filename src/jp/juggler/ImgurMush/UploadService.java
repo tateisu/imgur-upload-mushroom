@@ -30,17 +30,19 @@
 		異常な量の画像をアップロード開始
 		ホームキーを押して再度画像選択アプリを開く。
 		この時画像選択アプリのスタックがどうなるかは外部依存。
-		画層選択アプリ / Imgurマッシュ / 画層選択アプリ / Imgurマッシュ / 
+		画層選択アプリ / Imgurマッシュ / 画層選択アプリ / Imgurマッシュ /
 		という深いネストになる可能性がある
-
-		複数のアップロードジョブを処理することは可能だが、完了したジョブをいつ破棄してよいか。
-		A: ユーザへの結果通知が終わった後。
-		B: なんらかのexpire。 完了/中断/キャンセル状態で一週間以上経過とか。
-		C: 設定画面で「アップロードサービスの中断」
+		また、マルチタスクなので別のタスクからImgurマッシュを開く場合もある。
+		- タスクA 画層選択アプリ / Imgurマッシュ
+		- タスクB ファイル選択アプリ  / Imgurマッシュ
+		- タスクC Imgurマッシュ
 		
-		よくあるケースでもないと思うし、Cを用意しておけば完了したジョブは勝手にexpireしてくれるだろう。
-		
-		TODO 設定画面で「アップロードタスクをクリア」
+		で、内部的には複数のアップロードジョブを処理することは可能だが、
+		完了したジョブをいつ破棄してよいかが曖昧になる。
+		そこで他のタスクでアップロードが処理中の場合にはダイアログを出して
+		前のタスクを中断するか、自分がアップロードを諦めるか選べるようにした。
+		前のタスクを中断するとそこでアップロードジョブはキャンセルされて中止されて破棄される
+		中断時点でのジョブ要素への参照は残るが、サービス側が管理しているリストからは除かれる
 		
 	ユースケース4 キャンセルしてダイアログを閉じた後
 		ダイアログをキャンセル
@@ -80,6 +82,7 @@ import jp.juggler.util.LogCategory;
 import jp.juggler.util.WorkerBase;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -88,6 +91,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.SparseArray;
@@ -101,6 +105,8 @@ public class UploadService extends Service{
 
 		env = new HelperEnv(this);
 
+		initCompatibleMethod();
+		
 		PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
 		wake_lock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"imgur uploader");
 		
@@ -138,16 +144,24 @@ public class UploadService extends Service{
 		lock_disable.run();
 	}
 
-
 	@Override
 	public IBinder onBind(Intent intent) {
 		log.d("onBind");
 		assert_ui_thread();
+		bind_flag = true; // 1つでもクライアントがbindしたらtrue
 		return binder_instance;
 	}
 
-	//////////////////////////////////////
+	@Override
+	public boolean onUnbind(Intent intent) {
+		log.d("onUnbind");
+		//	全てのクライアントがunbindした
+		bind_flag = false;
+		checkExit();
+		return false;
+	}
 
+	//////////////////////////////////////
 
 	private NotificationManager mNM;
 	private Method mSetForeground;
@@ -160,13 +174,13 @@ public class UploadService extends Service{
 			mStartForeground = getClass().getMethod("startForeground",int.class,Notification.class);
 			mStopForeground = getClass().getMethod("stopForeground",boolean.class);
 		}catch(Throwable ex){
-	        mStartForeground = mStopForeground = null;
-		    try {
-		        mSetForeground = getClass().getMethod("setForeground",boolean.class);
-		    } catch (Throwable ex2){
-		    	ex.printStackTrace();
-		    	ex2.printStackTrace();
-		    }
+			mStartForeground = mStopForeground = null;
+			try {
+				mSetForeground = getClass().getMethod("setForeground",boolean.class);
+			} catch (Throwable ex2){
+				ex.printStackTrace();
+				ex2.printStackTrace();
+			}
 		}
 	}
 
@@ -185,12 +199,12 @@ public class UploadService extends Service{
 
 	void stopForegroundCompat(int id) {
 		try{
-		    if (mStopForeground != null) {
-		    	mStopForeground.invoke(this,true);
-		    }else{
-		    	mNM.cancel(id);
-		    	mSetForeground.invoke(this,false);
-		    }
+			if (mStopForeground != null) {
+				mStopForeground.invoke(this,true);
+			}else{
+				mNM.cancel(id);
+				mSetForeground.invoke(this,false);
+			}
 		}catch(Throwable ex){
 			ex.printStackTrace();
 		}
@@ -233,9 +247,19 @@ public class UploadService extends Service{
 	
 	static final int notification_id = 1;
 	boolean is_foreground = false;
+	boolean bind_flag = false;
+	
+	void checkExit(){
+		log.d("bind=%s,foreground=%s",bind_flag,is_foreground);
+		if(!bind_flag && !is_foreground ){
+			log.d("not bind,not foreground, stop self...");
+			stopSelf();
+		}
+	}
 	
 	Runnable lock_enable = new Runnable() {
 		
+		@SuppressWarnings("deprecation")
 		@Override
 		public void run() {
 			//
@@ -259,9 +283,13 @@ public class UploadService extends Service{
 			//
 			if( !is_foreground){
 				is_foreground = true;
-				Notification notification = new Notification();
+				PendingIntent pi = PendingIntent.getService(env.context,0,new Intent(env.context,UploadService.class),0);
+				Notification notification = new Notification(R.drawable.icon,env.getString(R.string.upload_notification_ticker),System.currentTimeMillis());
+				notification.setLatestEventInfo(env.context,env.getString(R.string.app_name),env.getString(R.string.upload_notification_message),pi);
 				notification.flags |= Notification.FLAG_ONGOING_EVENT;
-				notification.when = System.currentTimeMillis();
+				if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ){
+					notification.icon = R.drawable.icon_status_v4;
+				}
 				startForegroundCompat(notification_id,notification);
 			}
 			//
@@ -316,13 +344,17 @@ public class UploadService extends Service{
 	public int addJob(UploadJob job) {
 		log.d("addJob");
 		assert_ui_thread();
+
+		// フォアグラウンド化
+		lock_enable.run();
 		
 		// ジョブの進捗表示を初期化
 		job.progress_title.set(env.getString(R.string.upload_pending_title));
 		job.progress_message.set(env.getString(R.string.upload_pending_message));
-		job.progress_var.set(-1);
-		job.progress_max.set(0);
+		job.progress_var.set(0);
+		job.progress_max.set(1);
 		
+		log.d("job add: account=%s,album_id=%s",(job.account_name==null?"OFF":"ON"),(job.album_id==null?"OFF":"ON"));
 		
 		// リストにジョブを追加
 		synchronized(job_list){
@@ -332,6 +364,7 @@ public class UploadService extends Service{
 				break;
 			}
 			job_list.put(job.job_id,job);
+			joblist_save.run();
 		}
 		// アップロード開始
 		upload_thread.notifyEx();
@@ -348,24 +381,32 @@ public class UploadService extends Service{
 
 		if( job == null ) return;
 		job.cancel_request.set(true);
+		synchronized (job_list) {
+			if( attach_job_id != job.job_id ){
+				job.append_error_message( env.getString(R.string.upload_cancelled));
+			}
+			joblist_save.run();
+		}
 		upload_thread.notifyEx();
 	}
 
 	// ユーザへの結果通知が終わった際に呼ばれる。ジョブはもう参照されないので削除してよい。
-	public void expireJob(int job_id) {
-		log.d("expireJob");
+	public void expireJob(int job_id,String msg) {
+		log.d("expireJob id=%s,msg=%s",job_id,msg);
 		assert_ui_thread();
 		synchronized (job_list) {
+			UploadJob job = findJobById(job_id);
+			job.cancel_request.set(true);
+			if( msg != null ) job.append_error_message(msg);
 			job_list.delete(job_id);
+			joblist_save.run();
 		}
 		upload_thread.notifyEx();
 	}
 	
 	// ジョブの進捗情報を更新する
 	public UploadJob updateJobProgress(int job_id) {
-		log.d("updateJobProgress");
 		assert_ui_thread();
-
 		return findJobById(job_id);
 	}
 
@@ -384,26 +425,30 @@ public class UploadService extends Service{
 
 		@Override
 		public void run() {
+			log.d("uploader thread start.");
 			while(!bCancelled.get()){
 
 				UploadJob job = null;
-				
+				int job_count;
 				synchronized (job_list) {
-					for(int i=0,ie=job_list.size();i<ie;++i){
+					job_count = job_list.size();
+					for(int i=0;i<job_count;++i){
 						UploadJob it = job_list.valueAt(i);
-						if( it.completed.get() || it.aborted.get() ){
+						if( it.completed.get() || it.isAborted() ){
 							continue;
 						}else if( it.cancel_request.get() ){
 							// キャンセルされたがまだ中止されていないジョブは単に中止させる
-							job_abort(it,env.getString(R.string.upload_cancelled));
+							it.append_error_message(env.getString(R.string.upload_cancelled));
 							continue;
 						}else if(job == null){
 							job = it;
 						}
 					}
+					attach_job_id = (job==null ? -1 : job.job_id);
 				}
 				
 				if( job == null ){
+					log.d("no jobs to upload. sleep. // joblist size=%s",job_count);
 					env.handler.post(new Runnable() {
 						@Override public void run() {
 							lock_disable.run();
@@ -423,19 +468,27 @@ public class UploadService extends Service{
 				int complete_count=0;
 				int error_count =0;
 				for( UploadUnit it : job.file_list ){
-					if( it.error_message != null ){
+					if( it.error_message.get() != null ){
 						++ error_count;
-					}else if(it.text_output != null ){
+					}else if(it.text_output.get() != null ){
 						++ complete_count;
 					}else if( file == null ){
 						file = it;
 					}
 				}
 				if( file == null ){
+					log.d("job %s is completed.",job.job_id);
 					job.completed.set(true);
 					continue;
 				}
-				
+				log.d("upload job id=%s,count=%s // file complete=%s,error=%s,total=%s"
+					,job.job_id
+					,job_count
+					,complete_count
+					,error_count
+					,file_count
+				);
+
 				String title = (file_count==1
 					? env.getString(R.string.upload)
 					: env.getString(R.string.upload_multi_title,(1+complete_count+error_count),file_count )
@@ -448,26 +501,27 @@ public class UploadService extends Service{
 						result = new APIResult(env.getString(R.string.upload_cancelled));
 					}
 					if( !result.isError() ){
+						log.d("4");
 						try{
 							// resultをみてitemの状態を更新
 							if( result.content_json.has("upload") ){
 								JSONObject links=result.content_json.getJSONObject("upload").getJSONObject("links");
 								save_history(links,job.account_name,job.album_id );
-								job.append_text_output(env.pref(),links.getString("original") , links.getString("imgur_page") );
+								file.setTextOutput(env.pref(),links.getString("original") , links.getString("imgur_page") );
 							}else if( result.content_json.has("images") ){
 								JSONObject links=result.content_json.getJSONObject("images").getJSONObject("links");
 								save_history(links,job.account_name,job.album_id );
-								job.append_text_output(env.pref(),links.getString("original") , links.getString("imgur_page") );
+								file.setTextOutput(env.pref(),links.getString("original") , links.getString("imgur_page") );
 							}
 						}catch (Throwable ex) {
-							result.setErrorExtra(APIResult.format_ex(ex));
+							result.setErrorExtra(env.format_ex(ex));
 						}
 					}
 					String errmsg = result.getError();
 					if( errmsg != null ){
 						++error_count;
 						file.error_message.set( errmsg );
-						job_abort(job,errmsg );
+						job.append_error_message( errmsg );
 					}else{
 						++complete_count;
 						if( complete_count >= file_count ){
@@ -476,44 +530,34 @@ public class UploadService extends Service{
 					}
 				}
 			}
+			log.d("uploader thread end.");
 		}
 		
-		void job_abort(UploadJob job, String file_error){
-			job.append_error_message( file_error );
-			job.aborted.set(true);
-		}
-			
-		private void save_history(JSONObject links, String account_name,String album_id) {
-			try{
-				ImgurHistory item = new ImgurHistory();
-				item.image = links.getString("original");
-				item.page = links.getString("imgur_page");
-				item.delete = links.getString("delete_page");
-				item.square = links.getString("small_square");
-				item.upload_time = System.currentTimeMillis();
-				item.account_name = (account_name==null ? null : account_name );
-				item.album_id = album_id;
-				item.save(env.cr);
-			}catch(Throwable ex){
-				env.report_ex(ex);
-			}
-		}
+
 
 		APIResult upload_one(final UploadJob job,final UploadUnit item,String title){
 			
 			job.progress_title.set(title);
-			job.progress_var.set(-1);
-			job.progress_max.set(0);
+			job.progress_var.set(0);
+			job.progress_max.set(1);
 
 			// 入力ファイルのアクセス権を確認
 			File infile = new File(item.src_path);
 			if( !infile.isFile() ||!infile.canRead() || infile.length() <= 0L ){
+				log.d("cannot access to src file");
 				return new APIResult(env.getString(R.string.file_access_error,item.src_path));
 			}
 			
 			final CancelChecker cancel_checker = new CancelChecker() {
 				@Override public boolean isCancelled() {
-					return ( bCancelled.get() || job.cancel_request.get() );
+					if( bCancelled.get() ){
+						log.d("thread was cancelled.");
+						return true;
+					}else if( job.cancel_request.get() ){
+						log.d("job was cancelled.");
+						return true;
+					}
+					return false;
 				}
 			};
 			//
@@ -549,10 +593,16 @@ public class UploadService extends Service{
 
 			job.progress_message.set(env.getString(R.string.upload_network_waiting));
 			while(!check_connection_state() ){
-				if( cancel_checker.isCancelled() ) return null;
+				if( cancel_checker.isCancelled() ){
+					log.d("cancelled at check connection state");
+					return null;
+				}
 				waitEx(111);
 			}
-			if( cancel_checker.isCancelled() ) return null;
+			if( cancel_checker.isCancelled() ){
+				log.d("cancelled at check connection state(2)");
+				return null;
+			}
 	
 			try{
 				// oAuthのPercentEscapeルールだと、Base64した方が小さい
@@ -576,7 +626,10 @@ public class UploadService extends Service{
 					ProgressHTTPEntity entity = new ProgressHTTPEntity(signer.createPostEntity(),progress_listener);
 					request.setEntity(entity);
 
-					if( !cancel_checker.isCancelled() ) return null;
+					if( cancel_checker.isCancelled() ){
+						log.d("cancelled at upload as nanasi(1)");
+						return null;
+					}
 					progress_busy.set(false);
 					result = client.json_send_request(request,cancel_message,PrefKey.RATELIMIT_ANONYMOUS );
 					result.save_error(env);
@@ -592,20 +645,29 @@ public class UploadService extends Service{
 					job.progress_message.set( env.getString(R.string.upload_progress_digest));
 					signer.sign_header(  request,signer.hmac_sha1(Config.CONSUMER_SECRET,job.account_secret,"POST",request.getURI().toString()));
 
-					if( cancel_checker.isCancelled() ) return null;
+					if( cancel_checker.isCancelled() ){
+						log.d("cancelled at upload as account user(1)");
+						return null;
+					}
 					job.progress_message.set( env.getString(R.string.upload_progress_sizecheck));
 					ProgressHTTPEntity entity = new ProgressHTTPEntity(signer.createPostEntity(),progress_listener);
 					request.setEntity(entity);
 
-					if( cancel_checker.isCancelled() ) return null;
+					if( cancel_checker.isCancelled() ){
+						log.d("cancelled at upload as account user(2)");
+						return null;
+					}
 					progress_busy.set(false);
 					result = client.json_send_request(request,cancel_message,job.account_name);
 					result.save_error(env);
 
 					// 画像をアルバムに追加する
 					if( ! result.isError() && job.album_id != null ){
-						if( cancel_checker.isCancelled() ) return null;
 						try{
+							if( cancel_checker.isCancelled() ){
+								log.d("cancelled at album post (1)");
+								return null;
+							}
 							JSONObject image = result.content_json.getJSONObject("images").getJSONObject("image");
 							request = new HttpPost("http://api.imgur.com/2/account/albums/"+ job.album_id +".json");
 							request.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -618,14 +680,19 @@ public class UploadService extends Service{
 							r2.save_error(env);
 							if( r2.isError() ) result = r2;
 						}catch(Throwable ex){
-							return new APIResult(ex);
+							log.d("error at album post");
+							return new APIResult(env,ex);
 						}
 					}
 				}
-				if( cancel_checker.isCancelled() ) return null;
+				if( cancel_checker.isCancelled() ){
+					log.d("cancelled at end of upload");
+					return null;
+				}
 				return result;
 			}catch(Throwable ex){
-				return new APIResult(ex);
+				log.d("error at upload");
+				return new APIResult(env,ex);
 			}
 		}
 	}
@@ -664,7 +731,7 @@ public class UploadService extends Service{
 	
 					// 中止or完了したジョブは一定期間でexpireする
 					if( now - job.create_time > job_expire
-					&& (job.aborted.get() || job.completed.get() ) 
+					&& (job.isAborted() || job.completed.get() )
 					){
 						continue;
 					}
@@ -676,4 +743,31 @@ public class UploadService extends Service{
 			ex.printStackTrace();
 		}
 	}
+	
+
+		
+	private void save_history(JSONObject links, String account_name,String album_id) {
+		try{
+			ImgurHistory item = new ImgurHistory();
+			item.image = links.getString("original");
+			item.page = links.getString("imgur_page");
+			item.delete = links.getString("delete_page");
+			item.square = links.getString("small_square");
+			item.upload_time = System.currentTimeMillis();
+			item.account_name = (account_name==null ? null : account_name );
+			item.album_id = album_id;
+			item.save(env.cr);
+		}catch(Throwable ex){
+			env.report_ex(ex);
+		}
+	}
+
+	public int getOtherTask( int ignore_task_id ){
+		synchronized(job_list){
+			if( job_list.size() > 0 ) return job_list.keyAt(0);
+			return -1;
+		}
+	}
+
+
 }
