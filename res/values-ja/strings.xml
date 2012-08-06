@@ -9,6 +9,7 @@
 <string name="account_anonymous">(名無し)</string>
 <string name="account_delete_title">アカウントの削除</string>
 <string name="account_info_querying">アカウント情報の取得中です&#8230;</string>
+<string name="account_not_selected">アカウントが選択されていません</string>
 <string name="account_settings">アカウントの設定(必須ではありません)</string>
 <string name="act_appinfo"		 >Imgur マッシュ/ このアプリについて</string>
 <string name="act_arrange"		 >Imgur マッシュ/ 画像の加工</string>
@@ -18,10 +19,21 @@
 <string name="act_oauth"		 >Imgur マッシュ/ アカウントの追加</string>
 <string name="act_pref"			 >Imgur マッシュ/ 設定</string>
 <string name="act_resize_preset" >Imgur マッシュ/ リサイズ指定</string>
+<string name="album_add">アルバムの作成</string>
 <string name="album_all">全アルバム</string>
+<string name="album_delete">アルバム %1$s を削除しています&#8230;</string>
+<string name="album_delete_confirm">アルバム %1$s を削除しますか?</string>
+<string name="album_description">説明</string>
+<string name="album_layout">レイアウト</string>
 <string name="album_loading">(読み込み中…)</string>
+<string name="album_loading_wait">アルバム一覧を再読み込み中です&#8230;</string>
 <string name="album_load_error">アルバム一覧の読み込みに失敗しました</string>
 <string name="album_not_select">(アルバムなし)</string>
+<string name="album_option_non_select">(アカウント設定に合わせる)</string>
+<string name="album_privacy">プライバシー</string>
+<string name="album_title">タイトル</string>
+<string name="album_title_empty">タイトルが入力されていません</string>
+<string name="album_title_invalid_char">タイトルに使用できない文字が含まれています</string>
 <string name="app_name"			 >Imgur マッシュ</string>
 <string name="autostart_settings">操作の省略</string>
 <string name="auto_rotate_summary">有効にすると、加工開始時に画像から回転情報を読んで自動で回転します。(Android 2.1以降)</string>
@@ -80,6 +92,7 @@
 <string name="picker_autostart_title">画像選択を自動開始</string>
 <string name="picker_missing">ファイル選択に使えるアプリがありません</string>
 <string name="please_wait">お待ちください…</string>
+<string name="plus">+</string>
 <string name="preview_disabled_summary">有効にすると、メモリを節約するためにプレビューを省略します</string>
 <string name="preview_disabled_title">プレビューしない</string>
 <string name="ratelimit_checkdate">最終確認時刻</string>
@@ -167,6 +180,18 @@
 	<item>サーバから削除</item>
 	<item>履歴だけ削除</item>
 	<item>その他…</item>
+</string-array>
+
+<string-array name="album_privacy_list">
+	<item>public</item>
+	<item>hidden</item>
+	<item>secret</item>
+</string-array>
+<string-array name="album_layout_list">
+	<item>blog</item>
+	<item>horizontal</item>
+	<item>vertical</item>
+	<item>grid</item>
 </string-array>
 
 </resources>

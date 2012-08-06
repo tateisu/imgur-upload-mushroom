@@ -22,6 +22,7 @@ import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ClipboardHelper;
 import jp.juggler.ImgurMush.helper.ImageTempDir;
+import jp.juggler.ImgurMush.helper.MenuDialog;
 import jp.juggler.ImgurMush.helper.MushroomHelper;
 import jp.juggler.ImgurMush.helper.UploadItem;
 import jp.juggler.ImgurMush.helper.UploadItemAdapter;
@@ -33,12 +34,6 @@ import jp.juggler.util.LogCategory;
 public class ActMultiple extends BaseActivity{
 	static final LogCategory log = new LogCategory("ActMultiple");
 	
-	static final int REQ_FILEPICKER = 2;
-	static final int REQ_HISTORY = 3;
-	static final int REQ_PREF = 4;
-	static final int REQ_ARRANGE= 5;
-	static final int REQ_APPINFO = 6;
-	static final int REQ_CAPTURE = 7;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,28 +58,28 @@ public class ActMultiple extends BaseActivity{
 	protected void onActivityResult(int requestCode, int resultCode, Intent detail) {
 		log.d("onActivityResult req=%s res=%sdetail=%s",requestCode,resultCode,detail);
 		switch(requestCode){
-		case REQ_FILEPICKER:
+		case MenuDialog.REQ_FILEPICKER:
 			if( resultCode == RESULT_OK && detail != null ){
 				add_item(MushroomHelper.uri_to_path(env,detail.getData()));
 			}
 			break;
-		case REQ_HISTORY:
+		case MenuDialog.REQ_HISTORY:
 			if( resultCode == RESULT_OK && detail != null ){
 				MushroomHelper.finish_mush(env,true,detail.getStringExtra("url"));
 			}
 			break;
-		case REQ_PREF:
+		case MenuDialog.REQ_PREF:
 			upload_target_manager.reload();
 			break;
-		case REQ_ARRANGE:
+		case MenuDialog.REQ_ARRANGE:
 			if( resultCode ==  RESULT_OK && detail != null){
 				String path = detail.getStringExtra(PrefKey.EXTRA_DST_PATH);
 				replace_path(last_edit_index,path);
 			}
 			break;
-		case REQ_APPINFO:
+		case MenuDialog.REQ_APPINFO:
 			break;
-		case REQ_CAPTURE:
+		case MenuDialog.REQ_CAPTURE:
 			if(resultCode == RESULT_OK ){
 				Uri uri = (detail==null ? null : detail.getData());
 				if( uri == null ) uri = capture_uri;
@@ -98,6 +93,11 @@ public class ActMultiple extends BaseActivity{
 			break;
 		}
 		super.onActivityResult(requestCode, resultCode, detail);
+	}
+	
+	@Override
+	protected void  procMenuKey() {
+		MenuDialog.menu_dialog(env);
 	}
 	
 	/////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ public class ActMultiple extends BaseActivity{
 		findViewById(R.id.btnSetting).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				menu_dialog();
+				MenuDialog.menu_dialog(env);
 			}
 		});
 
@@ -261,7 +261,7 @@ public class ActMultiple extends BaseActivity{
 			intent.addCategory(Intent.CATEGORY_OPENABLE);
 			// open chooser
 		//	startActivityForResult(Intent.createChooser(intent,"file picker"),REQ_FILEPICKER);
-			startActivityForResult(intent,REQ_FILEPICKER);
+			startActivityForResult(intent,MenuDialog.REQ_FILEPICKER);
 			return;
 		}catch(ActivityNotFoundException ex ){
 			env.show_toast(true,R.string.picker_missing);
@@ -284,7 +284,7 @@ public class ActMultiple extends BaseActivity{
 		try{
 			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT,capture_uri);
-			startActivityForResult(intent,REQ_CAPTURE);
+			startActivityForResult(intent,MenuDialog.REQ_CAPTURE);
 			return;
 		}catch(ActivityNotFoundException ex ){
 			env.show_toast(true,R.string.capture_missing);
@@ -296,39 +296,9 @@ public class ActMultiple extends BaseActivity{
 		last_edit_index = index;
 		Intent intent = new Intent(act,ActArrange.class);
 		intent.putExtra(PrefKey.EXTRA_SRC_PATH,item.file.getAbsolutePath());
-		startActivityForResult(intent,REQ_ARRANGE);
+		startActivityForResult(intent,MenuDialog.REQ_ARRANGE);
 	}
 
-	public void menu_dialog() {
-		env.dialog_manager.show_dialog(
-			new AlertDialog.Builder(this)
-			.setCancelable(true)
-			.setNegativeButton(R.string.cancel,null)
-			.setItems(
-				new String[]{
-					getString(R.string.history),
-					getString(R.string.setting),
-					getString(R.string.about),
-				},new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						switch(which){
-						case 0:
-							startActivityForResult(new Intent(act,ActHistory.class),REQ_HISTORY);
-							break;
-						case 1:
-							startActivityForResult(new Intent(act,ActPref.class),REQ_PREF);
-							break;
-						case 2:
-							startActivityForResult(new Intent(act,ActAppInfo.class),REQ_APPINFO);
-							break;
-						}
-					}
-				}
-			)
-		);
-	}
-	
 	void updateUploadButtonStatus() {
 		boolean b = ( upload_list_adapter.getCount() > 0 && !uploader.isBusy());
 		btnUpload.setEnabled(b);

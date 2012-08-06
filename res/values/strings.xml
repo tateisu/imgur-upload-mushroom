@@ -9,6 +9,7 @@
 <string name="account_anonymous">(anonymous)</string>
 <string name="account_delete_title">remove account</string>
 <string name="account_info_querying">retrieving account information&#8230;</string>
+<string name="account_not_selected">account is not selected.</string>
 <string name="account_settings">account settings</string>
 <string name="act_appinfo"		 >Imgur Mushroom/ about this app</string>
 <string name="act_arrange"		 >Imgur Mushroom/ image arrange</string>
@@ -18,10 +19,21 @@
 <string name="act_oauth"		 >Imgur Mushroom/ account authorization</string>
 <string name="act_pref"			 >Imgur Mushroom/ setting</string>
 <string name="act_resize_preset" >Imgur Mushroom/ resize presets</string>
+<string name="album_add">create new album</string>
 <string name="album_all">all albums</string>
+<string name="album_delete">delete album %1$s&#8230;</string>
+<string name="album_delete_confirm">delete album %1$s ?</string>
+<string name="album_description">description</string>
+<string name="album_layout">layout</string>
 <string name="album_loading">(loading..)</string>
+<string name="album_loading_wait">please wait for reload album list&#8230;</string>
 <string name="album_load_error">failed to loading album list</string>
 <string name="album_not_select">(no album)</string>
+<string name="album_option_non_select">(account default)</string>
+<string name="album_privacy">privacy</string>
+<string name="album_title">title</string>
+<string name="album_title_empty">album title is required.</string>
+<string name="album_title_invalid_char">album title contains incorrect character.</string>
 <string name="app_name"			 >Imgur Mushroom</string>
 <string name="autostart_settings">laziness settings</string>
 <string name="auto_rotate_summary">If checked,automatically rotate using image\'s metadata when start editing. (Android 2.1 or later)</string>
@@ -46,6 +58,7 @@
 <string name="edit_autostart_title">auto start editor</string>
 <string name="edit_progress_title">processing..</string>
 <string name="edit_settings">image editor settings</string>
+<string name="file_access_error">cannot access to file: %1$s</string>
 <string name="file_temp_error">failed to prepare temporary file</string>
 <string name="history">history</string>
 <string name="history_cleared">history data was cleared.</string>
@@ -79,6 +92,7 @@
 <string name="picker_autostart_title">auto start picker</string>
 <string name="picker_missing">missing app to choose the file.</string>
 <string name="please_wait">Please wait..</string>
+<string name="plus">+</string>
 <string name="preview_disabled_summary">if checked, disable image preview to save native heap memory.</string>
 <string name="preview_disabled_title">disable preview</string>
 <string name="ratelimit_checkdate">last check</string>
@@ -170,5 +184,18 @@ these are required to SSL connection with server of Imgur.
 	<item>delete image on the server</item>
 	<item>delete history</item>
 	<item>other &#8230;</item>
+</string-array>
+
+<string-array name="album_privacy_list">
+
+	<item>public</item>
+	<item>hidden</item>
+	<item>secret</item>
+</string-array>
+<string-array name="album_layout_list">
+	<item>blog</item>
+	<item>horizontal</item>
+	<item>vertical</item>
+	<item>grid</item>
 </string-array>
 </resources>

@@ -51,7 +51,16 @@
 			android:layout_weight="1"
 			android:minHeight="48dp"
 			android:id="@+id/album"
-			android:nextFocusRight="@+id/btnPicker"
+		/>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingLeft="7dp"
+			android:paddingRight="7dp"
+			android:layout_weight="0"
+			android:minWidth="48dp"
+			android:text="@string/plus"
+			android:id="@+id/btnAlbumNew"
 		/>
 	</LinearLayout>
 

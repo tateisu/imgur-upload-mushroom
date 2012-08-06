@@ -50,6 +50,9 @@ public class AlbumLoader {
 		}
 		@Override public void onDestroy() {
 			load_thread.joinASync(log,"album loader");
+		}
+		@Override
+		public void onPause() {
 			cache_save();
 		}
 	};

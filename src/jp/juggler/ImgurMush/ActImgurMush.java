@@ -6,6 +6,7 @@ import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.ImgurAlbum;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ImageTempDir;
+import jp.juggler.ImgurMush.helper.MenuDialog;
 import jp.juggler.ImgurMush.helper.MushroomHelper;
 import jp.juggler.ImgurMush.helper.PreviewLoader;
 import jp.juggler.ImgurMush.helper.TextFormat;
@@ -14,9 +15,7 @@ import jp.juggler.ImgurMush.uploader.UploadJob;
 import jp.juggler.ImgurMush.uploader.UploaderUI;
 import jp.juggler.util.LogCategory;
 
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -31,17 +30,6 @@ import android.widget.TextView;
 
 public class ActImgurMush extends BaseActivity {
 	static final LogCategory log = new LogCategory("ActImgurMush");
-
-	static final int REQ_FILEPICKER = 2;
-	static final int REQ_HISTORY = 3;
-	static final int REQ_PREF = 4;
-	static final int REQ_ARRANGE= 5;
-	static final int REQ_APPINFO = 6;
-	static final int REQ_CAPTURE = 7;
-	
-	static final int FILE_FROM_PICK =1;
-	static final int FILE_FROM_EDIT =2;
-	static final int FILE_FROM_RESTORE =3;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,31 +55,31 @@ public class ActImgurMush extends BaseActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent detail) {
 		log.d("onActivityResult req=%s res=%sdetail=%s",requestCode,resultCode,detail);
 		switch(requestCode){
-		case REQ_FILEPICKER:
+		case MenuDialog.REQ_FILEPICKER:
 			if( resultCode == RESULT_OK && detail != null ){
 				String path = MushroomHelper.uri_to_path(env,detail.getData());
-				if(path != null ) setCurrentFile(FILE_FROM_PICK,path);
+				if(path != null ) setCurrentFile(MenuDialog.FILE_FROM_PICK,path);
 			}
 			break;
-		case REQ_HISTORY:
+		case MenuDialog.REQ_HISTORY:
 			if( resultCode == RESULT_OK && detail != null ){
 				MushroomHelper.finish_mush(env,true,detail.getStringExtra("url"));
 			}
 			break;
-		case REQ_PREF:
+		case MenuDialog.REQ_PREF:
 			upload_target_manager.reload();
 			upload_autostart = env.pref().getBoolean(PrefKey.KEY_AUTO_UPLOAD,false);
 			editor_autostart = env.pref().getBoolean(PrefKey.KEY_AUTO_EDIT,false);
 			break;
-		case REQ_ARRANGE:
+		case MenuDialog.REQ_ARRANGE:
 			if( resultCode ==  RESULT_OK && detail != null){
 				String path = detail.getStringExtra(PrefKey.EXTRA_DST_PATH);
-				if( path != null ) setCurrentFile( FILE_FROM_EDIT,path);
+				if( path != null ) setCurrentFile( MenuDialog.FILE_FROM_EDIT,path);
 			}
 			break;
-		case REQ_APPINFO:
+		case MenuDialog.REQ_APPINFO:
 			break;
-		case REQ_CAPTURE:
+		case MenuDialog.REQ_CAPTURE:
 			if(resultCode == RESULT_OK ){
 				Uri uri = (detail==null ? null : detail.getData());
 				if( uri == null ) uri = capture_uri;
@@ -99,7 +87,7 @@ public class ActImgurMush extends BaseActivity {
 					log.e("cannot get capture uri");
 				}else{
 					log.d("capture uri = %s", uri);
-					 setCurrentFile(FILE_FROM_PICK,MushroomHelper.uri_to_path(env,uri));
+					 setCurrentFile(MenuDialog.FILE_FROM_PICK,MushroomHelper.uri_to_path(env,uri));
 				}
 			}
 			break;
@@ -109,7 +97,7 @@ public class ActImgurMush extends BaseActivity {
 
 	@Override
 	protected void  procMenuKey() {
-		menu_dialog();
+		MenuDialog.menu_dialog(env);
 	}
 
 	//////////////////////////////////////////////////////////////
@@ -179,7 +167,7 @@ public class ActImgurMush extends BaseActivity {
 		findViewById(R.id.btnSetting).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				menu_dialog();
+				MenuDialog.menu_dialog(env);
 			}
 		});
 
@@ -248,7 +236,7 @@ public class ActImgurMush extends BaseActivity {
 			}
 			if( uri != null ){
 				String path = MushroomHelper.uri_to_path(env,uri);
-				if( path != null ) setCurrentFile( (bRestore?FILE_FROM_RESTORE:FILE_FROM_PICK),path);
+				if( path != null ) setCurrentFile( (bRestore?MenuDialog.FILE_FROM_RESTORE:MenuDialog.FILE_FROM_PICK),path);
 				return;
 			}
 		}
@@ -310,11 +298,11 @@ public class ActImgurMush extends BaseActivity {
 				return;
 			}
 
-			if( open_type == FILE_FROM_RESTORE ){
+			if( open_type == MenuDialog.FILE_FROM_RESTORE ){
 				log.d("this is reconstruct. skip autostart..");
 			}else{
 				// 画像選択後に自動処理が設定されていれば、それを開始する
-				if( editor_autostart && open_type == FILE_FROM_PICK ){
+				if( editor_autostart && open_type == MenuDialog.FILE_FROM_PICK ){
 					open_editor();
 				}else if( upload_autostart ){
 					upload_start();
@@ -374,7 +362,7 @@ public class ActImgurMush extends BaseActivity {
 			intent.addCategory(Intent.CATEGORY_OPENABLE);
 			// open chooser
 		//	startActivityForResult(Intent.createChooser(intent,"file picker"),REQ_FILEPICKER);
-			startActivityForResult(intent,REQ_FILEPICKER);
+			startActivityForResult(intent,MenuDialog.REQ_FILEPICKER);
 			return;
 		}catch(ActivityNotFoundException ex ){
 			env.show_toast(true,R.string.picker_missing);
@@ -396,7 +384,7 @@ public class ActImgurMush extends BaseActivity {
 		try{
 			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT,capture_uri);
-			startActivityForResult(intent,REQ_CAPTURE);
+			startActivityForResult(intent,MenuDialog.REQ_CAPTURE);
 			return;
 		}catch(ActivityNotFoundException ex ){
 			env.show_toast(true,R.string.capture_missing);
@@ -407,37 +395,7 @@ public class ActImgurMush extends BaseActivity {
 	void open_editor(){
 		Intent intent = new Intent(ActImgurMush.this,ActArrange.class);
 		intent.putExtra(PrefKey.EXTRA_SRC_PATH,file_path);
-		startActivityForResult(intent,REQ_ARRANGE);
-	}
-
-	public void menu_dialog() {
-		env.dialog_manager.show_dialog(
-			new AlertDialog.Builder(this)
-			.setCancelable(true)
-			.setNegativeButton(R.string.cancel,null)
-			.setItems(
-				new String[]{
-					getString(R.string.history),
-					getString(R.string.setting),
-					getString(R.string.about),
-				},new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						switch(which){
-						case 0:
-							startActivityForResult(new Intent(act,ActHistory.class),REQ_HISTORY);
-							break;
-						case 1:
-							startActivityForResult(new Intent(act,ActPref.class),REQ_PREF);
-							break;
-						case 2:
-							startActivityForResult(new Intent(act,ActAppInfo.class),REQ_APPINFO);
-							break;
-						}
-					}
-				}
-			)
-		);
+		startActivityForResult(intent,MenuDialog.REQ_ARRANGE);
 	}
 
 	void upload_start(){
