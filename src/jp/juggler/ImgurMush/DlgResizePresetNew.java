@@ -3,6 +3,8 @@ package jp.juggler.ImgurMush;
 import jp.juggler.ImgurMush.data.ResizePreset;
 import jp.juggler.util.HelperEnvUI;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -21,11 +23,15 @@ public class DlgResizePresetNew {
 	int mode;
 	int value;
 
-
+	public static void show(HelperEnvUI env){
+		new DlgResizePresetNew(env).setup();
+		// TODO 自動生成されたメソッド・スタブ
+	}
 	public DlgResizePresetNew(HelperEnvUI _env){
 		this.env = _env;
+	}
+	private void setup() {
 		this.root = env.inflater.inflate(R.layout.dlg_resize_preset_new,null);
-		this.btnOk = root.findViewById(R.id.btnOk);
 		this.tvDesc = (TextView)root.findViewById(R.id.tvDesc);
 		this.radio_group = (RadioGroup)root.findViewById(R.id.radiogroup);
 		this.etValue = (EditText)root.findViewById(R.id.etValue);
@@ -33,17 +39,6 @@ public class DlgResizePresetNew {
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				check();
-			}
-		});
-		btnOk.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				dialog.dismiss();
-				ResizePreset preset = new ResizePreset();
-				preset.mode = mode;
-				preset.value = value;
-				preset.save(env.cr);
 			}
 		});
 		etValue.addTextChangedListener(new TextWatcher() {
@@ -59,18 +54,28 @@ public class DlgResizePresetNew {
 				check();
 			}
 		});
-		check();
-	}
-
-	public AlertDialog make_dialog(){
+		
 		this.dialog = new AlertDialog.Builder(env.context)
 		.setCancelable(true)
 		.setNegativeButton(R.string.cancel,null)
+		.setPositiveButton(R.string.ok,new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				ResizePreset preset = new ResizePreset();
+				preset.mode = mode;
+				preset.value = value;
+				preset.save(env.cr);
+				
+			}
+		})
 		.setTitle(R.string.resize_new_preset)
 		.setView(root)
 		.create();
-
-		return dialog;
+		env.dialog_manager.show_dialog(dialog);
+		
+		this.btnOk = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+		check();
 	}
 
 	boolean check(){
@@ -109,9 +114,10 @@ public class DlgResizePresetNew {
 		}
 		this.value = v;
 		btnOk.setEnabled(true);
-		tvDesc.setVisibility(View.INVISIBLE);
+		tvDesc.setVisibility(View.GONE);
 		return true;
 	}
+
 
 
 

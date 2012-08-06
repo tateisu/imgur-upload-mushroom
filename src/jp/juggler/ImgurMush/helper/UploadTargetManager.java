@@ -62,7 +62,7 @@ public class UploadTargetManager {
 				if( account == null ){
 					env.show_toast(true,R.string.account_not_selected);
 				}else{
-					env.dialog_manager.show_dialog(new DlgAlbumNew(env,UploadTargetManager.this,account).make_dialog());
+					DlgAlbumNew.show(env,UploadTargetManager.this,account);
 				}
 			}
 		});
@@ -105,6 +105,7 @@ public class UploadTargetManager {
 				env.confirm(
 					null
 					,env.getString(R.string.album_delete_confirm,album.album_name)
+					,true
 					,new Runnable() {
 						@Override public void run() {
 							album_delete(getSelectedAccount(),album);

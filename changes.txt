@@ -1,6 +1,9 @@
 
 * バージョン履歴
 
+** 2.19
+アルバム作成ダイアログやリサイズ指定ダイアログの整形
+
 ** 2.18
 新規作成時に空白を含むパラメータを入力するとoAuthの署名が食い違う不具合を修正。
 http://stackoverflow.com/questions/7915029/how-to-encode-space-as-20-in-urlencodedformentity-while-executing-apache-httppo

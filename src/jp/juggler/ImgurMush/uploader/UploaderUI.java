@@ -186,7 +186,10 @@ public class UploaderUI {
 			setBusyState(false);
 			final int job_id = upload_service.getOtherTask( env.act.getTaskId() );
 			if( job_id != -1 ){
-				env.confirm(null,env.getString(R.string.other_task_detected)
+				env.confirm(
+					null
+					,env.getString(R.string.other_task_detected)
+					,false
 					,new Runnable() {
 						@Override public void run() {
 							upload_service.expireJob(job_id,env.getString(R.string.upload_cancel_by_other_task));

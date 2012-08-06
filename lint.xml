@@ -14,7 +14,9 @@
     <issue id="NestedWeights" severity="ignore" />
     <issue id="NewApi" severity="informational" />
     <issue id="Registered" severity="ignore" />
-    <issue id="SetJavaScriptEnabled" severity="informational" />
+    <issue id="SetJavaScriptEnabled" severity="informational">
+        <ignore path="src\jp\juggler\ImgurMush\ActOAuth.java" />
+    </issue>
     <issue id="UnusedResources" severity="informational" />
     <issue id="UseCompoundDrawables" severity="ignore" />
 </lint>

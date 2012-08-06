@@ -53,9 +53,7 @@ public class ActResizePreset extends BaseActivity{
 			}
 		});
 		listview.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int idx,long arg3) {
+			@Override public void onItemClick(AdapterView<?> arg0, View arg1, int idx,long arg3) {
 				ResizePreset preset = (ResizePreset)resize_preset_adapter.getItem(idx);
 				if( preset!=null ){
 					Intent intent = new Intent();
@@ -69,7 +67,7 @@ public class ActResizePreset extends BaseActivity{
 					setResult(RESULT_OK,intent);
 					finish();
 				}else{
-					env.dialog_manager.show_dialog(new DlgResizePresetNew(env).make_dialog());
+					DlgResizePresetNew.show(env);
 				}
 			}
 		});

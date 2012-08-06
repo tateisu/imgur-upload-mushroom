@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,9 +61,15 @@ public class HelperEnvUI extends HelperEnv{
 		}
 	}
 
-	public void confirm(String title,String message,final Runnable proc_ok,final Runnable proc_cancel){
+	public void confirm(String title,String message,boolean bCancellable, final Runnable proc_ok,final Runnable proc_cancel){
 		AlertDialog.Builder b = new AlertDialog.Builder(context)
 		.setCancelable(true)
+		.setCancelable(bCancellable)
+		.setOnCancelListener(new OnCancelListener() {
+			@Override public void onCancel(DialogInterface dialog) {
+				if(proc_cancel!=null) proc_cancel.run();
+			}
+		})
 		.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
 			@Override public void onClick(DialogInterface dialog, int which) {
 				if(proc_cancel!=null) proc_cancel.run();
