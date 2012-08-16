@@ -1,7 +1,7 @@
 package jp.juggler.ImgurMush;
 
 import jp.juggler.ImgurMush.helper.ImageTempDir;
-import jp.juggler.util.HelperEnvUI;
+import jp.juggler.util.HelperEnv;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,13 +11,13 @@ import android.preference.PreferenceActivity;
 
 public class ActPref extends PreferenceActivity{
 
-	HelperEnvUI env;
+	HelperEnv env;
 	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		env = new HelperEnvUI(this);
+		env = new HelperEnv(this);
 
 		SharedPreferences pref = env.pref();
 		

@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 
 /*
@@ -36,10 +35,13 @@ public class DialogManager {
 	////////////////////////////////////////////
 	// ユーティリティ
 
-
-	// ダイアログを表示して、内部リストに控えておく
-	public void show_dialog( AlertDialog.Builder dialog) {
-		show_dialog(dialog.create());
+	public void dismiss(Dialog d){
+		try{
+			if(d!=null) d.dismiss();
+		}catch(Throwable ex){
+			// java.lang.IllegalArgumentException: View not attached to window manager
+			ex.printStackTrace();
+		}
 	}
 
 	// ダイアログを表示して、内部リストに控えておく
@@ -77,7 +79,7 @@ public class DialogManager {
 		Iterator<WeakReference<Dialog>> it = dialog_list.iterator();
 		while( it.hasNext() ){
 			Dialog d = it.next().get();
-			if( d!=null && d.isShowing() ) d.dismiss();
+			if( d!=null && d.isShowing() ) dismiss(d);
 			it.remove();
 		}
 	}

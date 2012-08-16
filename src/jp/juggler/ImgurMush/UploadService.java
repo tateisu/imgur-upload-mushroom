@@ -501,7 +501,6 @@ public class UploadService extends Service{
 						result = new APIResult(env.getString(R.string.upload_cancelled));
 					}
 					if( !result.isError() ){
-						log.d("4");
 						try{
 							// resultをみてitemの状態を更新
 							if( result.content_json.has("upload") ){

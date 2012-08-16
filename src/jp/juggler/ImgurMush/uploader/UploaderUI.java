@@ -151,7 +151,7 @@ public class UploaderUI {
 		env.act.setIntent(intent);
 		//
 		env.handler.removeCallbacks(progress_checker);
-		if(dialog != null) dialog.dismiss();
+		env.dismiss(dialog);
 	}
 	
 	// ユーザがアップロードボタンを押した
@@ -181,7 +181,7 @@ public class UploaderUI {
 	// ジョブが実行中ならダイアログを表示する
 	void restore_dialog(){
 		env.handler.removeCallbacks(progress_checker);
-		if( dialog != null ) dialog.dismiss();
+		env.dismiss(dialog);
 		if( tracking_job_id == -1 ){
 			setBusyState(false);
 			final int job_id = upload_service.getOtherTask( env.act.getTaskId() );
@@ -250,7 +250,7 @@ public class UploaderUI {
 		wake_lock.acquire();
 		log.d("wake lock acquired. isHeld=%s",wake_lock.isHeld());
 		//
-		env.dialog_manager.show_dialog(dialog);
+		env.show_dialog(dialog);
 		//
 		progress_checker.run();
 	}
@@ -275,7 +275,7 @@ public class UploaderUI {
 				upload_service.expireJob(job.job_id,null);
 				tracking_job_id = -1;
 				setBusyState(false);
-				dialog.dismiss();
+				env.dismiss(dialog);
 				return;
 			}else if( job.completed.get() ){
 				log.d("job completed");
@@ -283,7 +283,7 @@ public class UploaderUI {
 				upload_service.expireJob(job.job_id,null);
 				tracking_job_id = -1;
 				setBusyState(false);
-				dialog.dismiss();
+				env.dismiss(dialog);
 				return;
 			}
 

@@ -375,7 +375,7 @@ public class ActArrange extends BaseActivity{
 		progress_dialog.setIndeterminate(true);
 		progress_dialog.setTitle(R.string.edit_progress_title);
 		progress_dialog.setCancelable(true);
-		env.dialog_manager.show_dialog(progress_dialog);
+		env.show_dialog(progress_dialog);
 
 		new Thread(){
 			// 進捗表示がキャンセルされたなら真
@@ -523,7 +523,7 @@ public class ActArrange extends BaseActivity{
 									@Override
 									public void run() {
 										if(isFinishing()) return;
-										progress_dialog.dismiss();
+										env.dismiss(progress_dialog);
 										Intent intent = new Intent();
 										intent.putExtra(PrefKey.EXTRA_DST_PATH,src_path);
 										setResult(RESULT_OK,intent);
@@ -599,7 +599,7 @@ public class ActArrange extends BaseActivity{
 									@Override
 									public void run() {
 										if(isFinishing()) return;
-										progress_dialog.dismiss();
+										env.dismiss(progress_dialog);
 										Intent intent = new Intent();
 										intent.putExtra(PrefKey.EXTRA_DST_PATH,dst_path.getAbsolutePath());
 										setResult(RESULT_OK,intent);
@@ -625,13 +625,7 @@ public class ActArrange extends BaseActivity{
 					}
 				}finally{
 					// 進捗表示を消す
-					env.handler.post(new Runnable() {
-						@Override
-						public void run() {
-							if(isFinishing()) return;
-							progress_dialog.dismiss();
-						}
-					});
+					env.dismiss(progress_dialog);
 				}
 			}
 		}.start();

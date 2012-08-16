@@ -3,8 +3,6 @@ package jp.juggler.ImgurMush;
 import jp.juggler.ImgurMush.data.ResizePreset;
 import jp.juggler.ImgurMush.helper.BaseActivity;
 import jp.juggler.ImgurMush.helper.ResizePresetAdapter;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -34,18 +32,16 @@ public class ActResizePreset extends BaseActivity{
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,int idx, long arg3) {
 				final ResizePreset preset = (ResizePreset)resize_preset_adapter.getItem(idx);
 				if( preset != null){
-					env.dialog_manager.show_dialog(
-						new AlertDialog.Builder(act)
-						.setCancelable(true)
-						.setNegativeButton(R.string.cancel,null)
-						.setTitle(preset.makeTitle(env))
-						.setMessage(R.string.resize_preset_delete)
-						.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
+					env.confirm(
+						preset.makeTitle(env)
+						,env.getString(R.string.resize_preset_delete)
+						,true
+						,new Runnable() {
+							@Override public void run() {
 								preset.delete(env.cr);
 							}
-						})
+						}
+						,null
 					);
 					return true;
 				}

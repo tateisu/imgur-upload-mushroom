@@ -16,9 +16,9 @@
 		  android:layout_height="wrap_content"
 		  android:orientation="vertical"
 		>
-			<LinearLayout 
+			<LinearLayout
 				android:layout_marginTop="4dp"
-			 	android:layout_width="match_parent"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal"
 			>
@@ -36,16 +36,16 @@
 					android:id="@+id/etTitle"
 				/>
 			</LinearLayout>
-			<LinearLayout 
+			<LinearLayout
 				android:layout_marginTop="4dp"
-			 	android:layout_width="match_parent"
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal"
 			>
 				<TextView
-				  	android:layout_width="wrap_content"
-				  	android:layout_height="wrap_content"
-				  	android:text="@string/album_description"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/album_description"
 				/>
 				<EditText
 					android:layout_width="0dp"
@@ -56,21 +56,21 @@
 					android:id="@+id/etDesc"
 				/>
 			</LinearLayout>
-			<LinearLayout 
-			 	android:layout_width="match_parent"
+			<LinearLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal"
 				android:baselineAligned="false"
 			>
-				<LinearLayout 
-				 	android:layout_width="0dp"
+				<LinearLayout
+					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
 					android:orientation="vertical"
 				>
 					<TextView
 						android:layout_marginTop="4dp"
-					 	android:layout_width="match_parent"
+						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:text="@string/album_privacy"
 					/>
@@ -80,8 +80,8 @@
 						android:id="@+id/spPrivacy"
 					/>
 				</LinearLayout>
-				<LinearLayout 
-				 	android:layout_width="0dp"
+				<LinearLayout
+					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
 					android:orientation="vertical"

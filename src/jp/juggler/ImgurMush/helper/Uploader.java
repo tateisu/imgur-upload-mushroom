@@ -97,7 +97,7 @@ public class Uploader {
 		wake_lock.acquire();
 		log.d("wake lock acquired. isHeld=%s",wake_lock.isHeld());
 
-		env.dialog_manager.show_dialog(dialog);
+		env.show_dialog(dialog);
 
 		final CancelChecker cancel_checker = new CancelChecker() {
 			@Override
@@ -194,7 +194,7 @@ public class Uploader {
 			@Override
 			protected void onPostExecute(APIResult result) {
 				if(env.isFinishing()) return;
-				dialog.dismiss();
+				env.dismiss(dialog);
 				try{
 					if( result != null && !result.isError() ){
 						if( result.content_json.has("upload") ){

@@ -64,6 +64,9 @@ public class PrefKey {
 	public static final String RATELIMIT_ANONYMOUS = "anonymous";
 	public static final String KEY_UPLOAD_JOB_LIST = "upload_job_list";
 	
+	public static final String KEY_DISABLE_SSL_SERTIFICATE_VALIDATION = "disable_ssl_certificate_validation";
+
+	
 	
 	public static void upgrade_config(SharedPreferences pref) {
 		SharedPreferences.Editor e = pref.edit();

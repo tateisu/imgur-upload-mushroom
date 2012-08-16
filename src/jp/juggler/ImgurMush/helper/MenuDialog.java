@@ -8,6 +8,7 @@ import jp.juggler.util.HelperEnvUI;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 
 public class MenuDialog {
 
@@ -23,7 +24,7 @@ public class MenuDialog {
 	public static final int FILE_FROM_RESTORE =3;
 	
 	public static final void menu_dialog(final HelperEnvUI env) {
-		env.dialog_manager.show_dialog(
+		env.show_dialog(
 			new AlertDialog.Builder(env.context)
 			.setCancelable(true)
 			.setNegativeButton(R.string.cancel,null)
@@ -31,6 +32,7 @@ public class MenuDialog {
 				new String[]{
 					env.getString(R.string.history),
 					env.getString(R.string.setting),
+					env.getString(R.string.usage),
 					env.getString(R.string.about),
 				},new DialogInterface.OnClickListener() {
 					@Override
@@ -43,6 +45,15 @@ public class MenuDialog {
 							env.act.startActivityForResult(new Intent(env.context,ActPref.class),REQ_PREF);
 							break;
 						case 2:
+							try{
+								Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://juggler.jp/tateisu/android/ImgurMush-usage/"));
+								intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+								env.act.startActivity(intent);
+							}catch(Throwable ex){
+								ex.printStackTrace();
+							}
+							break;
+						case 3:
 							env.act.startActivityForResult(new Intent(env.context,ActAppInfo.class),REQ_APPINFO);
 							break;
 						}

@@ -6,22 +6,26 @@ import jp.juggler.ImgurMush.data.APIResult;
 import jp.juggler.ImgurMush.data.ImgurAccount;
 import jp.juggler.ImgurMush.data.SignedClient;
 import jp.juggler.ImgurMush.helper.BaseActivity;
+import jp.juggler.ImgurMush.helper.MySSLSocketFactory;
 import jp.juggler.util.CancelChecker;
 
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 import oauth.signpost.exception.OAuthCommunicationException;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -94,7 +98,8 @@ public class ActOAuth extends BaseActivity {
 		}
 
 		//
-		mWebView.setWebViewClient(mWebViewClient);
+		log.d("setWebViewClient %s",mWebViewClient.getClass().getSuperclass().getName() );
+		mWebView.setWebViewClient( mWebViewClient );
 		mWebView.setWebChromeClient(mWebChromeClient);
 		WebSettings setting = mWebView.getSettings();
 		setting.setJavaScriptEnabled(true);
@@ -114,6 +119,7 @@ public class ActOAuth extends BaseActivity {
 		}
 	};
 
+	
 	private WebViewClient mWebViewClient = new WebViewClient() {
 
 		@Override
@@ -135,7 +141,18 @@ public class ActOAuth extends BaseActivity {
 			log.d(String.format("onReceivedError code=%d,desc=%s,url=%s",errorCode,description,failingUrl));
 			super.onReceivedError(view, errorCode, description, failingUrl);
 		}
+
+		@TargetApi(8)
+		@Override
+		public void onReceivedSslError(WebView view, SslErrorHandler handler,SslError error) {
+			if( env.pref().getBoolean(PrefKey.KEY_DISABLE_SSL_SERTIFICATE_VALIDATION,false) ){
+				handler.proceed();
+			}else{
+				handler.cancel();
+			}
+		}
 	};
+
 
 	boolean check_oauth_callback(String url){
 		if( (url != null) && (url.startsWith(URL_CALLBACK)) ){
@@ -163,12 +180,12 @@ public class ActOAuth extends BaseActivity {
 		dialog.setCancelable(true);
 		dialog.setMax(0);
 		dialog.setProgress(0);
-		dialog.show();
 		dialog.setOnCancelListener(new OnCancelListener() {
 			@Override public void onCancel(DialogInterface dialog) {
 				finish();
 			}
 		});
+		env.show_dialog(dialog);
 		
 		new Thread(){
 
@@ -187,6 +204,15 @@ public class ActOAuth extends BaseActivity {
 						try {
 							mOAuthConsumer = new CommonsHttpOAuthConsumer( Config.CONSUMER_KEY, Config.CONSUMER_SECRET);
 							mOAuthProvider = new CommonsHttpOAuthProvider( URL_REQUEST_TOKEN, URL_ACCESS_TOKEN, URL_WEB_AUTHORIZATION);
+
+							if( env.pref().getBoolean(PrefKey.KEY_DISABLE_SSL_SERTIFICATE_VALIDATION,false) ){
+								try{
+									mOAuthProvider.setHttpClient(MySSLSocketFactory.createHTTPClient());
+								}catch(Throwable ex){
+									ex.printStackTrace();
+								}
+							}
+
 							url = mOAuthProvider.retrieveRequestToken(mOAuthConsumer, URL_CALLBACK);
 
 						}catch ( OAuthCommunicationException ex) {
@@ -212,6 +238,7 @@ public class ActOAuth extends BaseActivity {
 						env.finish_with_message(last_error);
 						return;
 					}else{
+						log.d("%s",url);
 						final String url_ = url;
 						env.handler.post(new Runnable() {
 							@Override
@@ -226,7 +253,7 @@ public class ActOAuth extends BaseActivity {
 				}finally{
 					env.handler.post(new Runnable() {
 						@Override public void run() {
-							dialog.dismiss();
+							env.dismiss(dialog);
 						}
 					});
 				}
@@ -243,12 +270,12 @@ public class ActOAuth extends BaseActivity {
 		dialog.setCancelable(true);
 		dialog.setMax(0);
 		dialog.setProgress(0);
-		dialog.show();
 		dialog.setOnCancelListener(new OnCancelListener() {
 			@Override public void onCancel(DialogInterface dialog) {
 				finish();
 			}
 		});
+		env.show_dialog(dialog);
 	
 		new Thread(){
 			String cancel_message = act.getString(R.string.cancelled);
@@ -302,11 +329,7 @@ public class ActOAuth extends BaseActivity {
 				}catch(Throwable ex) {
 					env.report_ex(ex);
 				}finally{
-					env.handler.post(new Runnable() {
-						@Override public void run() {
-							dialog.dismiss();
-						}
-					});
+					env.dismiss(dialog);
 				}
 			}
 		}.start();

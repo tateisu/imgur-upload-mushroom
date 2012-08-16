@@ -46,7 +46,6 @@ public class ImageTempDir {
 						log.e("not writeable: %s",dir.getPath());
 						continue;
 					}
-					new File(dir,".nomedia").setLastModified(System.currentTimeMillis());
 					path = dir.getAbsolutePath();
 					SharedPreferences.Editor e = eh.pref().edit();
 					e.putString(PrefKey.KEY_TEMP_DIR,path);

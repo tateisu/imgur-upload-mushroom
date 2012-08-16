@@ -60,8 +60,8 @@ public class DlgResizePresetNew {
 		.setNegativeButton(R.string.cancel,null)
 		.setPositiveButton(R.string.ok,new OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
+			public void onClick(DialogInterface di, int which) {
+				env.dismiss(dialog);
 				ResizePreset preset = new ResizePreset();
 				preset.mode = mode;
 				preset.value = value;
@@ -72,7 +72,7 @@ public class DlgResizePresetNew {
 		.setTitle(R.string.resize_new_preset)
 		.setView(root)
 		.create();
-		env.dialog_manager.show_dialog(dialog);
+		env.show_dialog(dialog);
 		
 		this.btnOk = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
 		check();

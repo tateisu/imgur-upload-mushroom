@@ -22,7 +22,6 @@ import jp.juggler.util.CancelChecker;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -90,7 +89,7 @@ public class ActHistory extends BaseActivity {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int idx, long id) {
 				final ImgurHistory item = (ImgurHistory)history_adapter.getItem(idx);
 				if(item != null){
-					env.dialog_manager.show_dialog(
+					env.show_dialog(
 						new AlertDialog.Builder(act)
 						.setCancelable(true)
 						.setItems(
@@ -297,20 +296,18 @@ public class ActHistory extends BaseActivity {
 	}
 
 	void delete_dialog(final ImgurHistory item){
-		env.dialog_manager.show_dialog(
-			new AlertDialog.Builder(this)
-			.setCancelable(true)
-			.setTitle(item.page)
-			.setMessage(R.string.history_delete_confirm)
-			.setNegativeButton(R.string.cancel,null)
-			.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
-				@Override public void onClick(DialogInterface dialog, int which) {
+		env.confirm(
+			item.page
+			,env.getString(R.string.history_delete_confirm)
+			,true
+			,new Runnable() {
+				@Override public void run() {
 					// 作業中表示
 					final ProgressDialog progress = new ProgressDialog(act);
 					progress.setIndeterminate(true);
 					progress.setMessage(getString(R.string.please_wait));
 					progress.setCancelable(true);
-					env.dialog_manager.show_dialog(progress);
+					env.show_dialog(progress);
 					// 別スレッドで実行
 					final Thread t = new Thread(){
 						@Override public void run() {
@@ -355,20 +352,15 @@ public class ActHistory extends BaseActivity {
 							}catch(Throwable ex){
 								env.report_ex(ex);
 							}finally{
-								progress.dismiss();
+								env.dismiss(progress);
 							}
 						}
 					};
-					progress.setOnCancelListener(new OnCancelListener() {
-						@Override
-						public void onCancel(DialogInterface dialog) {
-							progress.dismiss();
-							t.interrupt();
-						}
-					});
+					
 					t.start();
 				}
-			})
+			}
+			,null
 		);
 	}
 	
@@ -380,7 +372,7 @@ public class ActHistory extends BaseActivity {
 	}
 
 	void menu_dialog() {
-		env.dialog_manager.show_dialog(
+		env.show_dialog(
 			new AlertDialog.Builder(this)
 			.setCancelable(true)
 			.setNegativeButton(R.string.cancel,null)
@@ -406,19 +398,17 @@ public class ActHistory extends BaseActivity {
 	}
 	
 	void history_clear_dialog() {
-		env.dialog_manager.show_dialog(
-			new AlertDialog.Builder(act)
-			.setCancelable(true)
-			.setNegativeButton(R.string.cancel,null)
-			.setTitle(R.string.history_clear_title)
-			.setMessage(R.string.history_clear_message)
-			.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
-				@Override public void onClick(DialogInterface dialog, int which) {
+		env.confirm(
+			env.getString(R.string.history_clear_title)
+			,env.getString(R.string.history_clear_message)
+			,true
+			,new Runnable() {
+				@Override public void run() {
 					final ProgressDialog progress = new ProgressDialog(act);
 					progress.setIndeterminate(true);
 					progress.setMessage(getString(R.string.please_wait));
 					progress.setCancelable(true);
-					env.dialog_manager.show_dialog(progress);
+					env.show_dialog(progress);
 					new AsyncTask<Void,Void,String>(){
 						@Override
 						protected String doInBackground(Void... params) {
@@ -429,12 +419,13 @@ public class ActHistory extends BaseActivity {
 						@Override
 						protected void onPostExecute(String result) {
 							if(isFinishing()) return;
-							progress.dismiss();
+							env.dismiss(progress);
 							env.show_toast(false,R.string.history_cleared);
 						}
 					}.execute();
 				}
-			})
+			}
+			,null
 		);
 	}
 	
@@ -444,70 +435,68 @@ public class ActHistory extends BaseActivity {
 	}
 	
 	void history_export(){
-		env.dialog_manager.show_dialog(
-				new AlertDialog.Builder(act)
-				.setCancelable(true)
-				.setNegativeButton(R.string.cancel,null)
-				.setTitle(R.string.history_export)
-				.setMessage(R.string.history_export_confirm)
-				.setPositiveButton(R.string.ok,new DialogInterface.OnClickListener() {
-					@Override public void onClick(DialogInterface dialog, int which) {
-						
-						final ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
-						final ImgurAccount account = (ImgurAccount)account_adapter.getItem( spAccount.getSelectedItemPosition());
-						
-						final ProgressDialog progress = new ProgressDialog(act);
-						progress.setIndeterminate(true);
-						progress.setMessage(getString(R.string.please_wait));
-						progress.setCancelable(true);
-						env.dialog_manager.show_dialog(progress);
-						new AsyncTask<Void,Void,ExportData>(){
-							@Override
-							protected ExportData doInBackground(Void... params) {
-								ExportData result = new ExportData();
+		env.confirm(
+			env.getString(R.string.history_export)
+			,env.getString(R.string.history_export_confirm)
+			,true
+			,new Runnable() {
+				@Override public void run() {
+					final ImgurAlbum album = (ImgurAlbum)album_adapter.getItem(spAlbum.getSelectedItemPosition());
+					final ImgurAccount account = (ImgurAccount)account_adapter.getItem( spAccount.getSelectedItemPosition());
+					
+					final ProgressDialog progress = new ProgressDialog(act);
+					progress.setIndeterminate(true);
+					progress.setMessage(getString(R.string.please_wait));
+					progress.setCancelable(true);
+					env.show_dialog(progress);
+					new AsyncTask<Void,Void,ExportData>(){
+						@Override
+						protected ExportData doInBackground(Void... params) {
+							ExportData result = new ExportData();
+							try{
+								Cursor cursor = ImgurHistory.query(env.cr,account,album);
 								try{
-									Cursor cursor = ImgurHistory.query(env.cr,account,album);
-									try{
-										ImgurHistory.ColumnIndex colidx = new ImgurHistory.ColumnIndex();
-										if( cursor.getCount() <= 0 ){
-											env.show_toast(true,R.string.history_empty);
-										}else if(! cursor.moveToFirst() ){
-											env.show_toast(true,R.string.db_seek_error);
-										}else{
-											int n=0;
-											StringBuffer sb = new StringBuffer();
-											do{
-												ImgurHistory history = ImgurHistory.loadFromCursor(cursor,colidx);
-												if(history!=null){
-													if(sb.length()>0) sb.append("--\n");
-													history.appendText(sb);
-													++n;
-												}
-											}while( cursor.moveToNext() );
-											result.count = n;
-											result.text = sb.toString();
-										}
-									}finally{
-										cursor.close();
+									ImgurHistory.ColumnIndex colidx = new ImgurHistory.ColumnIndex();
+									if( cursor.getCount() <= 0 ){
+										env.show_toast(true,R.string.history_empty);
+									}else if(! cursor.moveToFirst() ){
+										env.show_toast(true,R.string.db_seek_error);
+									}else{
+										int n=0;
+										StringBuffer sb = new StringBuffer();
+										do{
+											ImgurHistory history = ImgurHistory.loadFromCursor(cursor,colidx);
+											if(history!=null){
+												if(sb.length()>0) sb.append("--\n");
+												history.appendText(sb);
+												++n;
+											}
+										}while( cursor.moveToNext() );
+										result.count = n;
+										result.text = sb.toString();
 									}
-								}catch (Throwable ex) {
-									env.report_ex(ex);
+								}finally{
+									cursor.close();
 								}
-								return result;
+							}catch (Throwable ex) {
+								env.report_ex(ex);
 							}
+							return result;
+						}
 
-							@Override
-							protected void onPostExecute(ExportData result) {
-								if(isFinishing()) return;
-								progress.dismiss();
-								if( result != null && result.count > 0 ){
-									String ok_msg = getString(R.string.history_export_complete,result.count);
-									ClipboardHelper.clipboard_copy(env,result.text,ok_msg);
-								}
+						@Override
+						protected void onPostExecute(ExportData result) {
+							if(isFinishing()) return;
+							env.dismiss(progress);
+							if( result != null && result.count > 0 ){
+								String ok_msg = getString(R.string.history_export_complete,result.count);
+								ClipboardHelper.clipboard_copy(env,result.text,ok_msg);
 							}
-						}.execute();
-					}
-				})
-			);
+						}
+					}.execute();
+				}
+			}
+			,null
+		);
 	}
 }

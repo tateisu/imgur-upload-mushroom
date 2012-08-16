@@ -1,0 +1,546 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+<meta charset="UTF-8">
+<title>Imgur Mushroom online manual / Imgurマッシュ オンラインマニュアル</title>
+<meta name="viewport" content="width=480px, maximum-scale=4.0, user-scalable=yes">
+<style>
+*{ margin:0; padding: 0; }
+body{
+	width: 480px;
+	font-size: 16px;
+}
+
+h1{
+	font-weight: bold;
+	font-size: 1.5em;
+	margin: 1em 0;
+	text-align: center;
+}
+h2{
+	font-weight: bold;
+	font-size: 1.33em;
+	margin: 1em 0;
+	text-align: center;
+}
+p{
+	margin: 0.3em 0;
+	padding: 0.3em;
+}
+hr{
+	margin: 1em 0.5em;
+}
+
+div.figureset{
+	margin: 1em 2px;
+	overflow: hidden;
+}
+div.figureset:after{
+	content: ""; 
+	display: block; 
+	clear: both;
+}
+div.figureset > img.figure {
+	float: left;
+	width: 240px;
+}
+div.figureset > div.caption {
+	float: right;
+	width: 233px;
+	border: 1px solid #888;
+	border-radius: 15px;
+}
+
+p.hint {
+	margin: 0.3em 0.1em 0.3em 0.3em;
+	background-color: #cef;
+	border-radius: 15px;
+}
+
+ul > li {
+	margin: 0.3em 0 0.3em 1.5em;
+	font-size: 32px;
+}
+
+dl{
+	margin: 0.3em;
+	padding: 0.3em;
+	border: solid 1px black;
+	border-radius: 15px;
+}
+
+dt{
+	font-weight: bold;
+	margin: 0.3em 0 0 0;
+}
+
+dd{
+	margin: 0.3em 0 0.3em 2em;
+}
+
+</style>
+<body>
+
+<H1><A href="./">Imgur Mushroom online manual<br>Imgurマッシュ オンラインマニュアル</a></H1>
+
+<p>this page is online-manual of <A href="https://play.google.com/store/apps/details?id=jp.juggler.ImgurMush">Imgur Mushroom</a>.
+
+<p>このページでは<A href="https://play.google.com/store/apps/details?id=jp.juggler.ImgurMush">Imgurマッシュ</a>の使い方を説明します。</p>
+
+<hr>
+<h2 id="toc">table of contents / 目次</h2>
+<ul>
+<li><A href="#disclaimer">disclaimer / 免責事項</a></li>
+<li><A href="#basic">basic usage / 単純な使い方</a></li>
+<li><A href="#mushroom">work as IME extension / IME拡張としての動作</a></li>
+<li><A href="#history">upload history / アップロード履歴</a></li>
+<li><A href="#authentication">account authentication / アカウント認証</a></li>
+<li><A href="#album">albums / アルバム</a></li>
+<li><A href="#bulkupload">bulk upload / 一括アップロード</a></li>
+</ul>
+
+<hr>
+<h2 id="disclaimer">disclaimer / 免責事項</h2>
+
+<p>this app has function access to Imgur account,
+but don't have function to create new Imgur account.
+please visit <a href="https://imgur.com/register">register page on Imgur website</a> to create new account.
+</p>
+
+<p>this app don't have any function to browse Imgur's gallery and albums.
+this app's upload history just show data sent from this app and installed machine.</p>
+
+<p>this app can not help about server-side troubles.</p>
+
+<p>このアプリにはImgurアカウントと連動する機能がありますが、
+Imgurアカウントを新しく作成する機能はありません。
+アカウントの作成は<a href="https://imgur.com/register">ImgurのWebサイト</a>で行なってください。</p>
+
+<p>このアプリにはImgurのデータを閲覧する機能はありません。
+アップロード履歴に表示されるのは、このアプリから送信したデータだけです。</p>
+
+<p>Imgurのサーバの不調による問題はこのアプリでは解決できません。</p>
+
+<hr>
+<h2 id="basic">basic usage / 単純な使い方</h2>
+
+<div class="figureset">
+	<img class="figure" src="images/basic-1.jpg" alt="basic-1.jpg" >
+	<div class="caption">
+		<p>when open this app from launcher, image is not selected at initial state.</p>
+		<p>please push pick button to choose image.</p>
+		<hr>
+		<p>このアプリを起動すると、最初は画像が選択されていません。</p>
+		<p>選択ボタンを押して画像を選択しましょう。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/basic-2.jpg" alt="basic-2.jpg" >
+	<div class="caption">
+		<p>list of image picker app will be shown.</p>
+		<p class="hint">if you want to skip choosing app at next time, please enable "Use by default for this action" checkbox.</p>
+		<hr>
+		<p>画像を選択するアプリの一覧が表示されます。</p>
+		<p class="hint">もし次回からアプリの選択をスキップしたい場合、「常にこの操作で使用」チェックボックスを有効にしてください。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/basic-3.jpg" alt="basic-3.jpg" >
+	<div class="caption">
+		<p>in this example, using "QuickPic" to pick up image.</p>
+		<hr>
+		<p>この例ではQuickPicを使って、画像を選択します。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/basic-4.jpg" alt="basic-4.jpg" >
+	<div class="caption">
+		<p>oops, picked image was tilted. please push edit button to fix it.</p>
+		<p class="hint">if you check "auto start editor" in application settings, editor screen is automatically open after pick or capture image.</p>
+		<hr>
+		<p>おや、画像が傾いてますね。editボタンを押して修正しましょう。</p>
+		<p class="hint">設定で「画像加工を自動開始」を有効にすると、画像選択やカメラ撮影の直後に自動的に編集画面を開きます。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/basic-5.jpg" alt="basic-5.jpg" >
+	<div class="caption">
+		<p>this app has in-app editor to rotate,resize,crop image.</p>
+		<p>on push save button, new image will be created.</p>
+		<p class="hint">there are auto-rotate and JPEG quality option in application settings.</p>
+		<hr>
+		<p>editor では 画像の回転、リサイズ、切り抜きを行うことができます。</p>
+		<p>saveボタンを押すとその場で新しい画像が作成されます。</p>
+		<p class="hint">自動回転やJPEG品質のオプションは設定画面にあります。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/basic-6.jpg" alt="basic-6.jpg" >
+	<div class="caption">
+		<p>second line from bottom in the screen is used to choose upload account and album.</p>
+		<p>but, Imgur allows anonymous upload without account.</p>
+		<p>in this example, choose "(anonymous)".</p>
+		<p class="hint">if you want to upload with Imgur account, see section <A href="#authentication">account authentication</a> and <A href="#album">albums</a>.</p>
+		<hr>
+		<p>画面の下から２行目で、アップロードするアカウントやアルバムを選択できます。</p>
+		<p>が、アカウントを設定しなくても画像のアップロードはできます。</p>
+		<p>今回の例では (anonymous) / (名無し) を選択してアップロードします。</p>
+		<p class="hint">もしImgurアカウントを使ったアップロードを行いたい場合、<A href="#authentication">アカウント認証</a>や<A href="#album">アルバム</a>の項を参照してください。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/basic-7.jpg" alt="basic-7.jpg" >
+	<div class="caption">
+	<p>on push upload button, uploading will be start.</p>
+	<p>on complete upload, URL of uploaded image will be copied to clipboard. you can paste URL to any text input on other app.</p>
+	<hr>
+	<p>アップロードボタンを押すとアップロードが行われます。</p>
+	<p>アップロードが完了すると、URLがクリップボードにコピーされます。他のアプリのテキスト入力部で貼り付け操作を行うことで、URLをそこに入力できます。</p>
+	</div>
+</div>
+
+<hr>
+<h2 id="mushroom">work as IME extension / IME拡張としての動作</h2>
+
+
+<p>this app support <a href="http://www.adamrocker.com/blog/mushroom-collaborates-with-simeji/">Mushroom IME(Input Method Editor) extension</a>. when start this app from IME, this app work as IME extension and automatically input URL of uploaded image.</p>
+
+<p>this function depends on IME. if your IME has no support of Mushroom IME extension, please skip this section. also, how to start IME extension depends on what IME you use. in this example, <a href="https://play.google.com/store/apps/details?id=com.justsystems.atokmobile.service">ATOK</a> is used.
+
+<p>このアプリは<a href="http://www.adamrocker.com/blog/mushroom-collaborates-with-simeji/">Mushroom IME拡張</a>に準拠しています。Mushroom をサポートしているIMEからImgurマッシュを起動することで、画像の選択→アップロード→URLの入力をシームレスに行うことができます。</p>
+
+<p>マッシュルームの起動方法はお使いのIMEによって異なります。この例では <a href="https://play.google.com/store/apps/details?id=com.justsystems.atokmobile.service">ATOK</a> での起動方法を説明します。</p>
+
+<div class="figureset">
+	<img class="figure" src="images/mushroom-1.jpg" alt="mushroom-1.jpg" >
+	<div class="caption">
+		<p>open some app that has text input.</p>
+		<p>then, <b>long-press left-bottom icon on softwea keyboard of ATOK.</b></p>
+		<hr>
+		<p>テキストエディタやTwitterアプリなど、テキストを入力できるアプリをまず開きます。</p>
+		<p>次に、<b>ATOKのソフトウェアキーボードの左下のアイコンを長押しします。</b></p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/mushroom-2.jpg" alt="mushroom-2.jpg" >
+	<div class="caption">
+		<p><b>slide your finger to abobe mushroom icon.</b></p>
+		<p>"ATOKダイレクト" will be shown.</p>
+		<p>this screen shot shows icon of this app to right of mushroom icon, but it will not be shown at first time, because it is list of last recently used.</p>
+		<p><b>untouch your finger that on mushroom icon.</b></p>
+		<hr>
+		<p><b>そのまま指を上の、キノコのマークにスライドします。</b></p>
+		<p>ATOKダイレクトが表示されます。</p>
+		<p>この画面写真ではキノコのマークの右にImgurマッシュのアイコンが出ていますが、これは起動履歴なので最初は見つからないでしょう。</p>
+		<p><b>キノコのマークをタッチしている指を、画面から離します。</b></p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/mushroom-3.jpg" alt="mushroom-3.jpg" >
+	<div class="caption">
+		<p>list of installed mushroom extension will be shown.</p>
+		<p><b>choose Imgur Mushroom.</b></p>
+		<hr>
+		<p>端末にインストールされたマッシュルーム拡張の一覧が表示されます。</p>
+		<p><b>Imgurマッシュを選びます。</b></p>
+	</div>
+</div>
+
+<p>following instruction is similer to <A href="#basic">basic usage</a>. choose image, upload it.</p>
+
+<p>Imgurマッシュの画面が開いて、画像選択からアップロードまでの流れは<A href="#basic">単純な使い方</a>の説明と同じです。</p>
+
+<div class="figureset">
+	<img class="figure" src="images/mushroom-4.jpg" alt="mushroom-4.jpg" >
+	<div class="caption">
+		<p>on complete upload, URL will be automatically input via IME.</p>
+		<hr>
+		<p>アップロードが終わるとURLが自動的にIME経由で入力されます。</p>
+	</div>
+</div>
+
+<hr>
+<h2 id="history">upload history / アップロード履歴</h2>
+
+<p>this app has in-app upload history. image uploaded as anonymous can be deleted only from upload history.</p>
+
+<p>このアプリは内部にアップロード履歴を保存します。名無しでアップロードした画像は、アップロード履歴からのみ削除可能です。</p>
+
+
+<div class="figureset">
+	<img class="figure" src="images/history-1.jpg" alt="history-1.jpg" >
+	<div class="caption">
+		<p>open this app, then push menu key , then choose history.</p>
+		<hr>
+		<p>このアプリを起動して、次にmenuボタンを押して、次に履歴を選択します。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/history-2.jpg" alt="history-2.jpg" >
+	<div class="caption">
+		<p>list of the uploaded image from this app will be shown.</p>
+		<hr>
+		<p>アプリからアップロードした画像の一覧が表示されます。</p>
+	</div>
+</div>
+
+
+<div class="figureset">
+	<img class="figure" src="images/history-3.jpg" alt="history-3.jpg" >
+	<div class="caption">
+		<p>on push list item, context menu for check/delete upload history will be shown.</p>
+		<hr>
+		<p>リストから項目を選択すると、履歴を確認/削除するメニューが表示されます。</p>
+	</div>
+</div>
+
+<dl>
+<dt>Input this URL</dt>
+<dd>URL of this image will be copied to clipboard.
+ or if you start this app as IME extension, URL will be input via IME.
+</dd>
+
+<dt>Browse image URL</dt>
+<dd>URL of this image will be open via web browser.</dd>
+
+<dt>Browse Imgur's site</dt>
+<dd>URL of image information page will be open via web browser.</dd>
+
+<dt>delete image on the server</dt>
+<dd>uploaded image will be delete from on Imgur's server.</dd>
+
+<dt>delete history</dt>
+<dd>delete only history data in this app. uploaded image on Imgur's server will not be deleted.</dd>
+</dl>
+
+
+<dl>
+<dt>このURLを入力</dt>
+<dd>アップロードされた画像のURLを、クリップボードにコピーします。
+ただし、このアプリをIME拡張として起動した場合はURLは直接IMEに入力されます。
+</dd>
+
+<dt>画像リンクを開く</dt>
+<dd>アップロードされた画像のURLを、Webブラウザで開きます。</dd>
+
+<dt>画像詳細ページ</dt>
+<dd>アップロードされた画像の詳細ページを、Webブラウザで開きます。</dd>
+
+<dt>サーバから削除</dt>
+<dd>アップロードされた画像を、Imgurのサーバから削除します。</dd>
+
+<dt>履歴だけ削除</dt>
+<dd>アップロードされた画像を、このアプリのアップロード履歴から削除します。Imgurのサーバからは削除されないので注意して下さい。</dd>
+</dl>
+
+<hr>
+<h2 id="authentication">account authentication / アカウント認証</h2>
+
+<p>this app has function access to Imgur account,
+but don't have function to create new Imgur account.
+please visit <a href="https://imgur.com/register">register page on Imgur website</a> to create new account.
+</p>
+
+<p>このアプリにはImgurアカウントと連動する機能がありますが、
+Imgurアカウントを新しく作成する機能はありません。
+アカウントの作成は<a href="https://imgur.com/register">ImgurのWebサイト</a>で行なってください。</p>
+
+<div class="figureset">
+	<img class="figure" src="images/auth-1.jpg" alt="auth 1" >
+	<div class="caption">
+		<p>open this app ,then push menu key, then choose settings.</p>
+		<hr>
+		<p>このアプリを開いて、次にメニューボタンを押して、次に設定を選びます。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/auth-2.jpg" alt="auth 2" >
+	<div class="caption">
+		<p>choose "account authentication" from list of settings.</p>
+		<hr>
+		<p>設定のリストから「アカウント認証」を選択します。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/auth-3.jpg" alt="auth 3" >
+	<div class="caption">
+		<p>please input information to be required for login.</p>
+		<hr>
+		<p>認証に必要な情報を入力します。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/auth-4.jpg" alt="auth 4" >
+	<div class="caption">
+		<p>push "allow" button at righit-bottom edge in login form.</p>
+		<hr>
+		<p>ログイン画面の右下の「Allow」ボタンを押します。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/auth-5.jpg" alt="auth 5" >
+	<div class="caption">
+		<p>authentication will be complete in a few minutes.</p>
+		<hr>
+		<p>すこし待つと、認証が完了します。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/auth-6.jpg" alt="auth 6" >
+	<div class="caption">
+		<p>choose account after back to upload screen.</p>
+		<hr>
+		<p>アップロード用の画面に戻って、登録したアカウントを選択します。</p>
+	</div>
+</div>
+
+
+<hr>
+<h2 id="album">albums / アルバム</h2>
+
+<div class="figureset">
+	<img class="figure" src="images/album-1.jpg" alt="album 1" >
+	<div class="caption">
+		<p>on complete account authentication, you can choose albums that created at Imgur's web site.</p>
+		<p>or create new album by using rightside "+" button.</p>
+		<hr>
+		<p>アカウント認証が終わると、ImgurのWebサイトで作成したアルバムを選択することができます。</p>
+		<p>また、右端の ＋ ボタンを押して新しくアルバムを作成することもできます。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/album-2.jpg" alt="album 2" >
+	<div class="caption">
+		<p>please input title and other information when create new album.</p>
+		<p class="hint">alphabet,number, space, hyphen, underline character will be allowed as letter in album title.</p>
+		<p>push OK to create new album.</p>
+		<hr>
+		<p>アルバムを作成する時は、アルバムのタイトルなどを入力します。</p>
+		<p class="hint">アルバム名に指定できる文字は半角アルファベット、半角数字、半角スペース、半角ハイフン、半角アンダーラインだけです。</p>
+		<p>OKボタンを押すとアルバムが作成されます。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/album-3.jpg" alt="album 3" >
+	<div class="caption">
+		<p>if you want to delete album, long press the box of album selection.</p>
+		<hr>
+		<p>アルバムを削除したい場合、アルバムを選択する部分を長押ししてください。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/album-4.jpg" alt="album 4" >
+	<div class="caption">
+		<p>if you want to delete album, press OK in the confirmation dialog.</p>
+		<p class="hint">no recovery after delete albums. be careful.</p>
+		<hr>
+		<p>アルバム削除の確認でOKを押すと、アルバムが削除されます。</p>
+		<p class="hint">削除してしまうと元に戻せません。注意して下さい。</p>
+	</div>
+</div>
+
+<hr>
+<h2 id="bulkupload">bulk upload / 一括アップロード</h2>
+
+<p>if you have the image viewer app that has capavility of multiple-selection and send share intent, this app can bulk upload the multiple image all together.</p>
+
+<p>this example shows multiple selection using QuickPic and bulk upload with this app.</p>
+
+
+<p>複数選択と共有のできる画像閲覧アプリ(QuickPicやES File Explorerなど)から共有されることで、
+複数の画像を一括アップロードすることができます。</p>
+
+<p>この例ではQuickPicでの複数選択と、そこからImgurマッシュで一括アップロードを行う手順を説明します。</p>
+
+<div class="figureset">
+	<img class="figure" src="images/bulk-1.jpg" alt="bulk 1" >
+	<div class="caption">
+		<p>open any folder from image viewer app such as QuickPic.</p>
+		<p>push check-boxed button at top-right edge.</p>
+		<p class="hint">some machine shows pencil button for multiple selection.</p>
+		<hr>
+		<p>QuickPic等の画像閲覧アプリで、適当なフォルダを開きます。</p>
+		<p>右上の、チェックボックスのついたボタンを押します。</p>
+		<p class="hint">一部の端末では鉛筆マークのボタンが該当するようです。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/bulk-2.jpg" alt="bulk 2" >
+	<div class="caption">
+		<p>the top-side view will be changed.</p>
+		<p>then, select some images.</p>
+		<hr>
+		<p>画面上部の表示が変わりました。</p>
+		<p>画像をいくつか選択します。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/bulk-3.jpg" alt="bulk 3" >
+	<div class="caption">
+		<p>push share button at top-center edge.</p>
+		<hr>
+		<p>選択したら、画面上部にある共有ボタンを押します。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/bulk-4.jpg" alt="bulk 4" >
+	<div class="caption">
+		<p>list of app that receive share intent will be shown.</p>
+		<p>choose "Imgur bulk upload".</p>
+		<hr>
+		<p>複数ファイルの共有を受け取れるアプリが一覧表示されます。</p>
+		<p>「Imgur一括投稿」を選択します。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/bulk-5.jpg" alt="bulk 5" >
+	<div class="caption">
+		<p>bulk upload screen of this app will be shown. oops, some images was tilted.</p>
+		<hr>
+		<p>このアプリの一括アップロード画面が開かれます。おや、いくつか画像が傾いてますね。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/bulk-6.jpg" alt="bulk 6" >
+	<div class="caption">
+		<p>tap image to edit or remove from upload list.</p>
+		<hr>
+		<p>画像をタップすると、個別に編集やアップロード対象リストからの除去を行えます。</p>
+	</div>
+</div>
+
+<div class="figureset">
+	<img class="figure" src="images/bulk-7.jpg" alt="bulk 7" >
+	<div class="caption">
+		<p>on push upload button, bulk upload will be start.</p>
+		<p>on complete upload, URL of images will be copied to clipboard.</p>
+		<hr>
+		<p>アップロードボタンを押すと、まとめてアップロードが行われます。</p>
+		<p>アップロードが完了するとURL(複数)がまとめてクリップボードにコピーされます。</p>
+	</div>
+</div>
+
+
+</body>
+</html>

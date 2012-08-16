@@ -120,7 +120,7 @@ public class ActMultiple extends BaseActivity{
 		listview.setOnItemClickListener(new OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> arg0, View arg1, final int idx,long arg3) {
 				final UploadItem item = (UploadItem)upload_list_adapter.getItem(idx);
-				env.dialog_manager.show_dialog(
+				env.show_dialog(
 					new AlertDialog.Builder(act)
 					.setCancelable(true)
 					.setItems(

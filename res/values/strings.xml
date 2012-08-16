@@ -4,10 +4,12 @@
 <string name="about">about this app</string>
 <string name="account">account</string>
 <string name="account_added">account has been configured.</string>
-<string name="account_add_title">add account</string>
+<string name="account_add_summary">authenticate access from this app to your Imgur account.</string>
+<string name="account_add_title">account authentication</string>
 <string name="account_all">all account</string>
 <string name="account_anonymous">(anonymous)</string>
-<string name="account_delete_title">remove account</string>
+<string name="account_delete_summary">remove access token of this app and your Imgur account.</string>
+<string name="account_delete_title">remove account authentication</string>
 <string name="account_info_querying">retrieving account information&#8230;</string>
 <string name="account_not_selected">account is not selected.</string>
 <string name="account_settings">account settings</string>
@@ -53,6 +55,8 @@
 <string name="delete_complete">image was deleted.</string>
 <string name="delete_hash_invalid">maybe already deleted.</string>
 <string name="delete_hash_missing">missing delete hash</string>
+<string name="disable_ssl_certificate_validation_summary">if checked,this app don\'t validate server\'s SSL certificate. helpful for avoid SSL certificate error, but this option has security risk.</string>
+<string name="disable_ssl_certificate_validation_title">disable validation of SSL certificate</string>
 <string name="edit">edit</string>
 <string name="edit_autostart_summary">if checked, automatically start editor when image is picked.</string>
 <string name="edit_autostart_title">auto start editor</string>
@@ -146,6 +150,7 @@
 <string name="upload_progress_sizecheck">calculate upload size&#8230;</string>
 <string name="upload_wait_response">waiting response&#8230;</string>
 <string name="uri_parse_error">cannot detect file path from URI:\n%1$s</string>
+<string name="usage">online manual</string>
 
 <!-- ここから長いテキスト-->
 <string name="about_thisapp">About this app:\nthis is image uploader for Imgur, and also Mushroom IME extension.</string>

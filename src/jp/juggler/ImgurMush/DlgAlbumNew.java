@@ -95,7 +95,7 @@ public class DlgAlbumNew {
 					,(String)spLayout.getSelectedItem()
 					,new AlbumCreateCallback(){
 						@Override public void onComplete() {
-							dialog.dismiss();
+							env.dismiss(dialog);
 						}
 						@Override public void onError(String message) {
 							tvError.setVisibility(View.VISIBLE);
@@ -107,7 +107,7 @@ public class DlgAlbumNew {
 			}
 		})
 		.create();
-		env.dialog_manager.show_dialog(dialog);
+		env.show_dialog(dialog);
 		this.btnOk = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
 		check();
 	}

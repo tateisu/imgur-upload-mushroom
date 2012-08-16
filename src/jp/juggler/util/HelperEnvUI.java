@@ -31,6 +31,37 @@ public class HelperEnvUI extends HelperEnv{
 		return act.findViewById(id);
 	}
 	
+	public void dismiss(final Dialog d){
+		if(!isUIThread()){
+			handler.post(new Runnable() {
+				@Override public void run() {
+					dismiss(d);
+				}
+			});
+		}
+		dialog_manager.dismiss(d);
+	}
+	public void show_dialog(final Dialog d){
+		if(!isUIThread()){
+			handler.post(new Runnable() {
+				@Override public void run() {
+					show_dialog(d);
+				}
+			});
+		}
+		dialog_manager.show_dialog(d);
+	}
+	public void show_dialog(final AlertDialog.Builder builder){
+		if(!isUIThread()){
+			handler.post(new Runnable() {
+				@Override public void run() {
+					show_dialog(builder);
+				}
+			});
+		}
+		dialog_manager.show_dialog(builder.create());
+	}
+	
 	public final void finish_with_message(final String msg){
 		if( !isUIThread() ){
 			handler.post(new Runnable() {
@@ -55,7 +86,7 @@ public class HelperEnvUI extends HelperEnv{
 				}
 			});
 			//
-			dialog_manager.show_dialog(dialog);
+			show_dialog(dialog);
 		}catch(Throwable ex){
 			ex.printStackTrace();
 		}
@@ -82,6 +113,8 @@ public class HelperEnvUI extends HelperEnv{
 		});
 		if(title != null ) b.setTitle(title);
 		if(message != null)b.setMessage(message);
-		dialog_manager.show_dialog(b);
+		show_dialog(b);
 	}
+	
+
 }

@@ -8,10 +8,17 @@
 		<Preference
 			android:key="pref_add_account"
 			android:title="@string/account_add_title"
+			android:summary="@string/account_add_summary"
 		/>
 		<jp.juggler.ImgurMush.Pref_RemoveAccount
 			android:key="pref_del_account"
 			android:title="@string/account_delete_title"
+			android:summary="@string/account_delete_summary"
+		/>
+		<CheckBoxPreference
+			android:key="disable_ssl_certificate_validation"
+			android:title="@string/disable_ssl_certificate_validation_title"
+			android:summary="@string/disable_ssl_certificate_validation_summary"
 		/>
 	</PreferenceCategory>
 

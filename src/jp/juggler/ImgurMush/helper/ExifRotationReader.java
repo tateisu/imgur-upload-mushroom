@@ -1,7 +1,9 @@
 package jp.juggler.ImgurMush.helper;
 
+import android.annotation.TargetApi;
 import android.media.ExifInterface;
 
+@TargetApi(5)
 public class ExifRotationReader {
 
 	public static int read_rotation(String file_path) {

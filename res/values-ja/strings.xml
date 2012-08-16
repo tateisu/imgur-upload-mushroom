@@ -4,10 +4,12 @@
 <string name="about">このアプリについて</string>
 <string name="account">アカウント</string>
 <string name="account_added">アカウントが設定されました</string>
-<string name="account_add_title">アカウントの追加</string>
+<string name="account_add_summary">Imgurアカウントとアプリの連携を設定します</string>
+<string name="account_add_title">アカウント認証</string>
 <string name="account_all">全アカウント</string>
 <string name="account_anonymous">(名無し)</string>
-<string name="account_delete_title">アカウントの削除</string>
+<string name="account_delete_summary">Imgurアカウントとアプリの連携を解除します</string>
+<string name="account_delete_title">アカウント認証を除去</string>
 <string name="account_info_querying">アカウント情報の取得中です&#8230;</string>
 <string name="account_not_selected">アカウントが選択されていません</string>
 <string name="account_settings">アカウントの設定(必須ではありません)</string>
@@ -16,7 +18,7 @@
 <string name="act_history"		 >Imgur マッシュ/ 投稿履歴</string>
 <string name="act_main"			 >Imgur マッシュ</string>
 <string name="act_multiple"		 >Imgur 一括投稿</string>
-<string name="act_oauth"		 >Imgur マッシュ/ アカウントの追加</string>
+<string name="act_oauth"		 >Imgur マッシュ/ アカウント認証</string>
 <string name="act_pref"			 >Imgur マッシュ/ 設定</string>
 <string name="act_resize_preset" >Imgur マッシュ/ リサイズ指定</string>
 <string name="album_add">アルバムの作成</string>
@@ -53,6 +55,8 @@
 <string name="delete_complete">画像を削除しました</string>
 <string name="delete_hash_invalid">サーバからは既に削除されていたようです</string>
 <string name="delete_hash_missing">削除ハッシュが見つかりません</string>
+<string name="disable_ssl_certificate_validation_summary">有効にすると、サーバのSSL証明書の検証を行いません。SSL証明書のエラーを回避できますが、安全性は低下します。</string>
+<string name="disable_ssl_certificate_validation_title">SSL証明書を検証しない</string>
 <string name="edit">加工</string>
 <string name="edit_autostart_summary">有効にすると、画像が選択されたらすぐに画像加工を開始します</string>
 <string name="edit_autostart_title">画像加工を自動開始</string>
@@ -146,6 +150,7 @@
 <string name="upload_progress_sizecheck">アップロードサイズを測定中です…</string>
 <string name="upload_wait_response">レスポンス待機中…</string>
 <string name="uri_parse_error">ファイルパスを調べられません\n%1$s</string>
+<string name="usage">オンラインマニュアル</string>
 
 <!-- ここから長いテキスト-->
 

@@ -4,7 +4,7 @@
     <issue id="ButtonCase" severity="ignore" />
     <issue id="ButtonOrder" severity="ignore" />
     <issue id="ContentDescription" severity="ignore" />
-    <issue id="ExportedActivity" severity="informational" />
+    <issue id="ExportedActivity" severity="ignore" />
     <issue id="ExportedContentProvider" severity="informational" />
     <issue id="ExportedReceiver" severity="informational" />
     <issue id="ExportedService" severity="informational" />

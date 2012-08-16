@@ -79,7 +79,7 @@ public class UploadTargetManager {
 			public void onLoad() {
 				account_selection_changed(true,spAccount.getSelectedItemPosition(),"album loaded");
 				if( reload_dialog != null ){
-					reload_dialog.dismiss();
+					env.dismiss(reload_dialog);
 					reload_dialog = null;
 				}
 			}
@@ -276,7 +276,7 @@ public class UploadTargetManager {
 		dialog.setMessage(env.getString(R.string.please_wait));
 		dialog.setIndeterminate(true);
 		dialog.setCancelable(true);
-		env.dialog_manager.show_dialog(dialog);
+		env.show_dialog(dialog);
 		new Thread(){
 			@Override public void run() {
 				ImgurAccount account = getSelectedAccount();
@@ -329,7 +329,7 @@ public class UploadTargetManager {
 							callback.onComplete();
 							reload_with_dialog();
 						}
-						dialog.dismiss();
+						env.dismiss(dialog);
 					}
 				});
 			}
@@ -343,7 +343,7 @@ public class UploadTargetManager {
 		dialog.setMessage(env.getString(R.string.please_wait));
 		dialog.setIndeterminate(true);
 		dialog.setCancelable(true);
-		env.dialog_manager.show_dialog(dialog);
+		env.show_dialog(dialog);
 		new Thread(){
 			@Override public void run() {
 				ImgurAccount account = getSelectedAccount();
@@ -377,7 +377,7 @@ public class UploadTargetManager {
 						}else{
 							reload_with_dialog();
 						}
-						dialog.dismiss();
+						env.dismiss(dialog);
 					}
 				});
 			}
@@ -394,7 +394,7 @@ public class UploadTargetManager {
 		dialog.setIndeterminate(true);
 		dialog.setCancelable(true);
 		reload_dialog = dialog;
-		env.dialog_manager.show_dialog(dialog);
+		env.show_dialog(dialog);
 		//
 		reload();
 	}
